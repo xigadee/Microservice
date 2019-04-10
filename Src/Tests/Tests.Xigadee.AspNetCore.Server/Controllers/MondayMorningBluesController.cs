@@ -18,11 +18,16 @@ namespace Tests.Xigadee
     [EntityControllerFeaturesSupport(EntityControllerFeatures.All)]
     public class MondayMorningBluesController : EntityController<Guid, MondayMorningBlues>
     {
+        readonly MondayMorningBluesModule _mmb;
+
         public MondayMorningBluesController(ILogger<MondayMorningBluesController> logger
-            , IRepositoryAsync<Guid, MondayMorningBlues> repository, RepositoryKeyManager<Guid> keyManager = null) 
+            , IRepositoryAsync<Guid, MondayMorningBlues> repository
+            , MondayMorningBluesModule mmb
+            , RepositoryKeyManager<Guid> keyManager = null
+            ) 
             : base(logger, repository, keyManager)
         {
-
+            _mmb = mmb;
         }
 
         public override Task<IActionResult> Read(CombinedRequestModel input)

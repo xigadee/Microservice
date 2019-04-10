@@ -194,7 +194,7 @@ namespace Xigadee
             , Func<E, IEnumerable<Tuple<string, string>>> propertiesMaker = null
             , VersionPolicy<E> versionPolicy = null
             , RepositoryKeyManager<K> keyManager = null
-            )
+            ):base(typeof(IRepositoryAsyncServer<K, E>))
         {
             var res = EntityHintHelper.Resolve<E>();
 
@@ -521,6 +521,37 @@ namespace Xigadee
     /// </summary>
     public abstract class RepositoryBase
     {
+        /// <summary>
+        /// This is the base repository shared class.
+        /// </summary>
+        /// <param name="repositoryType">The type of the inherited repository.</param>
+        protected RepositoryBase(Type repositoryType)
+        {
+            RepositoryTypeValidate(repositoryType, out var keyType, out var entityType);
+
+            RepositoryType = repositoryType;
+            TypeKey = keyType;
+            TypeEntity = entityType;
+        }
+
+        #region RepositoryTypeValidate(Type repositoryType, out Type keyType, out Type entityType)
+        /// <summary>
+        /// This method checks the type declaration for the overridden entity.
+        /// </summary>
+        /// <param name="repositoryType">The repository type.</param>
+        /// <param name="keyType">The outgoing key type.</param>
+        /// <param name="entityType">The outgoing entity type.</param>
+        protected virtual void RepositoryTypeValidate(Type repositoryType, out Type keyType, out Type entityType)
+        {
+            //Let's just check that the return type is a repository.
+            if (!repositoryType.IsSubclassOfRawGeneric(typeof(IRepositoryAsyncServer<,>)))
+                throw new ArgumentOutOfRangeException($"{nameof(RepositoryBase)}: '{repositoryType.Name}' does not implement IRepositoryAsyncServer<,>");
+
+            keyType = repositoryType.GenericTypeArguments[0];
+            entityType = repositoryType.GenericTypeArguments[1];
+        } 
+        #endregion
+
         #region ResultFormat...
         /// <summary>
         /// Formats the outgoing result.
@@ -586,5 +617,19 @@ namespace Xigadee
                 throw new ArgumentNullException("value must be set to a value");
         }
         #endregion
+
+        /// <summary>
+        /// This is the generic repository type.
+        /// </summary>
+        public Type RepositoryType { get; }
+
+        /// <summary>
+        /// This is the key type,
+        /// </summary>
+        public Type TypeKey { get; }
+        /// <summary>
+        /// This is the entity type.
+        /// </summary>
+        public Type TypeEntity { get; }
     }
 }

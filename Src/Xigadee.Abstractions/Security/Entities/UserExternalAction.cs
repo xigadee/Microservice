@@ -11,10 +11,16 @@ namespace Xigadee
     public class UserExternalAction: UserReferenceBase
     {
         /// <summary>
-        /// Gets or sets the type of the action, i.e. Registration confirmation, password reset, etc.
+        /// Gets or sets the type of the action, i.e. Email, SMS, Push etc.
         /// </summary>
-        [EntityPropertyHint("actiontype")]
+        [EntityPropertyHint("typeaction")]
         public string ActionType { get; set; }
+
+        /// <summary>
+        /// This property is used to specify a particular communication template, i.e. Registration confirmation, password reset, etc.
+        /// </summary>
+        [EntityPropertyHint("typetemplate")]
+        public string TemplateType { get; set; }
 
         /// <summary>
         /// Gets or sets the option expiry date/time for the action.

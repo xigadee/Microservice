@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Test.Xigadee;
 using Xigadee;
 
@@ -34,21 +35,27 @@ namespace Tests.Xigadee
         {
             var eOpts = Context.Directives.RepositoryProcessExtract();
 
-            Pipeline
-                .AdjustPolicyTaskManagerForDebug()
-                .AddChannelIncoming("testin")
-                    .AttachPersistenceManagerHandlerMemory(
-                        (MondayMorningBlues e) => e.Id
-                        , s => new Guid(s)
-                        , versionPolicy: ((e) => $"{e.VersionId:N}", (e) => e.VersionId = Guid.NewGuid(), true)
-                        , propertiesMaker: (e) => e.ToReferences2()
-                        , searches: new[] { new RepositoryMemorySearch<Guid, MondayMorningBlues>("default") }
-                        , searchIdDefault: "default")
-                    .AttachPersistenceClient(out _mmbClient)
-                    .Revert()                
-                ;
+            Pipeline.AdjustPolicyTaskManagerForDebug();
+
+            var channelIncoming = Pipeline.AddChannelIncoming("testin");
+
+            ProcessRepository(channelIncoming);
 
             Pipeline.Service.Events.StartCompleted += Service_StartCompleted; 
+        }
+
+        private void ProcessRepository(IPipelineChannelIncoming<MicroservicePipeline> channelIncoming)
+        {
+            channelIncoming
+                .AttachPersistenceManagerHandlerMemory(
+                    (MondayMorningBlues e) => e.Id
+                    , s => new Guid(s)
+                    , versionPolicy: ((e) => $"{e.VersionId:N}", (e) => e.VersionId = Guid.NewGuid(), true)
+                    , propertiesMaker: (e) => e.ToReferences2()
+                    , searches: new[] { new RepositoryMemorySearch<Guid, MondayMorningBlues>("default") }
+                    , searchIdDefault: "default")
+                .AttachPersistenceClient(out _mmbClient)
+                .Revert();
         }
 
         private void Service_StartCompleted(object sender, StartEventArgs e)
@@ -141,5 +148,22 @@ namespace Tests.Xigadee
 
             return usm;
         }
+
+        public override void ModulesCreate(IServiceCollection services)
+        {
+            base.ModulesCreate(services);
+            MondayMorningBlues = new MondayMorningBluesModule();
+        }
+
+        public override void Connect(ILoggerFactory lf)
+        {
+            base.Connect(lf);
+            MondayMorningBlues.Logger = lf.CreateLogger<MondayMorningBluesModule>();
+
+        }
+
+        [RepositoriesProcess]
+        [RegisterAsSingleton]
+        public MondayMorningBluesModule MondayMorningBlues { get; set; }
     }
 }
