@@ -63,10 +63,7 @@ namespace Xigadee
         /// This gets the repository.
         /// </summary>
         /// <returns></returns>
-        public object Get()
-        {
-            return Property.GetMethod.Invoke(Module, new object[] { });
-        }
+        public object Get => Property.GetMethod.Invoke(Module, new object[] { });
 
         /// <summary>
         /// This method sets the repository.

@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Test.Xigadee;
@@ -38,14 +34,15 @@ namespace Tests.Xigadee
             Pipeline.AdjustPolicyTaskManagerForDebug();
 
             var channelIncoming = Pipeline.AddChannelIncoming("testin");
-
-            ProcessRepository(channelIncoming);
+            //TODO: hack!!!
+            eOpts.Take(1).ForEach(r => ProcessRepository(r, channelIncoming));
 
             Pipeline.Service.Events.StartCompleted += Service_StartCompleted; 
         }
 
-        private void ProcessRepository(IPipelineChannelIncoming<MicroservicePipeline> channelIncoming)
+        private void ProcessRepository(RepositoryDirective rd, IPipelineChannelIncoming<MicroservicePipeline> channelIncoming)
         {
+
             channelIncoming
                 .AttachPersistenceManagerHandlerMemory(
                     (MondayMorningBlues e) => e.Id
@@ -53,9 +50,15 @@ namespace Tests.Xigadee
                     , versionPolicy: ((e) => $"{e.VersionId:N}", (e) => e.VersionId = Guid.NewGuid(), true)
                     , propertiesMaker: (e) => e.ToReferences2()
                     , searches: new[] { new RepositoryMemorySearch<Guid, MondayMorningBlues>("default") }
-                    , searchIdDefault: "default")
-                .AttachPersistenceClient(out _mmbClient)
-                .Revert();
+                    , searchIdDefault: "default");
+
+            channelIncoming
+                .AttachPersistenceClient(out _mmbClient);
+        }
+
+        private RepositoryBase ResolveRepository(Type repoType)
+        {
+            return null;
         }
 
         private void Service_StartCompleted(object sender, StartEventArgs e)

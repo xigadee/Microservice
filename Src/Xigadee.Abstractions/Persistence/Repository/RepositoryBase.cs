@@ -529,9 +529,11 @@ namespace Xigadee
         {
             RepositoryTypeValidate(repositoryType, out var keyType, out var entityType);
 
-            RepositoryType = repositoryType;
+            RepositoryServerType = repositoryType;
             TypeKey = keyType;
             TypeEntity = entityType;
+
+            RepositoryType = typeof(IRepositoryAsync<,>).MakeGenericType(keyType, entityType);
         }
 
         #region RepositoryTypeValidate(Type repositoryType, out Type keyType, out Type entityType)
@@ -619,7 +621,12 @@ namespace Xigadee
         #endregion
 
         /// <summary>
-        /// This is the generic repository type.
+        /// This is the generic repository type, i.e. IRepositoryAsyncServer
+        /// </summary>
+        public Type RepositoryServerType { get; }
+
+        /// <summary>
+        /// This is the generic repository type, i.e. IRepositoryAsyncServer
         /// </summary>
         public Type RepositoryType { get; }
 
