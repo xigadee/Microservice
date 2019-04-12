@@ -15,7 +15,7 @@ namespace Xigadee
         /// <returns>The pipeline.</returns>
         public static C AttachPersistenceRepositoryDirective<C>(this C cpipe
             , RepositoryDirective directive
-            , RepositoryBase repo = null
+            , Func<RepositoryDirective, RepositoryBase> fnRepo = null
             , int startupPriority = 100
             )
             where C : IPipelineChannelIncoming<IPipeline>
@@ -26,9 +26,9 @@ namespace Xigadee
             if (directive == null)
                 throw new ArgumentNullException("directive", $"directive cannot be null.");
 
-            repo = repo ?? directive.Get as RepositoryBase;
+            var repo = fnRepo?.Invoke(directive) ?? directive.Get as RepositoryBase;
             if (repo == null)
-                throw new ArgumentNullException("repo", $"repo cannot be resolved from the directive.");
+                throw new ArgumentNullException("repo", $"repo cannot be resolved from the function or the directive.");
 
             //OK, we need to create a persistence client.
             var client = directive.RepositoryCreatePersistenceClient();

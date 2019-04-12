@@ -57,6 +57,10 @@ namespace Xigadee
         , IRequireDataCollector
     {
         /// <summary>
+        /// This is the componentId used to uniquely reference the component.
+        /// </summary>
+        Guid ComponentId { get; }
+        /// <summary>
         /// This is the handler priority used when starting and stopping services.
         /// The higher the value, the sooner the command will be started relative to the other commands with lower priorities.
         /// </summary>

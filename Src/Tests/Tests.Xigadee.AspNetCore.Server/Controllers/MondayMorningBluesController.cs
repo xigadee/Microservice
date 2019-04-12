@@ -21,11 +21,10 @@ namespace Tests.Xigadee
         readonly MondayMorningBluesModule _mmb;
 
         public MondayMorningBluesController(ILogger<MondayMorningBluesController> logger
-            , IRepositoryAsync<Guid, MondayMorningBlues> repository
             , MondayMorningBluesModule mmb
             , RepositoryKeyManager<Guid> keyManager = null
             ) 
-            : base(logger, repository, keyManager)
+            : base(logger, mmb.RepositoryMondayMorningBlues, keyManager)
         {
             _mmb = mmb;
         }

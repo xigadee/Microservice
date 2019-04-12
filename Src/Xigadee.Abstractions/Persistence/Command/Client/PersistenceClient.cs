@@ -9,15 +9,14 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class PersistenceClient<K, E> : PersistenceClientBase<K, E>
-        , IPersistenceMessageInitiator 
+    public class PersistenceClient<K, E> : PersistenceClientBase<K, E>, IPersistenceClientCommand 
         where K : IEquatable<K>
     {
         #region Constructor
         /// <summary>
         /// This is the default constructor. This set the default routing to external only.
         /// </summary>
-        public PersistenceClient(ICacheManager<K, E> cacheManager = null, TimeSpan? defaultRequestTimespan = null) 
+        public PersistenceClient(ICacheManager<K, E> cacheManager = null, TimeSpan? defaultRequestTimespan = null)
             : base(cacheManager, defaultRequestTimespan)
         {
             RoutingDefault = ProcessOptions.RouteExternal;
@@ -34,7 +33,7 @@ namespace Xigadee
             {
                 return typeof(E).Name;
             }
-        } 
+        }
         #endregion
         #region ResponseId
         /// <summary>
@@ -43,8 +42,8 @@ namespace Xigadee
         /// </summary>
         protected override MessageFilterWrapper ResponseId
         {
-            get { return new MessageFilterWrapper(new ServiceMessageHeader(ResponseChannelId, EntityType),OriginatorId.ExternalServiceId ); }
-        } 
+            get { return new MessageFilterWrapper(new ServiceMessageHeader(ResponseChannelId, EntityType), OriginatorId.ExternalServiceId); }
+        }
         #endregion
 
         #region RoutingDefault
@@ -52,7 +51,7 @@ namespace Xigadee
         /// This is the default routing for outgoing messages. 
         /// By default messages will try external providers.
         /// </summary>
-        public ProcessOptions? RoutingDefault { get; set; } 
+        public ProcessOptions? RoutingDefault { get; set; }
         #endregion
 
         #region TransmitInternal<KT, ET>(string actionType, RepositoryHolder<KT, ET> rq)

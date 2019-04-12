@@ -60,6 +60,37 @@ namespace Xigadee
             return cpipe;
         }
 
+        public static void SetPersistenceClientChannel<C>(C cpipe, IPersistenceClientCommand command
+            , string responseChannel = null
+            , int startupPriority = 90
+            , ProcessOptions routing = ProcessOptions.RouteExternal | ProcessOptions.RouteInternal
+        )
+            where C : IPipelineChannelIncoming<IPipeline>
+        {
+            bool channelInternalOnly = responseChannel == null;
+            if (channelInternalOnly)
+                responseChannel = $"PersistenceClient{command.ComponentId.ToString("N").ToUpperInvariant()}";
+
+            if (!cpipe.ToMicroservice().Communication.HasChannel(responseChannel, ChannelDirection.Incoming))
+            {
+                var outPipe = cpipe.ToPipeline().AddChannelIncoming(responseChannel, isAutocreated: true, internalOnly: channelInternalOnly, description: $"Persistence Client Response: {command.EntityType}");
+                command.ResponseChannelId = outPipe.Channel.Id;
+            }
+            else
+                //If the response channel is not set, dynamically create a response channel.
+                command.ResponseChannelId = responseChannel;
+
+            //Check that the response channel exists
+            if (!cpipe.ToMicroservice().Communication.HasChannel(command.ResponseChannelId, ChannelDirection.Incoming))
+                throw new ChannelDoesNotExistException(command.ResponseChannelId, ChannelDirection.Incoming, cpipe.ToMicroservice().Id.Name);
+
+            command.ChannelId = cpipe.Channel.Id;
+            command.RoutingDefault = routing;
+
+            cpipe.Pipeline.AddCommand(command, startupPriority);
+
+        }
+
         /// <summary>
         /// This pipeline command creates a Persistence Message Initiator.
         /// </summary>

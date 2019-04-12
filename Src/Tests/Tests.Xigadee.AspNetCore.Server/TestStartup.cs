@@ -14,8 +14,6 @@ namespace Tests.Xigadee
     /// <seealso cref="Xigadee.ApiMicroserviceStartupBase{Tests.Xigadee.TestStartupContext}" />
     public class TestStartup : JwtApiMicroserviceStartupBase<TestStartupContext>
     {
-        PersistenceClient<Guid, MondayMorningBlues> _mmbClient;
-
         #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="TestStartup"/> class.
@@ -26,6 +24,9 @@ namespace Tests.Xigadee
         } 
         #endregion
 
+        /// <summary>
+        /// This method configures the repositories.
+        /// </summary>
         protected override void MicroserviceConfigure()
         {
             var eOpts = Context.Directives.RepositoryProcessExtract();
@@ -34,9 +35,14 @@ namespace Tests.Xigadee
 
             var channelIncoming = Pipeline.AddChannelIncoming("testin");
 
-            eOpts.ForEach(r => channelIncoming.AttachAndProcessRepositoryDirective(r));
+            eOpts.ForEach(r => channelIncoming.AttachPersistenceRepositoryDirective(r, RepositoryResolve));
 
             Pipeline.Service.Events.StartCompleted += Service_StartCompleted; 
+        }
+
+        private RepositoryBase RepositoryResolve(RepositoryDirective directive)
+        {
+            return directive.RepositoryCreateMemory();
         }
 
         private void ProcessRepository(RepositoryDirective rd, IPipelineChannelIncoming<MicroservicePipeline> channelIncoming)
@@ -50,8 +56,8 @@ namespace Tests.Xigadee
                     , searches: new[] { new RepositoryMemorySearch<Guid, MondayMorningBlues>("default") }
                     , searchIdDefault: "default");
 
-            channelIncoming
-                .AttachPersistenceClient(out _mmbClient);
+            //channelIncoming
+            //    .AttachPersistenceClient(out _mmbClient);
         }
 
         private RepositoryBase ResolveRepository(Type repoType)
@@ -61,7 +67,7 @@ namespace Tests.Xigadee
 
         private void Service_StartCompleted(object sender, StartEventArgs e)
         {
-            var rs = _mmbClient.Create(new MondayMorningBlues() { Id = new Guid("9A2E3F6D-3B98-4C2C-BD45-74F819B5EDFC") }).Result;
+            //var rs = _mmbClient.Create(new MondayMorningBlues() { Id = new Guid("9A2E3F6D-3B98-4C2C-BD45-74F819B5EDFC") }).Result;
         }
 
         /// <summary>
@@ -71,7 +77,7 @@ namespace Tests.Xigadee
         protected override void ConfigureSingletons(IServiceCollection services)
         {
             base.ConfigureSingletons(services);
-            services.AddSingleton<IRepositoryAsync<Guid, MondayMorningBlues>>(_mmbClient);
+            //services.AddSingleton<IRepositoryAsync<Guid, MondayMorningBlues>>(_mmbClient);
         }
 
         /// <summary>
