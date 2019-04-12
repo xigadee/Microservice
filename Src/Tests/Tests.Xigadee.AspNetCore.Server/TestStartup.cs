@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Test.Xigadee;
 using Xigadee;
-
 namespace Tests.Xigadee
 {
     /// <summary>
@@ -34,8 +33,8 @@ namespace Tests.Xigadee
             Pipeline.AdjustPolicyTaskManagerForDebug();
 
             var channelIncoming = Pipeline.AddChannelIncoming("testin");
-            //TODO: hack!!!
-            eOpts.Take(1).ForEach(r => ProcessRepository(r, channelIncoming));
+
+            eOpts.ForEach(r => channelIncoming.AttachAndProcessRepositoryDirective(r));
 
             Pipeline.Service.Events.StartCompleted += Service_StartCompleted; 
         }
