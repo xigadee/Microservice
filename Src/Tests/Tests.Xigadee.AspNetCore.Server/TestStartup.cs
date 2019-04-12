@@ -41,7 +41,6 @@ namespace Tests.Xigadee
 
         private void ProcessRepository(RepositoryDirective rd, IPipelineChannelIncoming<MicroservicePipeline> channelIncoming)
         {
-
             channelIncoming
                 .AttachPersistenceManagerHandlerMemory(
                     (MondayMorningBlues e) => e.Id

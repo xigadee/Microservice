@@ -12,7 +12,7 @@ namespace Xigadee
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
     public class PersistenceServer<K, E>: PersistenceServer<K, E, PersistenceServerStatistics, PersistenceServerPolicy>
-    where K : IEquatable<K>
+        where K : IEquatable<K>
     {
         /// <summary>
         /// Initializes a new instance of the PersistenceServer class that hosts a repository in the Microservice.
