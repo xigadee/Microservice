@@ -5,15 +5,9 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the abstract base class for persistence client/server communication functionality.
+    /// This is the abstract client base.
     /// </summary>
-    /// <typeparam name="K">The key type.</typeparam>
-    /// <typeparam name="E">The entity type.</typeparam>
-    /// <typeparam name="P">The policy.</typeparam>
-    public abstract class PersistenceClientBase<K, E, P> : CommandBase<PersistenceClientStatistics, P>
-        , IRepositoryAsyncClient<K, E>
-        where K : IEquatable<K>
-        where P : CommandPolicy, new()
+    public abstract class PersistenceClientBase: CommandBase<PersistenceClientStatistics, PersistenceClientPolicy>
     {
         #region Declarations
         /// <summary>
@@ -25,12 +19,126 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor which sets the cache manager.
         /// </summary>
+        /// <param name="defaultRequestTimespan">This is the default wait time for a response to arrive. This can be set to override the value stored in the policy.</param>
+        protected PersistenceClientBase(TimeSpan? defaultRequestTimespan = null)
+        {
+            mDefaultRequestTimespan = defaultRequestTimespan;
+        }
+        #endregion
+
+        #region DefaultPrincipal
+        /// <summary>
+        /// This is the default principal that the inititor works under.
+        /// </summary>
+        public IPrincipal DefaultPrincipal
+        {
+            get; set;
+        }
+        #endregion
+
+        /// <summary>
+        /// This abstract method is used to transmit the request to the appropriate party.
+        /// </summary>
+        /// <typeparam name="KT">The key type.</typeparam>
+        /// <typeparam name="ET">The entity type.</typeparam>
+        /// <param name="actionType">The request action type, i.e. Create/Read etc.</param>
+        /// <param name="rq">The request.</param>
+        /// <param name="routing">The routing options.</param>
+        /// <returns>Returns the request response.</returns>
+        protected abstract Task<RepositoryHolder<KT, ET>> TransmitInternal<KT, ET>(string actionType, RepositoryHolder<KT, ET> rq, ProcessOptions? routing = null, IPrincipal principal = null)
+            where KT : IEquatable<KT>;
+
+        #region ProcessResponse<KT, ET>(TaskStatus status, TransmissionPayload prs, bool async)
+        /// <summary>
+        /// This method is used to process the returning message response.
+        /// </summary>
+        /// <typeparam name="KT"></typeparam>
+        /// <typeparam name="ET"></typeparam>
+        /// <param name="rType"></param>
+        /// <param name="payload"></param>
+        /// <param name="processAsync"></param>
+        /// <returns></returns>
+        protected virtual RepositoryHolder<KT, ET> ProcessResponse<KT, ET>(TaskStatus rType, TransmissionPayload payload, bool processAsync)
+        {
+            StatisticsInternal.ActiveDecrement(payload != null ? payload.Extent : TimeSpan.Zero);
+
+            if (processAsync)
+                return new RepositoryHolder<KT, ET>(responseCode: 202, responseMessage: "Accepted");
+
+            try
+            {
+                switch (rType)
+                {
+                    case TaskStatus.RanToCompletion:
+                        if (payload.Message.Holder == null)
+                        {
+                            int rsCode = 500;
+                            int.TryParse(payload.Message?.Status, out rsCode);
+
+                            string rsMessage = payload.Message?.StatusDescription ?? "Unexpected response (no payload)";
+
+                            return new RepositoryHolder<KT, ET>(responseCode: rsCode, responseMessage: rsMessage);
+                        }
+
+                        try
+                        {
+                            if (payload.Message.Holder.HasObject)
+                                return (RepositoryHolder<KT, ET>)payload.Message.Holder.Object;
+                            else
+                            {
+                                int rsCode = 500;
+                                int.TryParse(payload.Message?.Status, out rsCode);
+
+                                string rsMessage = payload.Message?.StatusDescription ?? "Unexpected response (no payload)";
+
+                                return new RepositoryHolder<KT, ET>(responseCode: rsCode, responseMessage: rsMessage);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            StatisticsInternal.ErrorIncrement();
+                            return new RepositoryHolder<KT, ET>(responseCode: 500, responseMessage: $"Unexpected cast error: {payload.Message.Holder.Object.GetType().Name}-{ex.Message}");
+                        }
+                    case TaskStatus.Canceled:
+                        StatisticsInternal.ErrorIncrement();
+                        return new RepositoryHolder<KT, ET>(responseCode: 408, responseMessage: "Time out");
+                    case TaskStatus.Faulted:
+                        StatisticsInternal.ErrorIncrement();
+                        return new RepositoryHolder<KT, ET>() { ResponseCode = (int)PersistenceResponse.GatewayTimeout504, ResponseMessage = "Response timeout." };
+                    default:
+                        StatisticsInternal.ErrorIncrement();
+                        return new RepositoryHolder<KT, ET>(responseCode: 500, responseMessage: rType.ToString());
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Collector?.LogException("Error processing response for task status " + rType, ex);
+                throw;
+            }
+        }
+        #endregion
+    }
+
+    /// <summary>
+    /// This is the abstract base class for persistence client/server communication functionality.
+    /// </summary>
+    /// <typeparam name="K">The key type.</typeparam>
+    /// <typeparam name="E">The entity type.</typeparam>
+    public abstract class PersistenceClientBase<K, E> : PersistenceClientBase
+        , IRepositoryAsyncClient<K, E>
+        where K : IEquatable<K>
+    {
+        #region Constructor
+        /// <summary>
+        /// This is the default constructor which sets the cache manager.
+        /// </summary>
         /// <param name="cacheManager">The cache manager.</param>
         /// <param name="defaultRequestTimespan">This is the default wait time for a response to arrive. This can be set to override the value stored in the policy.</param>
         protected PersistenceClientBase(ICacheManager<K, E> cacheManager = null, TimeSpan? defaultRequestTimespan = null)
+            :base(defaultRequestTimespan)
         {
             CacheManager = cacheManager;
-            mDefaultRequestTimespan = defaultRequestTimespan;
         }
         #endregion
 
@@ -53,15 +161,6 @@ namespace Xigadee
             }
         }
 
-        #endregion
-        #region DefaultPrincipal
-        /// <summary>
-        /// This is the default principal that the inititor works under.
-        /// </summary>
-        public IPrincipal DefaultPrincipal
-        {
-            get; set;
-        } 
         #endregion
 
         #region Create(E entity, RepositorySettings settings = null)
@@ -263,89 +362,6 @@ namespace Xigadee
             //}
 
             return await TransmitInternal(EntityActions.SearchEntity, new RepositoryHolder<SearchRequest, SearchResponse<E>> { Key = rq, Settings = settings }, principal: DefaultPrincipal);
-        }
-        #endregion
-
-        /// <summary>
-        /// This abstract method is used to transmit the request to the appropriate party.
-        /// </summary>
-        /// <typeparam name="KT">The key type.</typeparam>
-        /// <typeparam name="ET">The entity type.</typeparam>
-        /// <param name="actionType">The request action type, i.e. Create/Read etc.</param>
-        /// <param name="rq">The request.</param>
-        /// <param name="routing">The routing options.</param>
-        /// <returns>Returns the request response.</returns>
-        protected abstract Task<RepositoryHolder<KT, ET>> TransmitInternal<KT, ET>(string actionType, RepositoryHolder<KT, ET> rq, ProcessOptions? routing = null, IPrincipal principal = null) 
-            where KT : IEquatable<KT>;
-
-        #region ProcessResponse<KT, ET>(TaskStatus status, TransmissionPayload prs, bool async)
-        /// <summary>
-        /// This method is used to process the returning message response.
-        /// </summary>
-        /// <typeparam name="KT"></typeparam>
-        /// <typeparam name="ET"></typeparam>
-        /// <param name="rType"></param>
-        /// <param name="payload"></param>
-        /// <param name="processAsync"></param>
-        /// <returns></returns>
-        protected virtual RepositoryHolder<KT, ET> ProcessResponse<KT, ET>(TaskStatus rType, TransmissionPayload payload, bool processAsync)
-        {
-            StatisticsInternal.ActiveDecrement(payload != null ? payload.Extent : TimeSpan.Zero);
-
-            if (processAsync)
-                return new RepositoryHolder<KT, ET>(responseCode: 202, responseMessage: "Accepted");
-
-            try
-            {
-                switch (rType)
-                {
-                    case TaskStatus.RanToCompletion:
-                        if (payload.Message.Holder == null)
-                        {
-                            int rsCode = 500;
-                            int.TryParse(payload.Message?.Status, out rsCode);
-
-                            string rsMessage = payload.Message?.StatusDescription ?? "Unexpected response (no payload)";
-
-                            return new RepositoryHolder<KT, ET>(responseCode: rsCode, responseMessage: rsMessage);
-                        }
-
-                        try
-                        {
-                            if (payload.Message.Holder.HasObject)
-                                return (RepositoryHolder<KT, ET>)payload.Message.Holder.Object;
-                            else
-                            {
-                                int rsCode = 500;
-                                int.TryParse(payload.Message?.Status, out rsCode);
-
-                                string rsMessage = payload.Message?.StatusDescription ?? "Unexpected response (no payload)";
-
-                                return new RepositoryHolder<KT, ET>(responseCode: rsCode, responseMessage: rsMessage);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            StatisticsInternal.ErrorIncrement();
-                            return new RepositoryHolder<KT, ET>(responseCode: 500, responseMessage: $"Unexpected cast error: {payload.Message.Holder.Object.GetType().Name}-{ex.Message}");
-                        }
-                    case TaskStatus.Canceled:
-                        StatisticsInternal.ErrorIncrement();
-                        return new RepositoryHolder<KT, ET>(responseCode: 408, responseMessage: "Time out");
-                    case TaskStatus.Faulted:
-                        StatisticsInternal.ErrorIncrement();
-                        return new RepositoryHolder<KT, ET>() { ResponseCode = (int)PersistenceResponse.GatewayTimeout504, ResponseMessage = "Response timeout." };
-                    default:
-                        StatisticsInternal.ErrorIncrement();
-                        return new RepositoryHolder<KT, ET>(responseCode: 500, responseMessage: rType.ToString());
-
-                }
-            }
-            catch (Exception ex)
-            {
-                Collector?.LogException("Error processing response for task status " + rType, ex);
-                throw;
-            }
         }
         #endregion
     }
