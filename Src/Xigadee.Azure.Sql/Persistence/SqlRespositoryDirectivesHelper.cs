@@ -15,7 +15,7 @@ namespace Xigadee
         /// <param name="dir">The directive.</param>
         /// <param name="sqlConnection">The Sql conenction.</param>
         /// <returns>Returns the repository.</returns>
-        public static RepositoryBase RepositoryCreateSqlJson(RepositoryDirective dir, string sqlConnection)
+        public static RepositoryBase RepositoryCreateSqlJson(this RepositoryDirective dir, string sqlConnection)
         {
             var repoType = typeof(RepositorySqlJson<,>).MakeGenericType(dir.TypeKey, dir.TypeEntity).GetConstructors();
 
