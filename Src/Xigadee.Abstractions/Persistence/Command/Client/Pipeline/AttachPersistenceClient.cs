@@ -13,7 +13,7 @@ namespace Xigadee
         /// <param name="cpipe">The incoming channel.</param>
         /// <param name="command">The output command.</param>
         /// <param name="responseChannel">The channel to send the response message on. If this is not set, a default response channel will be created.</param>
-        /// <param name="startupPriority"></param>
+        /// <param name="startupPriority">The command start up priority. The default is 90.</param>
         /// <param name="cacheManager">The cache manager to attach to the persistence agent</param>
         /// <param name="defaultRequestTimespan">The default time out time. If not set, this defaults to 30s as set in the command initiator policy.</param>
         /// <param name="routing">The route map will attempt to first route the message internally and then try an external channel.</param>
@@ -60,7 +60,16 @@ namespace Xigadee
             return cpipe;
         }
 
-        public static void SetPersistenceClientChannel<C>(C cpipe, IPersistenceClientCommand command
+        /// <summary>
+        /// This method sets the routing parameters for the client.
+        /// </summary>
+        /// <typeparam name="C"></typeparam>
+        /// <param name="cpipe">The incoming channel.</param>
+        /// <param name="command">The output command.</param>
+        /// <param name="responseChannel">The channel to send the response message on. If this is not set, a default response channel will be created.</param>
+        /// <param name="startupPriority">The command start up priority. The default is 90.</param>
+        /// <param name="routing">The route map will attempt to first route the message internally and then try an external channel.</param>
+        public static void SetPersistenceClientChannel<C>(this C cpipe, IPersistenceClientCommand command
             , string responseChannel = null
             , int startupPriority = 90
             , ProcessOptions routing = ProcessOptions.RouteExternal | ProcessOptions.RouteInternal
@@ -88,7 +97,6 @@ namespace Xigadee
             command.RoutingDefault = routing;
 
             cpipe.Pipeline.AddCommand(command, startupPriority);
-
         }
 
         /// <summary>

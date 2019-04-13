@@ -7,7 +7,7 @@ namespace Xigadee
     /// <summary>
     /// This is the abstract client base.
     /// </summary>
-    public abstract class PersistenceClientBase: CommandBase<PersistenceClientStatistics, PersistenceClientPolicy>
+    public abstract class PersistenceClientBase: CommandBase<PersistenceClientStatistics, PersistenceClientPolicy>, IPersistenceClientCommand
     {
         #region Declarations
         /// <summary>
@@ -19,9 +19,11 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor which sets the cache manager.
         /// </summary>
+        /// <param name="entityType">This is the entity type name used for debug.</param>
         /// <param name="defaultRequestTimespan">This is the default wait time for a response to arrive. This can be set to override the value stored in the policy.</param>
-        protected PersistenceClientBase(TimeSpan? defaultRequestTimespan = null)
+        protected PersistenceClientBase(string entityType, TimeSpan? defaultRequestTimespan = null)
         {
+            EntityType = entityType;
             mDefaultRequestTimespan = defaultRequestTimespan;
         }
         #endregion
@@ -35,7 +37,20 @@ namespace Xigadee
             get; set;
         }
         #endregion
+        #region RoutingDefault
+        /// <summary>
+        /// This is the default routing for outgoing messages. 
+        /// By default messages will try external providers.
+        /// </summary>
+        public ProcessOptions? RoutingDefault { get; set; }
+        #endregion
 
+        #region EntityType
+        /// <summary>
+        /// This is the entity type for the commands
+        /// </summary>
+        public virtual string EntityType { get; }
+        #endregion
         /// <summary>
         /// This abstract method is used to transmit the request to the appropriate party.
         /// </summary>
@@ -133,10 +148,11 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor which sets the cache manager.
         /// </summary>
+        /// <param name="entityType">This is the entity type name used for debug.</param>
         /// <param name="cacheManager">The cache manager.</param>
         /// <param name="defaultRequestTimespan">This is the default wait time for a response to arrive. This can be set to override the value stored in the policy.</param>
-        protected PersistenceClientBase(ICacheManager<K, E> cacheManager = null, TimeSpan? defaultRequestTimespan = null)
-            :base(defaultRequestTimespan)
+        protected PersistenceClientBase(string entityType, ICacheManager<K, E> cacheManager = null, TimeSpan? defaultRequestTimespan = null)
+            :base(entityType, defaultRequestTimespan)
         {
             CacheManager = cacheManager;
         }

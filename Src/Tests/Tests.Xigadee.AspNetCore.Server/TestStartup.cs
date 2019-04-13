@@ -42,6 +42,13 @@ namespace Tests.Xigadee
 
         private RepositoryBase RepositoryResolve(RepositoryDirective directive)
         {
+            if (directive.RepositoryType == typeof(IRepositoryAsync<Guid, MondayMorningBlues>))
+            {
+                var repo = new RepositoryMemory<Guid, MondayMorningBlues>();
+                repo.SearchAdd(new RepositoryMemorySearch<Guid, MondayMorningBlues>("default"), true);
+                return repo;
+            }
+
             return directive.RepositoryCreateMemory();
         }
 

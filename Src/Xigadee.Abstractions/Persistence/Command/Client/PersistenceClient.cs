@@ -9,7 +9,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class PersistenceClient<K, E> : PersistenceClientBase<K, E>, IPersistenceClientCommand 
+    public class PersistenceClient<K, E> : PersistenceClientBase<K, E> 
         where K : IEquatable<K>
     {
         #region Constructor
@@ -17,24 +17,12 @@ namespace Xigadee
         /// This is the default constructor. This set the default routing to external only.
         /// </summary>
         public PersistenceClient(ICacheManager<K, E> cacheManager = null, TimeSpan? defaultRequestTimespan = null)
-            : base(cacheManager, defaultRequestTimespan)
+            : base(typeof(E).Name, cacheManager, defaultRequestTimespan)
         {
             RoutingDefault = ProcessOptions.RouteExternal;
         }
         #endregion
 
-        #region EntityType
-        /// <summary>
-        /// This is the entity type for the commands
-        /// </summary>
-        public virtual string EntityType
-        {
-            get
-            {
-                return typeof(E).Name;
-            }
-        }
-        #endregion
         #region ResponseId
         /// <summary>
         /// This is the MessageFilterWrapper for the payloadRs message channel. This will pick up all reponse messages of the specific type 
@@ -44,14 +32,6 @@ namespace Xigadee
         {
             get { return new MessageFilterWrapper(new ServiceMessageHeader(ResponseChannelId, EntityType), OriginatorId.ExternalServiceId); }
         }
-        #endregion
-
-        #region RoutingDefault
-        /// <summary>
-        /// This is the default routing for outgoing messages. 
-        /// By default messages will try external providers.
-        /// </summary>
-        public ProcessOptions? RoutingDefault { get; set; }
         #endregion
 
         #region TransmitInternal<KT, ET>(string actionType, RepositoryHolder<KT, ET> rq)

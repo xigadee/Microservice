@@ -39,7 +39,8 @@ namespace Xigadee
             cpipe.AttachCommand(server, startupPriority);
 
             //Attach the client to send the requests.
-            cpipe.AttachCommand(client, startupPriority);
+            cpipe.SetPersistenceClientChannel(client, startupPriority: startupPriority);
+            //cpipe.AttachCommand(client, startupPriority);
 
             directive.Set(client);
 

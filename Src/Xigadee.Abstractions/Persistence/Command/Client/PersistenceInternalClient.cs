@@ -38,7 +38,7 @@ namespace Xigadee
         public PersistenceInternalClient(string responseChannel = "internalpersistence"
             , ICacheManager<K, E> cacheManager = null
             , TimeSpan? defaultRequestTimespan = null) 
-            :base(cacheManager, defaultRequestTimespan)
+            :base(typeof(E).Name, cacheManager, defaultRequestTimespan)
         {
             mMessageType = typeof(E).Name;
             mResponseId = new MessageFilterWrapper(new ServiceMessageHeader(responseChannel, mMessageType),null);
