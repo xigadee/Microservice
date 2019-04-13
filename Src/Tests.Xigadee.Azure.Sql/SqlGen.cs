@@ -5,7 +5,7 @@ using Xigadee;
 namespace Tests.Xigadee.Azure.Sql
 {
     [TestClass]
-    public class SqlTests
+    public class SqlGen
     {
         [TestMethod]
         public void Verify_SqlStoredProcedureResolver()
@@ -51,7 +51,8 @@ namespace Tests.Xigadee.Azure.Sql
 
             var scr = generator.ScriptEntity();
 
-            var scr2 = generator2.ScriptEntity();
+            var scr2a = generator2.ScriptAncillary();
+            var scr2e = generator2.ScriptEntity();
 
         }
     }

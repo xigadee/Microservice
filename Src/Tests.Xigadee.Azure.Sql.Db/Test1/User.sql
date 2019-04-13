@@ -1,22 +1,22 @@
-﻿CREATE TABLE [dbo].[Test1ReferenceKey]
+﻿CREATE TABLE [dbo].[UserReferenceKey]
 (
 	[Id] INT NOT NULL PRIMARY KEY IDENTITY(1,1), 
     [Type] VARCHAR(20) NULL
 )
 GO
 
-CREATE UNIQUE INDEX [IX_Test1ReferenceKey_Type] ON [dbo].[Test1ReferenceKey] ([Type])
+CREATE UNIQUE INDEX [IX_UserReferenceKey_Type] ON [dbo].[UserReferenceKey] ([Type])
 GO
-CREATE TABLE [dbo].[Test1PropertyKey]
+CREATE TABLE [dbo].[UserPropertyKey]
 (
 	[Id] INT NOT NULL PRIMARY KEY IDENTITY(1,1), 
     [Type] VARCHAR(20) NULL
 )
 GO
 
-CREATE UNIQUE INDEX [IX_Test1PropertyKey_Type] ON [dbo].[Test1PropertyKey] ([Type])
+CREATE UNIQUE INDEX [IX_UserPropertyKey_Type] ON [dbo].[UserPropertyKey] ([Type])
 GO
-CREATE TABLE[dbo].[Test1]
+CREATE TABLE[dbo].[User]
 (
      [Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1)
 	,[ExternalId] UNIQUEIDENTIFIER NOT NULL
@@ -28,10 +28,10 @@ CREATE TABLE[dbo].[Test1]
 	,[Body] NVARCHAR(MAX)
 )
 GO
-CREATE UNIQUE INDEX[IX_Test1_ExternalId] ON [dbo].[Test1] ([ExternalId]) INCLUDE ([VersionId])
+CREATE UNIQUE INDEX[IX_User_ExternalId] ON [dbo].[User] ([ExternalId]) INCLUDE ([VersionId])
 
 GO
-CREATE TABLE[dbo].[Test1History]
+CREATE TABLE[dbo].[UserHistory]
 (
      [Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1)
     ,[EntityId] BIGINT NOT NULL 
@@ -46,40 +46,40 @@ CREATE TABLE[dbo].[Test1History]
 )
 
 GO
-CREATE TABLE [dbo].[Test1Property]
+CREATE TABLE [dbo].[UserProperty]
 (
 	[Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1), 
 	[EntityId] BIGINT NOT NULL,
     [KeyId] INT NOT NULL, 
     [Value] NVARCHAR(250) NOT NULL, 
-    CONSTRAINT [FK_Test1Property_Id] FOREIGN KEY ([EntityId]) REFERENCES [dbo].[Test1]([Id]), 
-    CONSTRAINT [FK_Test1Property_KeyId] FOREIGN KEY ([KeyId]) REFERENCES [dbo].[Test1PropertyKey]([Id])
+    CONSTRAINT [FK_UserProperty_Id] FOREIGN KEY ([EntityId]) REFERENCES [dbo].[User]([Id]), 
+    CONSTRAINT [FK_UserProperty_KeyId] FOREIGN KEY ([KeyId]) REFERENCES [dbo].[UserPropertyKey]([Id])
 )
 GO
-CREATE INDEX [IX_Test1Property_EntityId] ON [dbo].[Test1Property] ([EntityId]) INCLUDE ([Id])
+CREATE INDEX [IX_UserProperty_EntityId] ON [dbo].[UserProperty] ([EntityId]) INCLUDE ([Id])
 GO
-CREATE INDEX [IX_Test1Property_KeyId] ON [dbo].[Test1Property] ([KeyId],[EntityId]) INCLUDE ([Value])
+CREATE INDEX [IX_UserProperty_KeyId] ON [dbo].[UserProperty] ([KeyId],[EntityId]) INCLUDE ([Value])
 
 GO
-CREATE TABLE [dbo].[Test1Reference]
+CREATE TABLE [dbo].[UserReference]
 (
 	[Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1), 
 	[EntityId] BIGINT NOT NULL,
     [KeyId] INT NOT NULL, 
     [Value] NVARCHAR(250) NOT NULL, 
-    CONSTRAINT [FK_Test1Reference_Id] FOREIGN KEY ([EntityId]) REFERENCES [dbo].[Test1]([Id]), 
-    CONSTRAINT [FK_Test1Reference_KeyId] FOREIGN KEY ([KeyId]) REFERENCES [dbo].[Test1ReferenceKey]([Id])
+    CONSTRAINT [FK_UserReference_Id] FOREIGN KEY ([EntityId]) REFERENCES [dbo].[User]([Id]), 
+    CONSTRAINT [FK_UserReference_KeyId] FOREIGN KEY ([KeyId]) REFERENCES [dbo].[UserReferenceKey]([Id])
 )
 GO
-CREATE UNIQUE INDEX [IX_Test1Reference_TypeReference] ON [dbo].[Test1Reference] ([KeyId],[Value]) INCLUDE ([EntityId])
+CREATE UNIQUE INDEX [IX_UserReference_TypeReference] ON [dbo].[UserReference] ([KeyId],[Value]) INCLUDE ([EntityId])
 GO
-CREATE INDEX [IX_Test1Reference_EntityId] ON [dbo].[Test1Reference] ([EntityId]) INCLUDE ([Id])
+CREATE INDEX [IX_UserReference_EntityId] ON [dbo].[UserReference] ([EntityId]) INCLUDE ([Id])
 GO
-CREATE INDEX [IX_Test1Reference_KeyId] ON [dbo].[Test1Reference] ([KeyId],[EntityId]) INCLUDE ([Value])
+CREATE INDEX [IX_UserReference_KeyId] ON [dbo].[UserReference] ([KeyId],[EntityId]) INCLUDE ([Value])
 
 GO
 
-CREATE PROCEDURE [dbo].[spTest1_UpsertRP]
+CREATE PROCEDURE [dbo].[spUser_UpsertRP]
 	@EntityId BIGINT,
 	@References [External].[KvpTableType] READONLY,
 	@Properties [External].[KvpTableType] READONLY
@@ -87,17 +87,17 @@ AS
 	BEGIN TRY
 
 		--Process the reference first.
-		INSERT INTO [dbo].[Test1ReferenceKey] WITH (UPDLOCK) ([Type])
+		INSERT INTO [dbo].[UserReferenceKey] WITH (UPDLOCK) ([Type])
 		SELECT DISTINCT [RefType] FROM @References
 		EXCEPT
-		SELECT [Type] FROM [dbo].[Test1ReferenceKey]
+		SELECT [Type] FROM [dbo].[UserReferenceKey]
 
 		--Remove old records
-		DELETE FROM [dbo].[Test1Reference] WITH (UPDLOCK)
+		DELETE FROM [dbo].[UserReference] WITH (UPDLOCK)
 		WHERE [EntityId] = @EntityId
 
 		--Add the new records.
-		INSERT INTO [dbo].[Test1Reference] WITH (UPDLOCK)
+		INSERT INTO [dbo].[UserReference] WITH (UPDLOCK)
 		(
 		      [EntityId]
 			, [KeyId]
@@ -105,20 +105,20 @@ AS
 		)
 		SELECT @EntityId, K.[Id], R.RefValue
 		FROM @References AS R 
-		INNER JOIN [dbo].[Test1ReferenceKey] AS K ON R.[RefType] = K.[Type]
+		INNER JOIN [dbo].[UserReferenceKey] AS K ON R.[RefType] = K.[Type]
 	
 		--Now process the properties.
-		INSERT INTO [dbo].[Test1PropertyKey] WITH (UPDLOCK) ([Type])
+		INSERT INTO [dbo].[UserPropertyKey] WITH (UPDLOCK) ([Type])
 		SELECT DISTINCT [RefType] FROM @Properties
 		EXCEPT
-		SELECT [Type] FROM [dbo].[Test1PropertyKey]
+		SELECT [Type] FROM [dbo].[UserPropertyKey]
 
 		--Remove old records
-		DELETE FROM [dbo].[Test1Property] WITH (UPDLOCK)
+		DELETE FROM [dbo].[UserProperty] WITH (UPDLOCK)
 		WHERE [EntityId] = @EntityId
 
 		--Add the new records.
-		INSERT INTO [dbo].[Test1Property] WITH (UPDLOCK)
+		INSERT INTO [dbo].[UserProperty] WITH (UPDLOCK)
 		(
 			  [EntityId]
 			, [KeyId]
@@ -126,7 +126,7 @@ AS
 		)
 		SELECT @EntityId, K.[Id], P.RefValue
 		FROM @Properties AS P
-		INNER JOIN [dbo].[Test1PropertyKey] AS K ON P.[RefType] = K.[Type]
+		INNER JOIN [dbo].[UserPropertyKey] AS K ON P.[RefType] = K.[Type]
 
 		RETURN 200;
 	END TRY
@@ -138,7 +138,7 @@ AS
 	END CATCH
 
 GO
-CREATE PROCEDURE [External].[spTest1_Create]
+CREATE PROCEDURE [External].[spUser_Create]
 	 @ExternalId UNIQUEIDENTIFIER
 	,@VersionId UNIQUEIDENTIFIER = NULL
 	,@VersionIdNew UNIQUEIDENTIFIER = NULL
@@ -154,7 +154,7 @@ AS
 		BEGIN TRAN
 
 		-- Insert record into DB and get its identity
-		INSERT INTO [dbo].[Test1] 
+		INSERT INTO [dbo].[User] 
 		(
 			  ExternalId
 			, VersionId
@@ -178,7 +178,7 @@ AS
 	
 		-- Create references and properties
 		DECLARE @RPResponse INT;
-		EXEC @RPResponse = [dbo].[spTest1_UpsertRP] @Id, @References, @Properties
+		EXEC @RPResponse = [dbo].[spUser_UpsertRP] @Id, @References, @Properties
 		IF (@RPResponse = 409)
 		BEGIN
 			ROLLBACK TRAN;
@@ -196,7 +196,7 @@ AS
 	END CATCH
 
 GO
-CREATE PROCEDURE [External].[spTest1_Delete]
+CREATE PROCEDURE [External].[spUser_Delete]
 	@ExternalId UNIQUEIDENTIFIER
 AS
 SET NOCOUNT ON;
@@ -204,7 +204,7 @@ SET NOCOUNT ON;
 	
 		BEGIN TRAN
 
-		DECLARE @Id BIGINT = (SELECT [Id] FROM [dbo].[Test1] WHERE [ExternalId] = @ExternalId)
+		DECLARE @Id BIGINT = (SELECT [Id] FROM [dbo].[User] WHERE [ExternalId] = @ExternalId)
 
 		IF (@Id IS NULL)
 		BEGIN
@@ -212,13 +212,13 @@ SET NOCOUNT ON;
 			RETURN 404;
 		END
 
-		DELETE FROM [dbo].[Test1Property]
+		DELETE FROM [dbo].[UserProperty]
 		WHERE [EntityId] = @Id
 
-		DELETE FROM [dbo].[Test1Reference]
+		DELETE FROM [dbo].[UserReference]
 		WHERE [EntityId] = @Id
 
-		DELETE FROM [dbo].[Test1]
+		DELETE FROM [dbo].[User]
 		WHERE [Id] = @Id
 
 		--Not found.
@@ -233,7 +233,7 @@ SET NOCOUNT ON;
 		RETURN 500;
 	END CATCH
 GO
-CREATE PROCEDURE [External].[spTest1_DeleteByRef]
+CREATE PROCEDURE [External].[spUser_DeleteByRef]
 	@RefType VARCHAR(30),
 	@RefValue NVARCHAR(250) 
 AS
@@ -243,9 +243,9 @@ SET NOCOUNT ON;
 		BEGIN TRAN
 
 		DECLARE @Id BIGINT = (
-			SELECT E.[Id] FROM [dbo].[Test1] E
-			INNER JOIN [dbo].[Test1Reference] R ON E.Id = R.EntityId
-			INNER JOIN [dbo].[Test1ReferenceKey] RK ON R.KeyId = RK.Id
+			SELECT E.[Id] FROM [dbo].[User] E
+			INNER JOIN [dbo].[UserReference] R ON E.Id = R.EntityId
+			INNER JOIN [dbo].[UserReferenceKey] RK ON R.KeyId = RK.Id
 			WHERE RK.[Type] = @RefType AND R.[Value] = @RefValue
 		)
 
@@ -255,13 +255,13 @@ SET NOCOUNT ON;
 			RETURN 404;
 		END
 
-		DELETE FROM [dbo].[Test1Property]
+		DELETE FROM [dbo].[UserProperty]
 		WHERE [EntityId] = @Id
 
-		DELETE FROM [dbo].[Test1Reference]
+		DELETE FROM [dbo].[UserReference]
 		WHERE [EntityId] = @Id
 
-		DELETE FROM [dbo].[Test1]
+		DELETE FROM [dbo].[User]
 		WHERE [Id] = @Id
 
 		--Not found.
@@ -276,14 +276,14 @@ SET NOCOUNT ON;
 		RETURN 500
 	END CATCH
 GO
-CREATE PROCEDURE [External].[spTest1_Read]
+CREATE PROCEDURE [External].[spUser_Read]
 	@ExternalId UNIQUEIDENTIFIER
 AS
 SET NOCOUNT ON;
 	BEGIN TRY
 	
 		SELECT * 
-		FROM [dbo].[Test1]
+		FROM [dbo].[User]
 		WHERE [ExternalId] = @ExternalId
 
 		IF (@@ROWCOUNT>0)
@@ -298,7 +298,7 @@ SET NOCOUNT ON;
 		RETURN 500
 	END CATCH
 GO
-CREATE PROCEDURE [External].[spTest1_ReadByRef]
+CREATE PROCEDURE [External].[spUser_ReadByRef]
 	@RefType VARCHAR(30),
 	@RefValue NVARCHAR(250) 
 AS
@@ -306,9 +306,9 @@ SET NOCOUNT ON;
 	BEGIN TRY
 	
 		SELECT E.* 
-		FROM [dbo].[Test1] E
-		INNER JOIN [dbo].[Test1Reference] R ON E.Id = R.EntityId
-		INNER JOIN [dbo].[Test1ReferenceKey] RK ON R.KeyId = RK.Id
+		FROM [dbo].[User] E
+		INNER JOIN [dbo].[UserReference] R ON E.Id = R.EntityId
+		INNER JOIN [dbo].[UserReferenceKey] RK ON R.KeyId = RK.Id
 		WHERE RK.[Type] = @RefType AND R.[Value] = @RefValue
 
 		IF (@@ROWCOUNT>0)
@@ -323,7 +323,7 @@ SET NOCOUNT ON;
 		RETURN 500
 	END CATCH
 GO
-CREATE PROCEDURE [External].[spTest1_Update]
+CREATE PROCEDURE [External].[spUser_Update]
 	 @ExternalId UNIQUEIDENTIFIER
 	,@VersionId UNIQUEIDENTIFIER = NULL
 	,@VersionIdNew UNIQUEIDENTIFIER = NULL
@@ -343,7 +343,7 @@ AS
 		IF (@VersionId IS NOT NULL)
 		BEGIN
 			DECLARE @ExistingVersion UNIQUEIDENTIFIER;
-			SELECT @Id = [Id], @VersionId = [VersionId] FROM [dbo].[Test1] WHERE [ExternalId] = @ExternalId
+			SELECT @Id = [Id], @VersionId = [VersionId] FROM [dbo].[User] WHERE [ExternalId] = @ExternalId
 			IF (@Id IS NOT NULL AND @ExistingVersion != @VersionId)
 			BEGIN
 				ROLLBACK TRAN;
@@ -352,7 +352,7 @@ AS
 		END
 		ELSE
 		BEGIN
-			SELECT @Id = [Id] FROM [dbo].[Test1] WHERE [ExternalId] = @ExternalId
+			SELECT @Id = [Id] FROM [dbo].[User] WHERE [ExternalId] = @ExternalId
 		END
 
 		--Check we can find the entity
@@ -363,7 +363,7 @@ AS
 		END
 
 		-- Insert record into DB and get its identity
-		UPDATE [dbo].[Test1]
+		UPDATE [dbo].[User]
 		SET   [VersionId] = @VersionIdNew
 			, [UserIdAudit] = @UserIdAudit
 			, [DateUpdated] = ISNULL(@DateUpdated, GETUTCDATE())
@@ -379,7 +379,7 @@ AS
 	
 		-- Create references and properties
 		DECLARE @RPResponse INT;
-		EXEC @RPResponse = [dbo].[spTest1_UpsertRP] @Id, @References, @Properties
+		EXEC @RPResponse = [dbo].[spUser_UpsertRP] @Id, @References, @Properties
 		IF (@RPResponse = 409)
 		BEGIN
 			ROLLBACK TRAN;
@@ -398,14 +398,14 @@ AS
 	END CATCH
 
 GO
-CREATE PROCEDURE [External].[spTest1_Version]
+CREATE PROCEDURE [External].[spUser_Version]
 	@ExternalId UNIQUEIDENTIFIER
 AS
 SET NOCOUNT ON;
 	BEGIN TRY
 	
 		SELECT [ExternalId], [VersionId]
-		FROM [dbo].[Test1]
+		FROM [dbo].[User]
 		WHERE [ExternalId] = @ExternalId
 
 		IF (@@ROWCOUNT>0)
@@ -420,7 +420,7 @@ SET NOCOUNT ON;
 		RETURN 500
 	END CATCH
 GO
-CREATE PROCEDURE [External].[spTest1_VersionByRef]
+CREATE PROCEDURE [External].[spUser_VersionByRef]
 	@RefType VARCHAR(30),
 	@RefValue NVARCHAR(250) 
 AS
@@ -428,9 +428,9 @@ SET NOCOUNT ON;
 	BEGIN TRY
 	
 		SELECT E.[ExternalId], E.[VersionId]
-		FROM [dbo].[Test1] E
-		INNER JOIN [dbo].[Test1Reference] R ON E.Id = R.EntityId
-		INNER JOIN [dbo].[Test1ReferenceKey] RK ON R.KeyId = RK.Id
+		FROM [dbo].[User] E
+		INNER JOIN [dbo].[UserReference] R ON E.Id = R.EntityId
+		INNER JOIN [dbo].[UserReferenceKey] RK ON R.KeyId = RK.Id
 		WHERE RK.[Type] = @RefType AND R.[Value] = @RefValue
 
 		IF (@@ROWCOUNT>0)

@@ -62,5 +62,6 @@
   <ItemGroup>
     <Build Include="Ancillary.sql" />
     <Build Include="Test1\Test1.sql" />
+    <Build Include="Test1\User.sql" />
   </ItemGroup>
 </Project>
