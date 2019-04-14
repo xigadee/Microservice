@@ -521,6 +521,7 @@ namespace Xigadee
     /// </summary>
     public abstract class RepositoryBase
     {
+        #region Constructor
         /// <summary>
         /// This is the base repository shared class.
         /// </summary>
@@ -534,7 +535,8 @@ namespace Xigadee
             TypeEntity = entityType;
 
             RepositoryType = typeof(IRepositoryAsync<,>).MakeGenericType(keyType, entityType);
-        }
+        } 
+        #endregion
 
         #region RepositoryTypeValidate(Type repositoryType, out Type keyType, out Type entityType)
         /// <summary>

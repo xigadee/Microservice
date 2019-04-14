@@ -18,7 +18,7 @@ AS
 		IF (@VersionId IS NOT NULL)
 		BEGIN
 			DECLARE @ExistingVersion UNIQUEIDENTIFIER;
-			SELECT @Id = [Id], @VersionId = [VersionId] FROM [{NamespaceTable}].[{EntityName}] WHERE [ExternalId] = @ExternalId
+			SELECT @Id = [Id], @ExistingVersion = [VersionId] FROM [{NamespaceTable}].[{EntityName}] WHERE [ExternalId] = @ExternalId
 			IF (@Id IS NOT NULL AND @ExistingVersion != @VersionId)
 			BEGIN
 				ROLLBACK TRAN;

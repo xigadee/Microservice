@@ -31,6 +31,7 @@ namespace Tests.Xigadee.Azure.Sql
                 var read1 = await repo.Read(newUser.Id);
                 newUser.PropertiesSet("wahey", "123");
                 var attempt2 = await repo.Update(newUser);
+                var attempt3 = await repo.Update(newUser);
                 var v1 = await repo.Version(newUser.Id);
 
             }

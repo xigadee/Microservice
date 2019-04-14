@@ -63,10 +63,15 @@ namespace Xigadee
         {
             var ctx = new SqlEntityContext<K, E>(SpNamer.StoredProcedureCreate, options, key, entity);
 
+            VersionPolicySet(ctx, false);
+
             await ExecuteSqlCommand(ctx
                 , DbSerializeEntity
                 , DbDeserializeEntity
                 );
+
+            if (ctx.IsSuccessResponse)
+                ctx.ResponseEntities.Add(ctx.EntityOutgoing);
 
             return ProcessOutputEntity(ctx, holderAction);
         }
@@ -113,10 +118,15 @@ namespace Xigadee
         {
             var ctx = new SqlEntityContext<K, E>(SpNamer.StoredProcedureUpdate, options, key, entity);
 
+            VersionPolicySet(ctx, true);
+
             await ExecuteSqlCommand(ctx
                 , DbSerializeEntity
                 , DbDeserializeEntity
                 );
+
+            if (ctx.IsSuccessResponse)
+                ctx.ResponseEntities.Add(ctx.EntityOutgoing);
 
             return ProcessOutputEntity(ctx, holderAction);
         }
@@ -225,11 +235,14 @@ namespace Xigadee
         /// This method deserializes a data reader record into a version tuple.
         /// </summary>
         /// <param name="dataReader">The incoming data reader class.</param>
+        /// <param name="ctx">The context.</param>
         protected virtual void DbDeserializeVersion(SqlDataReader dataReader, SqlEntityContext<Tuple<K, string>> ctx)
         {
             var key = KeyManager.Deserialize(dataReader["ExternalId"].ToString());
-            DataTable schema = dataReader.GetSchemaTable();
-            string versionId = schema?.Columns.Contains("VersionId") ?? false ? dataReader["VersionId"].ToString() : null;
+            var versionId = dataReader["VersionId"].ToString();
+
+            //DataTable schema = dataReader.GetSchemaTable();
+            //string versionId = schema?.Columns.Contains("VersionId") ?? false ? dataReader["VersionId"].ToString() : null;
 
             ctx.ResponseEntities.Add(new Tuple<K, string>(key, versionId));
         }
@@ -374,6 +387,21 @@ namespace Xigadee
         }
         #endregion
 
+        protected virtual void VersionPolicySet(SqlEntityContext<K, E> ctx, bool isUpdate)
+        {
+            var entity = ctx.EntityIncoming;
+
+            ctx.EntityOutgoing = entity.JsonClone();
+
+            //OK, do we have to update the version id?
+            if (isUpdate && (VersionPolicy?.SupportsOptimisticLocking ?? false))
+            {
+                var incomingVersionId = VersionPolicy.EntityVersionAsString(entity);
+                string newVersion = VersionPolicy.EntityVersionUpdate(ctx.EntityOutgoing);
+            }
+
+
+        }
         /// <summary>
         /// This method serializes the entity in to the SqlCommand.
         /// </summary>

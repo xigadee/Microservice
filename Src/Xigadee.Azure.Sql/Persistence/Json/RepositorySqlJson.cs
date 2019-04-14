@@ -62,7 +62,8 @@ namespace Xigadee
         {
             try
             {
-                var entity = JsonConvert.DeserializeObject<E>(dataReader["Body"]?.ToString());
+                var json = dataReader["Body"]?.ToString();
+                var entity = JsonConvert.DeserializeObject<E>(json);
                 var sig = dataReader.GetFieldValue<string>(dataReader.GetOrdinal("Sig"));
                 SignatureValidate(entity, sig);
                 ctx.ResponseEntities.Add(entity);
@@ -82,26 +83,29 @@ namespace Xigadee
         protected override void DbSerializeEntity(SqlEntityContext<E> ctx)
         {
             var cmd = ctx.Command;
+            var entity = ctx.EntityOutgoing;
 
-            cmd.Parameters.Add(new SqlParameter("@ExternalId", SqlDbType.UniqueIdentifier) { Value = ctx.EntityIncoming.Id });
+            cmd.Parameters.Add(new SqlParameter("@ExternalId", SqlDbType.UniqueIdentifier) { Value = entity.Id });
+
             cmd.Parameters.Add(new SqlParameter("@VersionId", SqlDbType.UniqueIdentifier) { Value = ctx.EntityIncoming.VersionId });
-            cmd.Parameters.Add(new SqlParameter("@VersionIdNew", SqlDbType.UniqueIdentifier) { Value = ctx.EntityIncoming.VersionId });
-            cmd.Parameters.Add(new SqlParameter("@UserIdAudit", SqlDbType.UniqueIdentifier) { Value = ctx.EntityIncoming.UserIdAudit });
-            cmd.Parameters.Add(new SqlParameter("@DateCreated", SqlDbType.DateTime) { Value = ctx.EntityIncoming.DateCreated });
-            cmd.Parameters.Add(new SqlParameter("@DateUpdated", SqlDbType.DateTime) { Value = ctx.EntityIncoming.DateUpdated });
 
-            cmd.Parameters.Add(new SqlParameter("@Body", SqlDbType.NVarChar) { Value = CreateBody(ctx.EntityIncoming) });
+            cmd.Parameters.Add(new SqlParameter("@VersionIdNew", SqlDbType.UniqueIdentifier) { Value = entity.VersionId });
+
+            cmd.Parameters.Add(new SqlParameter("@UserIdAudit", SqlDbType.UniqueIdentifier) { Value = entity.UserIdAudit });
+            cmd.Parameters.Add(new SqlParameter("@DateCreated", SqlDbType.DateTime) { Value = entity.DateCreated });
+            cmd.Parameters.Add(new SqlParameter("@DateUpdated", SqlDbType.DateTime) { Value = entity.DateUpdated });
+
+            cmd.Parameters.Add(new SqlParameter("@Body", SqlDbType.NVarChar) { Value = CreateBody(entity) });
 
             cmd.Parameters.Add(new SqlParameter("@References", SqlDbType.Structured)
-            { TypeName = $"{SpNamer.ExternalSchema}[KvpTableType]", Value = CreateReferences(ctx.EntityIncoming) });
+            { TypeName = $"{SpNamer.ExternalSchema}[KvpTableType]", Value = CreateReferences(entity) });
 
             cmd.Parameters.Add(new SqlParameter("@Properties", SqlDbType.Structured)
-            { TypeName = $"{SpNamer.ExternalSchema}[KvpTableType]", Value = CreateProperties(ctx.EntityIncoming) });
+            { TypeName = $"{SpNamer.ExternalSchema}[KvpTableType]", Value = CreateProperties(entity) });
 
-            cmd.Parameters.Add(new SqlParameter("@Sig", SqlDbType.VarChar, 255) { Value = SignatureCreate(ctx.EntityIncoming) });
+            cmd.Parameters.Add(new SqlParameter("@Sig", SqlDbType.VarChar, 255) { Value = SignatureCreate(entity) });
         }
         #endregion
-
 
         #region SignatureCreate(E entity)
         /// <summary>
