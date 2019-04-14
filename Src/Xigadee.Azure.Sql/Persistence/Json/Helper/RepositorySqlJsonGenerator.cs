@@ -173,6 +173,11 @@ namespace Xigadee
         /// </summary>
         public string SpUpsertRP => ProcessTemplate("StoredProcedures.spUpsertRP.sql");
         /// <summary>
+        /// This is the internal reference/properties stored procedure
+        /// </summary>
+        public string SpHistory => ProcessTemplate("StoredProcedures.spHistory.sql");
+
+        /// <summary>
         /// This is the entity search stored procedure.
         /// </summary>
         public string SpSearch => ProcessTemplate("StoredProcedures.spSearch.sql");
@@ -192,6 +197,8 @@ namespace Xigadee
             var sb = new StringBuilder();
 
             sb.AppendLine(SpUpsertRP);
+            sb.AppendLine("GO");
+            sb.AppendLine(SpHistory);
             sb.AppendLine("GO");
             sb.AppendLine(SpCreate);
             sb.AppendLine("GO");

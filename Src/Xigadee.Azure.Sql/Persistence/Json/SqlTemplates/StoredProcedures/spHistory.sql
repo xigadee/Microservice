@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [{NamespaceTable}].[{spHistory}]
 	 @EntityId BIGINT
 	,@ExternalId UNIQUEIDENTIFIER
-	,@VersionId UNIQUEIDENTIFIER 
 	,@VersionIdNew UNIQUEIDENTIFIER 
     ,@UserIdAudit UNIQUEIDENTIFIER 
 	,@Body NVARCHAR (MAX)

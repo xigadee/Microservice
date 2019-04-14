@@ -57,15 +57,15 @@ namespace Xigadee
         /// This method deserializes a data reader record into an entity.
         /// </summary>
         /// <param name="dataReader">Data reader</param>
-        /// <returns>Returns the entity.</returns>
-        protected override E DbDeserializeEntity(SqlDataReader dataReader)
+        /// <param name="ctx">The context.</param>
+        protected override void DbDeserializeEntity(SqlDataReader dataReader, SqlEntityContext<E> ctx)
         {
             try
             {
                 var entity = JsonConvert.DeserializeObject<E>(dataReader["Body"]?.ToString());
                 var sig = dataReader.GetFieldValue<string>(dataReader.GetOrdinal("Sig"));
                 SignatureValidate(entity, sig);
-                return entity;
+                ctx.ResponseEntities.Add(entity);
             }
             catch (JsonException e)
             {
@@ -78,28 +78,30 @@ namespace Xigadee
         /// <summary>
         /// This method serializes the entity in to the SqlCommand.
         /// </summary>
-        /// <param name="entity">The entity</param>
-        /// <param name="cmd">The SQL command.</param>
-        protected override void DbSerializeEntity(E entity, SqlCommand cmd)
+        /// <param name="ctx">The context</param>
+        protected override void DbSerializeEntity(SqlEntityContext<E> ctx)
         {
-            cmd.Parameters.Add(new SqlParameter("@ExternalId", SqlDbType.UniqueIdentifier) { Value = entity.Id });
-            cmd.Parameters.Add(new SqlParameter("@VersionId", SqlDbType.UniqueIdentifier) { Value = entity.VersionId });
-            cmd.Parameters.Add(new SqlParameter("@VersionIdNew", SqlDbType.UniqueIdentifier) { Value = entity.VersionId });
-            cmd.Parameters.Add(new SqlParameter("@UserIdAudit", SqlDbType.UniqueIdentifier) { Value = entity.UserIdAudit });
-            cmd.Parameters.Add(new SqlParameter("@DateCreated", SqlDbType.DateTime) { Value = entity.DateCreated });
-            cmd.Parameters.Add(new SqlParameter("@DateUpdated", SqlDbType.DateTime) { Value = entity.DateUpdated });
+            var cmd = ctx.Command;
 
-            cmd.Parameters.Add(new SqlParameter("@Body", SqlDbType.NVarChar) { Value = CreateBody(entity) });
+            cmd.Parameters.Add(new SqlParameter("@ExternalId", SqlDbType.UniqueIdentifier) { Value = ctx.EntityIncoming.Id });
+            cmd.Parameters.Add(new SqlParameter("@VersionId", SqlDbType.UniqueIdentifier) { Value = ctx.EntityIncoming.VersionId });
+            cmd.Parameters.Add(new SqlParameter("@VersionIdNew", SqlDbType.UniqueIdentifier) { Value = ctx.EntityIncoming.VersionId });
+            cmd.Parameters.Add(new SqlParameter("@UserIdAudit", SqlDbType.UniqueIdentifier) { Value = ctx.EntityIncoming.UserIdAudit });
+            cmd.Parameters.Add(new SqlParameter("@DateCreated", SqlDbType.DateTime) { Value = ctx.EntityIncoming.DateCreated });
+            cmd.Parameters.Add(new SqlParameter("@DateUpdated", SqlDbType.DateTime) { Value = ctx.EntityIncoming.DateUpdated });
+
+            cmd.Parameters.Add(new SqlParameter("@Body", SqlDbType.NVarChar) { Value = CreateBody(ctx.EntityIncoming) });
 
             cmd.Parameters.Add(new SqlParameter("@References", SqlDbType.Structured)
-            { TypeName = $"{SpNamer.ExternalSchema}[KvpTableType]", Value = CreateReferences(entity) });
+            { TypeName = $"{SpNamer.ExternalSchema}[KvpTableType]", Value = CreateReferences(ctx.EntityIncoming) });
 
             cmd.Parameters.Add(new SqlParameter("@Properties", SqlDbType.Structured)
-            { TypeName = $"{SpNamer.ExternalSchema}[KvpTableType]", Value = CreateProperties(entity) });
+            { TypeName = $"{SpNamer.ExternalSchema}[KvpTableType]", Value = CreateProperties(ctx.EntityIncoming) });
 
-            cmd.Parameters.Add(new SqlParameter("@Sig", SqlDbType.VarChar, 255) { Value = SignatureCreate(entity) });
+            cmd.Parameters.Add(new SqlParameter("@Sig", SqlDbType.VarChar, 255) { Value = SignatureCreate(ctx.EntityIncoming) });
         }
         #endregion
+
 
         #region SignatureCreate(E entity)
         /// <summary>
@@ -170,7 +172,9 @@ namespace Xigadee
             }
 
             return data;
-        } 
+        }
         #endregion
+
+
     }
 }

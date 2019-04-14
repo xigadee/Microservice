@@ -138,6 +138,52 @@ AS
 	END CATCH
 
 GO
+CREATE PROCEDURE [dbo].[{spHistory}]
+	 @EntityId BIGINT
+	,@ExternalId UNIQUEIDENTIFIER
+	,@VersionIdNew UNIQUEIDENTIFIER 
+    ,@UserIdAudit UNIQUEIDENTIFIER 
+	,@Body NVARCHAR (MAX)
+	,@DateCreated DATETIME 
+	,@DateUpdated DATETIME 
+	,@Sig VARCHAR(256) 
+AS
+	BEGIN TRY
+
+		--Process the reference first.
+		INSERT INTO [dbo].[UserHistory] 
+		(
+			 [EntityId]
+			,[ExternalId] 
+			,[VersionId] 
+			,[UserIdAudit] 
+			,[DateCreated] 
+			,[DateUpdated] 
+			,[Sig] 
+			,[Body]
+		)
+		VALUES
+		(
+			 @EntityId 
+			,@ExternalId 
+			,@VersionIdNew  
+			,@UserIdAudit  
+			,@DateCreated  
+			,@DateUpdated  
+			,@Sig 
+			,@Body 
+		)
+
+		RETURN 200;
+	END TRY
+	BEGIN CATCH
+		IF (ERROR_NUMBER() = 2601)
+			RETURN 409; --Conflict - duplicate reference key to other transaction.
+		ELSE
+			THROW;
+	END CATCH
+
+GO
 CREATE PROCEDURE [External].[spUser_Create]
 	 @ExternalId UNIQUEIDENTIFIER
 	,@VersionId UNIQUEIDENTIFIER = NULL
@@ -184,6 +230,9 @@ AS
 			ROLLBACK TRAN;
 			RETURN 409; --Conflict with other entities.
 		END
+
+		--Record the audit history.
+		EXEC [dbo].[{spHistory}] @Id, @ExternalId, @VersionIdNew, @UserIdAudit, @Body, @DateCreated, @DateUpdated, @Sig
 
 		COMMIT TRAN;
 
@@ -386,9 +435,12 @@ AS
 			RETURN 409; --Not found
 		END
 
+	    --Record the audit history.
+		EXEC [dbo].[{spHistory}] @Id, @ExternalId, @VersionIdNew, @UserIdAudit, @Body, @DateCreated, @DateUpdated, @Sig
+
 		COMMIT TRAN;
 
-		RETURN 201;
+		RETURN 200;
 	END TRY
 	BEGIN CATCH
 		SELECT  ERROR_NUMBER() AS ErrorNumber, ERROR_MESSAGE() AS ErrorMessage; 

@@ -61,12 +61,14 @@ namespace Xigadee
         protected override async Task<RepositoryHolder<K, E>> CreateInternal(K key, E entity, RepositorySettings options
             , Action<RepositoryHolder<K, E>> holderAction)
         {
-            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureCreate
-                , sqlCmd => DbSerializeEntity(entity, sqlCmd)
-                , DbDeserializeEntity
-                , options);
+            var ctx = new SqlEntityContext<K, E>(SpNamer.StoredProcedureCreate, options, key, entity);
 
-            return ProcessOutputEntity(rs, holderAction);
+            await ExecuteSqlCommand(ctx
+                , DbSerializeEntity
+                , DbDeserializeEntity
+                );
+
+            return ProcessOutputEntity(ctx, holderAction);
         }
         #endregion
         #region Read
@@ -76,12 +78,14 @@ namespace Xigadee
         protected override async Task<RepositoryHolder<K, E>> ReadInternal(K key, RepositorySettings options
             , Action<RepositoryHolder<K, E>> holderAction)
         {
-            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureRead
-                , sqlCmd => DbSerializeKey(key, sqlCmd)
-                , DbDeserializeEntity
-                , options);
+            var ctx = new SqlEntityContext<K, E>(SpNamer.StoredProcedureRead, options, key);
 
-            return ProcessOutputEntity(rs, holderAction);
+            await ExecuteSqlCommand(ctx
+                , DbSerializeKey
+                , DbDeserializeEntity
+                );
+
+            return ProcessOutputEntity(ctx, holderAction);
         }
         /// <summary>
         /// Read the entity from the SQL server by reference.
@@ -89,12 +93,15 @@ namespace Xigadee
         protected override async Task<RepositoryHolder<K, E>> ReadByRefInternal(string refKey, string refValue, RepositorySettings options
             , Action<RepositoryHolder<K, E>> holderAction)
         {
-            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureReadByRef
-                , sqlCmd => DbSerializeKeyReference(new Tuple<string, string>(refKey, refValue), sqlCmd)
-                , DbDeserializeEntity
-                , options);
+            var ctx = new SqlEntityContext<K, E>(SpNamer.StoredProcedureReadByRef, options);
+            ctx.Reference = (refKey, refValue);
 
-            return ProcessOutputEntity(rs, holderAction);
+            await ExecuteSqlCommand(ctx
+                , DbSerializeKeyReference
+                , DbDeserializeEntity
+                );
+
+            return ProcessOutputEntity(ctx, holderAction);
         }
         #endregion
         #region Update
@@ -104,12 +111,14 @@ namespace Xigadee
         protected override async Task<RepositoryHolder<K, E>> UpdateInternal(K key, E entity, RepositorySettings options
             , Action<RepositoryHolder<K, E>> holderAction)
         {
-            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureUpdate
-                , sqlCmd => DbSerializeEntity(entity, sqlCmd)
-                , DbDeserializeEntity
-                , options);
+            var ctx = new SqlEntityContext<K, E>(SpNamer.StoredProcedureUpdate, options, key, entity);
 
-            return ProcessOutputEntity(rs, holderAction);
+            await ExecuteSqlCommand(ctx
+                , DbSerializeEntity
+                , DbDeserializeEntity
+                );
+
+            return ProcessOutputEntity(ctx, holderAction);
         }
         #endregion
         #region Delete
@@ -119,12 +128,14 @@ namespace Xigadee
         protected override async Task<RepositoryHolder<K, Tuple<K, string>>> DeleteInternal(K key, RepositorySettings options
             , Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
         {
-            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureDelete
-                , sqlCmd => DbSerializeKey(key, sqlCmd)
-                , DbDeserializeVersion
-                , options);
+            var ctx = new SqlEntityContext<K, Tuple<K, string>>(SpNamer.StoredProcedureDelete, options, key);
 
-            return ProcessOutputVersion(rs, key, holderAction);
+            await ExecuteSqlCommand(ctx
+                , DbSerializeKey
+                , DbDeserializeVersion
+                );
+
+            return ProcessOutputVersion(ctx, key, holderAction);
         }
         /// <summary>
         /// Delete the entity by reference
@@ -132,12 +143,15 @@ namespace Xigadee
         protected override async Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRefInternal(string refKey, string refValue, RepositorySettings options
             , Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
         {
-            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureDeleteByRef
-                , sqlCmd => DbSerializeKeyReference(new Tuple<string, string>(refKey, refValue), sqlCmd)
-                , DbDeserializeVersion
-                , options);
+            var ctx = new SqlEntityContext<K, Tuple<K, string>>(SpNamer.StoredProcedureDeleteByRef, options);
+            ctx.Reference = (refKey, refValue);
 
-            return ProcessOutputVersion(rs, onEvent: holderAction);
+            await ExecuteSqlCommand(ctx
+                , DbSerializeKeyReference
+                , DbDeserializeVersion
+                );
+
+            return ProcessOutputVersion(ctx, onEvent: holderAction);
         }
         #endregion
         #region Version
@@ -147,12 +161,14 @@ namespace Xigadee
         protected override async Task<RepositoryHolder<K, Tuple<K, string>>> VersionInternal(K key, RepositorySettings options
             , Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
         {
-            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureVersion
-                , sqlCmd => DbSerializeKey(key, sqlCmd)
-                , DbDeserializeVersion
-                , options);
+            var ctx = new SqlEntityContext<K, Tuple<K, string>>(SpNamer.StoredProcedureVersion, options, key);
 
-            return ProcessOutputVersion(rs, key, holderAction);
+            await ExecuteSqlCommand(ctx
+                , DbSerializeKey
+                , DbDeserializeVersion
+                );
+
+            return ProcessOutputVersion(ctx, key, holderAction);
         }
 
         /// <summary>
@@ -161,129 +177,112 @@ namespace Xigadee
         protected override async Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRefInternal(string refKey, string refValue
             , RepositorySettings options, Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
         {
-            var rs = await ExecuteSqlCommand(SpNamer.StoredProcedureVersionByRef
-                , sqlCmd => DbSerializeKeyReference(new Tuple<string, string>(refKey, refValue), sqlCmd)
-                , DbDeserializeVersion
-                , options);
+            var ctx = new SqlEntityContext<K, Tuple<K, string>>(SpNamer.StoredProcedureVersionByRef, options);
+            ctx.Reference = (refKey, refValue);
 
-            return ProcessOutputVersion(rs, onEvent: holderAction);
+            await ExecuteSqlCommand(ctx
+                , DbSerializeKeyReference
+                , DbDeserializeVersion
+                );
+
+            return ProcessOutputVersion(ctx, onEvent: holderAction);
         }
         #endregion
 
-        #region DbSerializeKey(K key, SqlCommand cmd)
+        #region DbSerializeKey(ISqlEntityContextKey<K> ctx)
         /// <summary>
         /// This method serializes the entity key in to the SQL command.
         /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="cmd">The command.</param>
-        protected virtual void DbSerializeKey(K key, SqlCommand cmd)
+        /// <param name="ctx">The context.</param>
+        protected virtual void DbSerializeKey(ISqlEntityContextKey<K> ctx)
         {
             if (typeof(K) == typeof(Guid))
-                cmd.Parameters.Add("@ExternalId", SqlDbType.UniqueIdentifier).Value = key;
+                ctx.Command.Parameters.Add("@ExternalId", SqlDbType.UniqueIdentifier).Value = ctx.Key;
             else if (typeof(K) == typeof(string))
-                cmd.Parameters.Add("@ExternalId", SqlDbType.NVarChar, 255).Value = key;
+                ctx.Command.Parameters.Add("@ExternalId", SqlDbType.NVarChar, 255).Value = ctx.Key;
             else if (typeof(K) == typeof(long))
-                cmd.Parameters.Add("@ExternalId", SqlDbType.BigInt).Value = key;
+                ctx.Command.Parameters.Add("@ExternalId", SqlDbType.BigInt).Value = ctx.Key;
             else if (typeof(K) == typeof(int))
-                cmd.Parameters.Add("@ExternalId", SqlDbType.Int).Value = key;
+                ctx.Command.Parameters.Add("@ExternalId", SqlDbType.Int).Value = ctx.Key;
             else
                 throw new NotSupportedException($"Key type '{typeof(K).Name}' is not supported automatically. Override DbSerializeKey");
         }
         #endregion
-        #region DbSerializeKeyReference(Tuple<string, string> key, SqlCommand cmd)
+        #region DbSerializeKeyReference(SqlEntityContext ctx)
         /// <summary>
         /// This method serializes the entity key in to the SQL command.
         /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="cmd">The command.</param>
-        protected virtual void DbSerializeKeyReference(Tuple<string, string> key, SqlCommand cmd)
+        /// <param name="ctx">The context.</param>
+        protected virtual void DbSerializeKeyReference(SqlEntityContext ctx)
         {
-            cmd.Parameters.Add("@RefType", SqlDbType.NVarChar, 50).Value = key.Item1;
-            cmd.Parameters.Add("@RefValue", SqlDbType.NVarChar, 255).Value = key.Item2;
-        } 
+            ctx.Command.Parameters.Add("@RefType", SqlDbType.NVarChar, 50).Value = ctx.Reference.type;
+            ctx.Command.Parameters.Add("@RefValue", SqlDbType.NVarChar, 255).Value = ctx.Reference.value;
+        }
         #endregion
-
-        /// <summary>
-        /// This method serializes the entity in to the SqlCommand.
-        /// </summary>
-        /// <param name="entity">The entity</param>
-        /// <param name="cmd">The SQL command.</param>
-        protected abstract void DbSerializeEntity(E entity, SqlCommand cmd);
-
-
-        /// <summary>
-        /// This method deserializes a data reader record into an entity.
-        /// </summary>
-        /// <param name="dataReader">Data reader</param>
-        protected abstract E DbDeserializeEntity(SqlDataReader dataReader);
 
         #region DbDeserializeVersion(SqlDataReader dataReader)
         /// <summary>
         /// This method deserializes a data reader record into a version tuple.
         /// </summary>
         /// <param name="dataReader">The incoming data reader class.</param>
-        protected virtual Tuple<K, string> DbDeserializeVersion(SqlDataReader dataReader)
+        protected virtual void DbDeserializeVersion(SqlDataReader dataReader, SqlEntityContext<Tuple<K, string>> ctx)
         {
             var key = KeyManager.Deserialize(dataReader["Id"].ToString());
             DataTable schema = dataReader.GetSchemaTable();
             string versionId = schema?.Columns.Contains("VersionId") ?? false ? dataReader["VersionId"].ToString() : null;
 
-            return new Tuple<K, string>(key, versionId);
-        } 
+            ctx.ResponseEntities.Add(new Tuple<K, string>(key, versionId));
+        }
         #endregion
 
         #region ExecuteSqlCommand<ET> ...
         /// <summary>
         /// Executes a SQL command and deserializes the response into a set of entities.
         /// </summary>
-        /// <typeparam name="ET">The entity class to return.</typeparam>
-        /// <param name="commandName">The SQL stored procedure name</param>
-        /// <param name="populateCommand">Populate command i.e. add SQL parameters</param>
-        /// <param name="deserializeToEntity">Read an entity out from a SQL Data Reader Record</param>
-        /// <param name="options">The request options.</param>
+        /// <typeparam name="KT">The key type.</typeparam>
+        /// <typeparam name="ET">The entity type.</typeparam>
+        /// <param name="ctx">The context.</param>
+        /// <param name="populateRequest">Populate command i.e. add SQL parameters</param>
+        /// <param name="processResponse">Read an entity out from a SQL Data Reader Record</param>
         /// <returns>Returns a response object with a set of returned entities.</returns>
-        protected async Task<SqlEntityResponse<ET>> ExecuteSqlCommand<ET>(string commandName
-            , Action<SqlCommand> populateCommand
-            , Func<SqlDataReader, ET> deserializeToEntity = null
-            , RepositorySettings options = null)
+        protected async Task ExecuteSqlCommand<KT,ET>(SqlEntityContext<KT,ET> ctx
+            , Action<SqlEntityContext<KT, ET>> populateRequest
+            , Action<SqlDataReader, SqlEntityContext<KT, ET>> processResponse = null) 
+            where KT : IEquatable<KT>
         {
             SqlParameter paramReturnValue = null;
-            var rs = new SqlEntityResponse<ET>();
 
             try
             {
                 using (SqlConnection cn = new SqlConnection(_sqlConnection))
                 {
                     cn.Open();
-                    SqlCommand sqlCmd = new SqlCommand(commandName)
+                    ctx.Command = new SqlCommand(ctx.SpName)
                     {
                         CommandType = CommandType.StoredProcedure,
                         Connection = cn
                     };
 
-                    populateCommand(sqlCmd);
+                    populateRequest(ctx);
 
                     paramReturnValue = new SqlParameter("@return_value", SqlDbType.Int) { Direction = ParameterDirection.ReturnValue };
-                    sqlCmd.Parameters.Add(paramReturnValue);
+                    ctx.Command.Parameters.Add(paramReturnValue);
 
                     try
                     {
-                        using (var reader = await sqlCmd.ExecuteReaderAsync())
+                        using (var reader = await ctx.Command.ExecuteReaderAsync())
                         {
-                            while (deserializeToEntity != null && await reader.ReadAsync())
+                            while (processResponse != null && await reader.ReadAsync())
                             {
                                 try
                                 {
-                                    rs.Entities.Add(deserializeToEntity(reader));
+                                    processResponse(reader, ctx);
                                 }
                                 catch (Exception)
                                 {
-                                    if (!SqlErrorsCheck(reader, rs))
+                                    if (!SqlErrorsCheck(reader, ctx))
                                         throw;
-
-                                    return rs;
                                 }
-
                             }
                         }
                     }
@@ -294,23 +293,21 @@ namespace Xigadee
                     }
 
                     if (paramReturnValue.Value != null)
-                        rs.ResponseCode = (int)paramReturnValue.Value;
+                        ctx.ResponseCode = (int)paramReturnValue.Value;
                 }
             }
             catch (Exception ex)
             {
                 if (paramReturnValue?.Value != null)
-                    rs.ResponseCode = (int)paramReturnValue.Value;
+                    ctx.ResponseCode = (int)paramReturnValue.Value;
                 else
                 {
-                    rs.ResponseCode = 500;
-                    rs.ResponseMessage = ex.Message;
+                    ctx.ResponseCode = 500;
+                    ctx.ResponseMessage = ex.Message;
                 }
 
                 throw;
             }
-
-            return rs;
         }
 
         /// <summary>
@@ -320,7 +317,7 @@ namespace Xigadee
         /// <param name="dataReader">The data reader.</param>
         /// <param name="response">The response class.</param>
         /// <returns>Returns true if errors are detected.</returns>
-        protected virtual bool SqlErrorsCheck<ET>(SqlDataReader dataReader, SqlEntityResponse<ET> response)
+        protected virtual bool SqlErrorsCheck<ET>(SqlDataReader dataReader, SqlEntityContext<ET> response)
         {
             var columnSchema = dataReader.GetColumnSchema();
             if (columnSchema.Any(dbc => dbc.ColumnName.Equals("ErrorNumber")))
@@ -343,10 +340,10 @@ namespace Xigadee
         /// <param name="sqlResponse">The SQL response.</param>
         /// <param name="onEvent">The event to fire.</param>
         /// <returns>The repository response.</returns>
-        protected virtual RepositoryHolder<K, E> ProcessOutputEntity(SqlEntityResponse<E> sqlResponse
+        protected virtual RepositoryHolder<K, E> ProcessOutputEntity(SqlEntityContext<E> sqlResponse
             , Action<RepositoryHolder<K, E>> onEvent = null)
         {
-            E entity = sqlResponse.Entities.FirstOrDefault();
+            E entity = sqlResponse.ResponseEntities.FirstOrDefault();
             K key = entity != null ? KeyMaker(entity) : default(K);
 
             var rs = new RepositoryHolder<K, E>(key, null, entity, sqlResponse.ResponseCode, sqlResponse.ResponseMessage);
@@ -363,13 +360,13 @@ namespace Xigadee
         /// <param name="key">The optional key.</param>
         /// <returns>The repository response.</returns>
         protected virtual RepositoryHolder<K, Tuple<K, string>> ProcessOutputVersion(
-            SqlEntityResponse<Tuple<K, string>> sqlResponse, K key = default(K)
+            SqlEntityContext<Tuple<K, string>> sqlResponse, K key = default(K)
             , Action<RepositoryHolder<K, Tuple<K, string>>> onEvent = null)
 
         {
-            var entity = sqlResponse.Entities.FirstOrDefault();
-            var rs = (entity == null)? new RepositoryHolder<K, Tuple<K, string>>(key, null, null, 404)
-                : new RepositoryHolder<K, Tuple<K, string>>(entity.Item1, null, new Tuple<K, string>(entity.Item1, entity.Item2), sqlResponse.ResponseCode,sqlResponse.ResponseMessage);
+            var entity = sqlResponse.ResponseEntities.FirstOrDefault();
+            var rs = (entity == null) ? new RepositoryHolder<K, Tuple<K, string>>(key, null, null, 404)
+                : new RepositoryHolder<K, Tuple<K, string>>(entity.Item1, null, new Tuple<K, string>(entity.Item1, entity.Item2), sqlResponse.ResponseCode, sqlResponse.ResponseMessage);
 
             onEvent?.Invoke(rs);
 
@@ -377,28 +374,17 @@ namespace Xigadee
         }
         #endregion
 
-        #region Class -> SqlEntityResponse<ET>
         /// <summary>
-        /// This class contains the set of entities returned from a SQL command
+        /// This method serializes the entity in to the SqlCommand.
         /// </summary>
-        /// <typeparam name="ET">The entity type.</typeparam>
-        protected class SqlEntityResponse<ET>
-        {
-            /// <summary>
-            /// Gets the entity list.
-            /// </summary>
-            public List<ET> Entities { get; } = new List<ET>();
+        /// <param name="ctx">The context</param>
+        protected abstract void DbSerializeEntity(SqlEntityContext<E> ctx);
 
-            /// <summary>
-            /// Gets or sets the response code.
-            /// </summary>
-            public int ResponseCode { get; set; }
-            /// <summary>
-            /// Gets or sets the optional response message.
-            /// </summary>
-            public string ResponseMessage { get; set; }
-        } 
-        #endregion
+        /// <summary>
+        /// This method deserializes a data reader record into an entity.
+        /// </summary>
+        /// <param name="dataReader">Data reader</param>
+        /// <param name="ctx">The context</param>
+        protected abstract void DbDeserializeEntity(SqlDataReader dataReader, SqlEntityContext<E> ctx);
     }
-
 }

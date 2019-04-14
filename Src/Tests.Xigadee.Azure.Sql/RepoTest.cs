@@ -10,12 +10,11 @@ namespace Tests.Xigadee.Azure.Sql
     {
 
         [TestMethod]
-        [Ignore]
         public async Task SqlJsonTest()
         {
-            var server = "";
-            var uname = "";
-            var pwd = "";
+            var server = "tpjrtest";
+            var uname = "ApiService";
+            var pwd = "123Enter**&";
             var conn = $"Server=tcp:{server}.database.windows.net,1433;Initial Catalog=xgtest2;Persist Security Info=False;User ID={uname};Password={pwd};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
             var spNames2 = new SqlStoredProcedureResolver<User>(schemaName: "External", interfix: "_");

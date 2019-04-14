@@ -45,6 +45,9 @@ AS
 			RETURN 409; --Conflict with other entities.
 		END
 
+		--Record the audit history.
+		EXEC [{NamespaceTable}].[{spHistory}] @Id, @ExternalId, @VersionIdNew, @UserIdAudit, @Body, @DateCreated, @DateUpdated, @Sig
+
 		COMMIT TRAN;
 
 		RETURN 201;
