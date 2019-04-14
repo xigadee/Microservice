@@ -227,7 +227,7 @@ namespace Xigadee
         /// <param name="dataReader">The incoming data reader class.</param>
         protected virtual void DbDeserializeVersion(SqlDataReader dataReader, SqlEntityContext<Tuple<K, string>> ctx)
         {
-            var key = KeyManager.Deserialize(dataReader["Id"].ToString());
+            var key = KeyManager.Deserialize(dataReader["ExternalId"].ToString());
             DataTable schema = dataReader.GetSchemaTable();
             string versionId = schema?.Columns.Contains("VersionId") ?? false ? dataReader["VersionId"].ToString() : null;
 

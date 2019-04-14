@@ -15,7 +15,8 @@ namespace Tests.Xigadee.Azure.Sql
             var server = "tpjrtest";
             var uname = "ApiService";
             var pwd = "123Enter**&";
-            var conn = $"Server=tcp:{server}.database.windows.net,1433;Initial Catalog=xgtest2;Persist Security Info=False;User ID={uname};Password={pwd};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+            var catalog = "xgtest2";
+            var conn = $"Server=tcp:{server}.database.windows.net,1433;Initial Catalog={catalog};Persist Security Info=False;User ID={uname};Password={pwd};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
             var spNames2 = new SqlStoredProcedureResolver<User>(schemaName: "External", interfix: "_");
 
@@ -30,6 +31,7 @@ namespace Tests.Xigadee.Azure.Sql
                 var read1 = await repo.Read(newUser.Id);
                 newUser.PropertiesSet("wahey", "123");
                 var attempt2 = await repo.Update(newUser);
+                var v1 = await repo.Version(newUser.Id);
 
             }
             catch (Exception ex)
