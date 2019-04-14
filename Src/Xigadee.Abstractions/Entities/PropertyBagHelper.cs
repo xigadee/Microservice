@@ -16,7 +16,7 @@ namespace Xigadee
         /// <param name="convert">The optional convert method. If this is not passed, the method will resolve via the key manager.</param>
         public static void PropertiesSet<K>(this IPropertyBag bag, string key, K value, Func<K, string> convert = null)
         {
-            if (default(K).Equals(value))
+            if (object.Equals(default(K), value))
             {
                 bag.Properties[key] = null;
                 return;

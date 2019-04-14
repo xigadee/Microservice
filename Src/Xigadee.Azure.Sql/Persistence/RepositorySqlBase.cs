@@ -50,7 +50,7 @@ namespace Xigadee
         {
             _sqlConnection = sqlConnection ?? throw new ArgumentNullException("sqlConnection");
 
-            SpNamer = SpNamer ?? new SqlStoredProcedureResolver<E>();
+            SpNamer = spNamer ?? new SqlStoredProcedureResolver<E>();
         }
         #endregion
 

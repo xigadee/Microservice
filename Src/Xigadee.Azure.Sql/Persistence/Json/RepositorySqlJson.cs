@@ -86,8 +86,8 @@ namespace Xigadee
             cmd.Parameters.Add(new SqlParameter("@VersionId", SqlDbType.UniqueIdentifier) { Value = entity.VersionId });
             cmd.Parameters.Add(new SqlParameter("@VersionIdNew", SqlDbType.UniqueIdentifier) { Value = entity.VersionId });
             cmd.Parameters.Add(new SqlParameter("@UserIdAudit", SqlDbType.UniqueIdentifier) { Value = entity.UserIdAudit });
-            cmd.Parameters.Add(new SqlParameter("@DateCreated", SqlDbType.UniqueIdentifier) { Value = entity.DateCreated });
-            cmd.Parameters.Add(new SqlParameter("@DateUpdated", SqlDbType.UniqueIdentifier) { Value = entity.DateUpdated });
+            cmd.Parameters.Add(new SqlParameter("@DateCreated", SqlDbType.DateTime) { Value = entity.DateCreated });
+            cmd.Parameters.Add(new SqlParameter("@DateUpdated", SqlDbType.DateTime) { Value = entity.DateUpdated });
 
             cmd.Parameters.Add(new SqlParameter("@Body", SqlDbType.NVarChar) { Value = CreateBody(entity) });
 

@@ -602,7 +602,7 @@ namespace Xigadee
         /// <exception cref="ArgumentOutOfRangeException">Key must be set to a value</exception>
         public static void IncomingParameterChecks<KT>(KT key) where KT : IEquatable<KT>
         {
-            if (key.Equals(default(KT)))
+            if (object.Equals(key,default(KT)))
                 throw new ArgumentOutOfRangeException("key must be set to a value");
         }
 
@@ -615,7 +615,7 @@ namespace Xigadee
         public static void IncomingParameterChecks<KT, ET>(KT key, ET value) where KT : IEquatable<KT>
         {
             IncomingParameterChecks(key);
-            if (value.Equals(default(ET)))
+            if (object.Equals(value,default(ET)))
                 throw new ArgumentNullException("value must be set to a value");
         }
         #endregion

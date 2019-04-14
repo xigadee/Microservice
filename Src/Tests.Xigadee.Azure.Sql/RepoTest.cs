@@ -9,20 +9,35 @@ namespace Tests.Xigadee.Azure.Sql
     public class RepoTest
     {
 
-        [TestMethod][Ignore]
+        [TestMethod]
+        [Ignore]
         public async Task SqlJsonTest()
         {
-            var server = "testtesttest";
+            var server = "";
             var uname = "";
             var pwd = "";
             var conn = $"Server=tcp:{server}.database.windows.net,1433;Initial Catalog=xgtest2;Persist Security Info=False;User ID={uname};Password={pwd};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
-            var repo = new RepositorySqlJson<Guid, User>(conn);
+            var spNames2 = new SqlStoredProcedureResolver<User>(schemaName: "External", interfix: "_");
+
+            var repo = new RepositorySqlJson<Guid, User>(conn, spNamer: spNames2);
 
             var newUser = new User();
             newUser.PropertiesSet("email", "pstancer@outlook.com");
 
-            var attempt1 = await repo.Create(newUser);
+            try
+            {
+                var attempt1 = await repo.Create(newUser);
+                var read1 = await repo.Read(newUser.Id);
+                newUser.PropertiesSet("wahey", "123");
+                var attempt2 = await repo.Update(newUser);
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
     }
 }
