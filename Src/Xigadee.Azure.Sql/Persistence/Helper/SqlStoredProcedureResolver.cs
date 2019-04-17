@@ -63,6 +63,7 @@ namespace Xigadee
         }
 
         string Name1(string m) => $"{PreFix}{EntityName}{InterFix}{m.ToString()}{PostFix}";
+
         string Name3(string m) => $"{PreFix}{m.ToString()}{InterFix}{EntityName}{PostFix}";
 
         public string this[RepositoryMethod o] => _spNames[o];
@@ -138,6 +139,8 @@ namespace Xigadee
         public virtual string StoredProcedureUpsertRP => ExternalSchema + StoredProcedureNameUpsertRP;
 
         public virtual string StoredProcedureNameUpsertRP => Name1("UpsertRP");
+
+        public virtual string StoredProcedureNameHistory => Name1("History");
 
     }
 }

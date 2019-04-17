@@ -65,6 +65,8 @@ namespace Xigadee
 
             script = script.Replace("{spUpsertRP}", _resolver.StoredProcedureNameUpsertRP);
 
+            script = script.Replace("{spHistory}", _resolver.StoredProcedureNameHistory);
+
             return script;
         }
         #endregion
