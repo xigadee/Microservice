@@ -15,7 +15,7 @@ namespace Xigadee
         /// Gets or sets the user identifier. This may not be set for all entities.
         /// </summary>
         [EntityPropertyHint("userid")]
-        public Guid? UserId { get; set; }
+        public virtual Guid? UserId { get; set; }
 
         /// <summary>
         /// The property bag container dictionary. This has a set of extensible properties for the user.
