@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Xigadee
+﻿namespace Xigadee
 {
     /// <summary>
     /// This class is used to generate the SQL for a specific entity.

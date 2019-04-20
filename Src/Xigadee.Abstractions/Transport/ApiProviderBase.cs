@@ -146,12 +146,18 @@ namespace Xigadee
         protected TransportSerializer TransportSerializerDefault => mTransportSerializers[mTransportOutDefault]; 
         #endregion
 
+        #region Client
+        /// <summary>
+        /// Get a new http client or uses the override.
+        /// </summary>
+        protected HttpClient Client => ClientOverride ?? new HttpClient(mHandler); 
+        #endregion
         #region ClientOverride
         /// <summary>
         /// Gets or sets the client override. This can be used for testing. It uses the HttpClient passed instead
         /// or creating a new client for each request.
         /// </summary>
-        public HttpClient ClientOverride { get; set; } 
+        public HttpClient ClientOverride { get; set; }
         #endregion
 
         #region Request(HttpMethod verb, Uri uri)
@@ -311,11 +317,9 @@ namespace Xigadee
                 //Sets the binary content to the request.
                 if (content != null)
                     httpRq.Content = content;
-                //Set the Http client or override.
-                var client = ClientOverride ?? new HttpClient(mHandler);
 
                 //Executes the request to the remote header.
-                var httpRs = await client.SendAsync(httpRq);
+                var httpRs = await Client.SendAsync(httpRq);
 
                 //Processes any response headers.
                 ResponseHeadersAuth(httpRq, httpRs);
