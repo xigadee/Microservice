@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Xigadee
 {
@@ -21,6 +19,12 @@ namespace Xigadee
         /// </summary>
         [EntityPropertyHint("typetemplate")]
         public string TemplateType { get; set; }
+
+        /// <summary>
+        /// This property holds the current state of the action.
+        /// </summary>
+        [EntityPropertyHint("state")]
+        public string State { get; set; }
 
         /// <summary>
         /// Gets or sets the option expiry date/time for the action.
