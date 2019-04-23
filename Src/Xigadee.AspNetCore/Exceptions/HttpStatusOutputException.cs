@@ -17,17 +17,23 @@ namespace Xigadee
         /// <param name="level">The logging level. The default is 'Error'</param>
         /// <param name="ex">The optional inner exception.</param>
         /// <param name="eid">The event id. The default is default(EventId).</param>
-        public HttpStatusOutputException(int code, string description = null, LogLevel level = LogLevel.Warning, Exception ex = null, EventId eid = default(EventId)) : base(description, ex)
+        /// <param name="statusSubcode">Gets the status error sub code. This can be used to give a more detailed error state.</param>
+        public HttpStatusOutputException(int code, string description = null, LogLevel level = LogLevel.Warning, Exception ex = null, EventId eid = default(EventId), int? statusSubcode = null) : base(description, ex)
         {
             StatusCode = code;
             EventId = eid;
             Level = level;
+            StatusSubcode = statusSubcode;
         }
 
         /// <summary>
         /// Gets the status error code.
         /// </summary>
         public int StatusCode { get; }
+        /// <summary>
+        /// Gets the status error sub code. This can be used to give a more detailed error state.
+        /// </summary>
+        public int? StatusSubcode { get; }
         /// <summary>
         /// Gets the log level for the exception.
         /// </summary>

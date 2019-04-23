@@ -11,7 +11,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 namespace Xigadee
 {
-
     /// <summary>
     /// This is the default start up context.
     /// </summary>

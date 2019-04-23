@@ -12,10 +12,9 @@ namespace Tests.Xigadee.AspNetCore.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SecurityController : ControllerBase
+    public class SecurityController : ApiControllerBase
     {
         #region Declarations
-        ILogger _logger;
         IApiUserSecurityModule _manager;
         ConfigAuthenticationJwt _config;
 
@@ -29,9 +28,8 @@ namespace Tests.Xigadee.AspNetCore.Server.Controllers
         /// <param name="manager">The manager.</param>
         /// <param name="config">The configuration.</param>
         public SecurityController(ILogger<SecurityController> logger
-            , IApiUserSecurityModule manager, ConfigAuthenticationJwt config)
+            , IApiUserSecurityModule manager, ConfigAuthenticationJwt config):base(logger)
         {
-            _logger = logger;
             _manager = manager;
             _config = config;
         } 
