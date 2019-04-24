@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Net.Mail;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -14,7 +10,7 @@ namespace Xigadee
     /// <summary>
     /// This class is used to generic response processing.
     /// </summary>
-    public class ApiControllerBase: ControllerBase
+    public abstract class ApiControllerBase: ControllerBase
     {
         /// <summary>
         /// The logger
