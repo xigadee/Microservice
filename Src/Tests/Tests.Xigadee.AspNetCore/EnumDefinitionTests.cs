@@ -23,7 +23,7 @@ namespace Tests.Xigadee.AspNetCore
             Two=2,
             [System.ComponentModel.Description("Big")]
             Max = int.MaxValue,
-            [LocalizedDescription("Really Big", "99", "en-us")]
+            [LocalizedDescription("Really Big", "Code99", "en-us")]
             TotalMax = long.MaxValue
 
         }

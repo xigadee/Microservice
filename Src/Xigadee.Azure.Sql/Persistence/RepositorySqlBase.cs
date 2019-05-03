@@ -387,6 +387,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region VersionPolicySet(SqlEntityContext<K, E> ctx, bool isUpdate)
         /// <summary>
         /// This method sets the version policy for the specific entity.
         /// </summary>
@@ -404,7 +405,8 @@ namespace Xigadee
                 var incomingVersionId = VersionPolicy.EntityVersionAsString(entity);
                 string newVersion = VersionPolicy.EntityVersionUpdate(ctx.EntityOutgoing);
             }
-        }
+        } 
+        #endregion
         /// <summary>
         /// This method serializes the entity in to the SqlCommand.
         /// </summary>

@@ -1,50 +1,38 @@
-﻿CREATE PROCEDURE [{NamespaceExternal}].[{spSearch}]
-	 @ExternalId UNIQUEIDENTIFIER
-	,@VersionId UNIQUEIDENTIFIER = NULL
-	,@VersionIdNew UNIQUEIDENTIFIER = NULL
-	,@Body NVARCHAR (MAX)
-	,@DateCreated DATETIME = NULL
-	,@DateUpdated DATETIME = NULL
-	,@References [{NamespaceExternal}].[KvpTableType] READONLY
-	,@Properties [{NamespaceExternal}].[KvpTableType] READONLY
-	,@Sig VARCHAR(256) = NULL
+﻿CREATE PROCEDURE [{NamespaceExternal}].[{spSearch}_Default]
+	@PropertiesFilter [{NamespaceExternal}].[KvpTableType] READONLY,
+	@PropertyOrder [{NamespaceExternal}].[KvpTableType] READONLY,
+	@Skip INT = 0,
+	@Take INT = 50
 AS
 	BEGIN TRY
-		BEGIN TRAN
 
-		-- Insert record into DB and get its identity
-		INSERT INTO [{NamespaceTable}].[{EntityName}] 
-		(
-			  ExternalId
-			, VersionId
-			, DateCreated
-			, DateUpdated
-			, Sig
-			, Body
-		)
-		VALUES 
-		(
-			  @ExternalId
-			, ISNULL(@VersionIdNew, NEWID())
-			, ISNULL(@DateCreated, GETUTCDATE())
-			, @DateUpdated
-			, @Sig
-			, @Body
-		)
-		DECLARE @Id BIGINT = SCOPE_IDENTITY();
-	
-		-- Create references and properties
-		DECLARE @RPResponse INT;
-		EXEC @RPResponse = [{NamespaceTable}].[spUpsert{EntityName}PropertyReferences] @Id, @References, @Properties
-		IF (@RPResponse = 409)
-		BEGIN
-			ROLLBACK TRAN;
-			RETURN 409; --Conflict with other entities.
-		END
+	--Build
+	DECLARE @FilterIds TABLE
+	(
+		Id BIGINT
+	);
 
-		COMMIT TRAN;
+	--Build
+	INSERT INTO @FilterIds
+	SELECT E.Id
+	FROM [{NamespaceTable}].[{EntityName}] E
+	INNER JOIN [{NamespaceTable}].[{EntityName}Property] P ON E.Id = P.EntityId
+	INNER JOIN [{NamespaceTable}].[{EntityName}PropertyKey] PK ON P.KeyId = PK.Id
+	WHERE PK.[Type] = @RefType AND R.[Value] = @RefValue
 
-		RETURN 201;
+		--Output
+		INSERT INTO @FilterIds
+		SELECT E.Id
+		FROM [{NamespaceTable}].[{EntityName}] E
+		INNER JOIN [{NamespaceTable}].[{EntityName}Property] P ON E.Id = P.EntityId
+		INNER JOIN [{NamespaceTable}].[{EntityName}PropertyKey] PK ON P.KeyId = PK.Id
+		WHERE PK.[Type] = @RefType AND R.[Value] = @RefValue
+		ORDER BY TCB.TransactionId
+		OFFSET @Skip ROWS
+		FETCH NEXT @Take ROWS ONLY
+
+
+		RETURN 200;
 	END TRY
 	BEGIN CATCH
 		SELECT  ERROR_NUMBER() AS ErrorNumber, ERROR_MESSAGE() AS ErrorMessage; 
