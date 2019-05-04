@@ -2,10 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -30,8 +32,6 @@ namespace Xigadee
             ContextCreate();
 
             ContextInitialize();
-
-
         }
         #endregion
         #region 1. ContextCreate()
@@ -256,6 +256,11 @@ namespace Xigadee
         /// <param name="app">The application.</param>
         protected virtual void ConfigureCustomRouting(IApplicationBuilder app)
         {
+            if (Context.ConfigHealthCheck?.Enabled ?? false)
+            {
+                //This sets the path to direct incoming callback requests to the middle-ware.
+                app.Map($"/{HealthCheckPath}", (a) => a.Run(d => HealthCheck(d)));
+            }
         }
         #endregion
         #region 6. ConfigureUseMvc(IApplicationBuilder app)
@@ -263,10 +268,7 @@ namespace Xigadee
         /// Override this method to configure the UseMvc command, or to stop it being set.
         /// </summary>
         /// <param name="app">The application.</param>
-        protected virtual void ConfigureUseMvc(IApplicationBuilder app)
-        {
-            app.UseMvc();
-        }
+        protected virtual void ConfigureUseMvc(IApplicationBuilder app) => app.UseMvc();
         #endregion
 
         #region HostingEnvironment
@@ -297,8 +299,48 @@ namespace Xigadee
         /// <summary>
         /// Gets the Microservice ASP.NET Core hosted service.
         /// </summary>
-        public MicroserviceHostedService HostedService { get; protected set; } 
+        public MicroserviceHostedService HostedService { get; protected set; }
+        #endregion
+
+        #region HealthCheck(HttpContext context)
+        /// <summary>
+        /// Process an incoming health check request.
+        /// </summary>
+        /// <param name="context">The HTTP context.</param>
+        protected virtual async Task HealthCheck(HttpContext context)
+        {
+            try
+            {
+                if (context.Request.QueryString.HasValue)
+                {
+                    var query = QueryHelpers.ParseQuery(context.Request.QueryString.Value);
+
+                    string id = query.Keys.FirstOrDefault(k => string.Equals("id", k, StringComparison.InvariantCultureIgnoreCase));
+
+                    if (id != null && Context.ConfigHealthCheck.Validate(query[id]))
+                    {
+                        context.Response.StatusCode = 200;
+                        await context.Response.WriteAsync(HealthCheckOutput);
+                        return;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Context?.Logger.LogError(ex, $"Health check failed.");
+            }
+
+            context.Response.StatusCode = 404;
+        }
+
+        /// <summary>
+        /// This is the default healthcheck path 'healthcheck'. You can override this if needed.
+        /// </summary>
+        protected string HealthCheckPath { get; set; } = "healthcheck";
+        /// <summary>
+        /// Gets the heartbeat output that is sent back to the polling client.
+        /// </summary>
+        protected virtual string HealthCheckOutput => $"{Context.ConfigApplication.Name} => {DateTime.UtcNow:s} @ {Context.Id}";
         #endregion
     }
-
 }

@@ -16,6 +16,12 @@ namespace Xigadee
     /// </summary>
     public class ApiStartUpContext : IApiStartupContext
     {
+        #region Id
+        /// <summary>
+        /// This is the unique service Id which is regenerated each time the service starts up.
+        /// </summary>
+        public readonly Guid Id = Guid.NewGuid(); 
+        #endregion
         #region Constructor
         /// <summary>
         /// This is the default construct that creates the directive class.
@@ -68,23 +74,56 @@ namespace Xigadee
         /// </summary>
         protected virtual void Bind()
         {
+            BindConfigApplication();
+
+            BindConfigMicroservice();
+
+            BindConfigHealthCheck();
+        }
+        #endregion
+
+        #region BindConfigApplication()
+        /// <summary>
+        /// This in the application config binding.
+        /// </summary>
+        protected virtual void BindConfigApplication()
+        {
+            ConfigApplication = new ConfigApplication();
             if (!string.IsNullOrWhiteSpace(BindNameConfigApplication))
             {
-                ConfigApplication = new ConfigApplication();
                 Configuration.Bind(BindNameConfigApplication, ConfigApplication);
 
                 ConfigApplication.Connections = Configuration.GetSection("ConnectionStrings").GetChildren().ToDictionary((e) => e.Key, (e) => e.Value);
             }
 
+        } 
+        #endregion
+        #region BindConfigMicroservice()
+        /// <summary>
+        /// This is the microservice config binding.
+        /// </summary>
+        protected virtual void BindConfigMicroservice()
+        {
+            ConfigMicroservice = new ConfigMicroservice();
             if (UseMicroservice)
             {
-                ConfigMicroservice = new ConfigMicroservice();
-
                 if (!string.IsNullOrEmpty(BindNameConfigMicroservice))
                     Configuration.Bind(BindNameConfigMicroservice, ConfigMicroservice);
-
             }
-        }
+        } 
+        #endregion
+        #region BindConfigHealthCheck()
+        /// <summary>
+        /// This is the config health check creation and binding.
+        /// </summary>
+        protected virtual void BindConfigHealthCheck()
+        {
+            ConfigHealthCheck = new ConfigHealthCheck();
+            if (!string.IsNullOrWhiteSpace(BindNameConfigHealthCheck))
+            {
+                Configuration.Bind(BindNameConfigHealthCheck, ConfigHealthCheck);
+            }
+        } 
         #endregion
 
         #region CXB => ModulesCreate(IServiceCollection services)
@@ -152,6 +191,17 @@ namespace Xigadee
         /// Gets the bind section for ConfigMicroservice.
         /// </summary>
         protected virtual string BindNameConfigApplication => "ConfigApplication";
+        #endregion
+
+        #region ConfigHealthCheck
+        /// <summary>
+        /// This is the config health check settings.
+        /// </summary>
+        public virtual ConfigHealthCheck ConfigHealthCheck { get; set; }
+        /// <summary>
+        /// This is the bind name for the health check. Override this if you need to change it.
+        /// </summary>
+        protected virtual string BindNameConfigHealthCheck => "ConfigHealthCheck"; 
         #endregion
     }
 }

@@ -9,7 +9,9 @@ AS
 	--Build
 	DECLARE @FilterIds TABLE
 	(
-		Id BIGINT
+		Id BIGINT,
+		Score INT
+
 	);
 
 	--Build
