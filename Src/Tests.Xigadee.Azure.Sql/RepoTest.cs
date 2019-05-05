@@ -13,9 +13,9 @@ namespace Tests.Xigadee.Azure.Sql
         public async Task SqlJsonTest()
         {
             var server = "tpjrtest";
-            var uname = "ApiService";
-            var pwd = "123Enter**&";
-            var catalog = "xgtest2";
+            var uname = "ExternalAccess";
+            var pwd = "123Tomorrow";
+            var catalog = "xgtest3";
             var conn = $"Server=tcp:{server}.database.windows.net,1433;Initial Catalog={catalog};Persist Security Info=False;User ID={uname};Password={pwd};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
             var spNames2 = new SqlStoredProcedureResolver<User>(schemaName: "External", interfix: "_");
@@ -34,6 +34,8 @@ namespace Tests.Xigadee.Azure.Sql
                 var attempt3 = await repo.Update(newUser);
                 var v1 = await repo.Version(newUser.Id);
 
+
+                var s1 = await repo.Search(new SearchRequest());
             }
             catch (Exception ex)
             {

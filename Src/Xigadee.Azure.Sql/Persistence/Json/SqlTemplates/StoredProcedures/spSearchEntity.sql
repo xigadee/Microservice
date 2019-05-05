@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [{NamespaceExternal}].[{spSearchEntity}_Default]
-	@ETag VARCHAR(50),
+	@ETag VARCHAR(50) = NULL,
 	@PropertiesFilter [{NamespaceExternal}].[KvpTableType] READONLY,
 	@PropertyOrder [{NamespaceExternal}].[KvpTableType] READONLY,
 	@Skip INT = 0,

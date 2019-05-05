@@ -212,8 +212,7 @@ namespace Xigadee
         {
             OnBeforeSearchEvent(rq);
 
-
-            var ctx = new SqlEntityContext<SearchRequest, SearchResponse>(SpNamer.StoredProcedureSearch(rq.Id), options, rq);
+            var ctx = new SqlEntityContext<SearchRequest, SearchResponse>(SpNamer.StoredProcedureSearch(rq.Id ?? "Default"), options, rq);
 
             await ExecuteSqlCommand(ctx
                 , DbSerializeSearchRequest

@@ -11,14 +11,14 @@ namespace Tests.Xigadee.Azure.Sql
         public void Verify_SqlStoredProcedureResolver()
         {
 
-            var spNames2 = new SqlStoredProcedureResolver<User>(schemaName: "External", interfix: "_");
-            var generator2 = new RepositorySqlJsonGenerator<User>(spNames2);
+            var spNames = new SqlStoredProcedureResolver<User>(schemaName: "External", interfix: "_");
+            var generator = new RepositorySqlJsonGenerator<User>(spNames);
 
             //Assert.AreEqual(spNames.StoredProcedureCreate, "[External].spCreate_Test1");
             //Assert.AreEqual(spNames.StoredProcedureSearch("default"), "mysearch1default");
 
-            var spNames = new SqlStoredProcedureResolver<Test1>(schemaName: "External", interfix: "_");
-            var generator = new RepositorySqlJsonGenerator<Test1>(spNames);
+            //var spNames = new SqlStoredProcedureResolver<Test1>(schemaName: "External", interfix: "_");
+            //var generator = new RepositorySqlJsonGenerator<Test1>(spNames);
 
             var sql1 = generator.TableEntity;
             var sql2 = generator.TableHistory;
@@ -54,8 +54,8 @@ namespace Tests.Xigadee.Azure.Sql
 
             var scr = generator.ScriptEntity();
 
-            var scr2a = generator2.ScriptAncillary();
-            var scr2e = generator2.ScriptEntity();
+            //var scr2a = generator2.ScriptAncillary();
+            //var scr2e = generator2.ScriptEntity();
 
         }
     }
