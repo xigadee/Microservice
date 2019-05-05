@@ -42,15 +42,6 @@ namespace Xigadee
         } 
         #endregion
 
-        public override Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest rq, RepositorySettings options = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<RepositoryHolder<SearchRequest, SearchResponse<E>>> SearchEntity(SearchRequest rq, RepositorySettings options = null)
-        {
-            throw new NotImplementedException();
-        }
 
         #region DbDeserializeEntity(SqlDataReader dataReader)
         /// <summary>
@@ -164,7 +155,7 @@ namespace Xigadee
         /// <param name="entity">The entity.</param>
         /// <param name="extractor">The extractor function.</param>
         /// <returns>Returns the SqlTable definition.</returns>
-        protected virtual DataTable CreateDataTable(E entity, Func<E, IEnumerable<Tuple<string, string>>> extractor)
+        protected virtual DataTable CreateDataTable<ET>(ET entity, Func<ET, IEnumerable<Tuple<string, string>>> extractor)
         {
             var data = new DataTable();
             data.Columns.Add(new DataColumn("RefType", typeof(string)));
@@ -178,6 +169,49 @@ namespace Xigadee
             return data;
         }
         #endregion
+
+        /// <summary>
+        /// This method serializes the search request to a set of SQL parameters. 
+        /// </summary>
+        /// <param name="ctx">The Sql context</param>
+        protected override void DbSerializeSearchRequestCombined(ISqlEntityContextKey<SearchRequest> ctx)
+        {
+            var cmd = ctx.Command;
+            var entity = ctx.Key;
+
+            cmd.Parameters.Add(new SqlParameter("@ETag", SqlDbType.VarChar, 50) { Value = entity.ETag });
+            //cmd.Parameters.Add(new SqlParameter("@UserId", SqlDbType.UniqueIdentifier) { Value = entity. });
+
+            cmd.Parameters.Add(new SqlParameter("@PropertiesFilter", SqlDbType.Structured)
+            { TypeName = $"{SpNamer.ExternalSchema}[KvpTableType]", Value = CreateDataTable(entity, CreateFilterParamsDataTable) });
+
+            cmd.Parameters.Add(new SqlParameter("@PropertyOrder", SqlDbType.Structured)
+            { TypeName = $"{SpNamer.ExternalSchema}[KvpTableType]", Value = CreateDataTable(entity, CreateOrderParamsDataTable) });
+
+            cmd.Parameters.Add(new SqlParameter("@Skip", SqlDbType.Int) { Value = entity.SkipValue });
+            cmd.Parameters.Add(new SqlParameter("@Top", SqlDbType.Int) { Value = entity.TopValue });
+
+        }
+
+        private IEnumerable<Tuple<string, string>> CreateFilterParamsDataTable(SearchRequest sr)
+        {
+            return sr.FilterParameters.Select(r => new Tuple<string,string>(r.Key, r.Value)) ;
+        }
+
+        private IEnumerable<Tuple<string, string>> CreateOrderParamsDataTable(SearchRequest sr)
+        {
+            return sr.FilterParameters.Select(r => new Tuple<string, string>(r.Key, r.Value));
+        }
+
+        protected override void DbDeserializeSearchResponse(SqlDataReader dataReader, SqlEntityContext<SearchRequest, SearchResponse> ctx)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void DbDeserializeSearchResponseEntity(SqlDataReader dataReader, SqlEntityContext<SearchRequest, SearchResponse<E>> ctx)
+        {
+            throw new NotImplementedException();
+        }
 
     }
 }

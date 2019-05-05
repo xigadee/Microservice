@@ -25,6 +25,7 @@
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spRead.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spReadByRef.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spSearch.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spSearchBuild.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spSearchEntity.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spUpdate.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spUpsertRP.sql" />
@@ -45,6 +46,7 @@
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Ancillary\Schema.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Ancillary\IdTableType.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Ancillary\KvpTableType.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spSearchBuild.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spSearchEntity.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spSearch.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spHistory.sql" />

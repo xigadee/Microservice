@@ -363,6 +363,8 @@ namespace Xigadee
         /// </summary>
         public override async Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest rq, RepositorySettings options = null)
         {
+            OnBeforeSearchEvent(rq);
+
             var result = await SearchInternal(rq, options, (rs) =>
             {
                 var output = new SearchResponse();
@@ -400,6 +402,8 @@ namespace Xigadee
         public override async Task<RepositoryHolder<SearchRequest, SearchResponse<E>>> SearchEntity(SearchRequest rq
             , RepositorySettings options = null)
         {
+            OnBeforeSearchEvent(rq);
+
             var result = await SearchInternal(rq, options, (rs) =>
             {
                 var output = new SearchResponse<E>();

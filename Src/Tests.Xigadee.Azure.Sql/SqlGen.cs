@@ -10,16 +10,15 @@ namespace Tests.Xigadee.Azure.Sql
         [TestMethod]
         public void Verify_SqlStoredProcedureResolver()
         {
-            var spNames = new SqlStoredProcedureResolver<Test1>(schemaName: "External", interfix: "_"
-                , overrides: new[] { (RepositoryMethod.Search, "mysearch1") });
 
             var spNames2 = new SqlStoredProcedureResolver<User>(schemaName: "External", interfix: "_");
+            var generator2 = new RepositorySqlJsonGenerator<User>(spNames2);
 
             //Assert.AreEqual(spNames.StoredProcedureCreate, "[External].spCreate_Test1");
             //Assert.AreEqual(spNames.StoredProcedureSearch("default"), "mysearch1default");
 
+            var spNames = new SqlStoredProcedureResolver<Test1>(schemaName: "External", interfix: "_");
             var generator = new RepositorySqlJsonGenerator<Test1>(spNames);
-            var generator2 = new RepositorySqlJsonGenerator<User>(spNames2);
 
             var sql1 = generator.TableEntity;
             var sql2 = generator.TableHistory;
@@ -43,6 +42,10 @@ namespace Tests.Xigadee.Azure.Sql
             var sp7 = generator.SpUpsertRP;
             var sp8 = generator.SpVersion;
             var sp9 = generator.SpVersionByRef;
+
+            var spsearch = generator.SpSearch;
+            var spsearchb = generator.SpSearchEntity;
+            var spsearche = generator.SpSearchBuild;
 
             var sps = generator.ScriptStoredProcedures(true);
             var spc = generator.ScriptStoredProcedures(false);

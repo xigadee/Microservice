@@ -1,53 +1,29 @@
-﻿CREATE PROCEDURE [{NamespaceExternal}].[{spSearchEntity}]
-	 @ExternalId UNIQUEIDENTIFIER
-	,@VersionId UNIQUEIDENTIFIER = NULL
-	,@VersionIdNew UNIQUEIDENTIFIER = NULL
-	,@Body NVARCHAR (MAX)
-	,@DateCreated DATETIME = NULL
-	,@DateUpdated DATETIME = NULL
-	,@References [{NamespaceExternal}].[KvpTableType] READONLY
-	,@Properties [{NamespaceExternal}].[KvpTableType] READONLY
-	,@Sig VARCHAR(256) = NULL
+﻿CREATE PROCEDURE [{NamespaceExternal}].[{spSearchEntity}_Default]
+	@ETag VARCHAR(50),
+	@PropertiesFilter [{NamespaceExternal}].[KvpTableType] READONLY,
+	@PropertyOrder [{NamespaceExternal}].[KvpTableType] READONLY,
+	@Skip INT = 0,
+	@Top INT = 50
 AS
+BEGIN
 	BEGIN TRY
-		BEGIN TRAN
-
-		-- Insert record into DB and get its identity
-		INSERT INTO [{NamespaceTable}].[{EntityName}] 
+		--Build
+		DECLARE @FilterIds TABLE
 		(
-			  ExternalId
-			, VersionId
-			, DateCreated
-			, DateUpdated
-			, Sig
-			, Body
-		)
-		VALUES 
-		(
-			  @ExternalId
-			, ISNULL(@VersionIdNew, NEWID())
-			, ISNULL(@DateCreated, GETUTCDATE())
-			, @DateUpdated
-			, @Sig
-			, @Body
-		)
-		DECLARE @Id BIGINT = SCOPE_IDENTITY();
-	
-		-- Create references and properties
-		DECLARE @RPResponse INT;
-		EXEC @RPResponse = [{NamespaceTable}].[spUpsert{EntityName}PropertyReferences] @Id, @References, @Properties
-		IF (@RPResponse = 409)
-		BEGIN
-			ROLLBACK TRAN;
-			RETURN 409; --Conflict with other entities.
-		END
+			Id BIGINT,
+			Score INT
+		);
 
-		COMMIT TRAN;
+		INSERT INTO @FilterIds
+			EXEC [{NamespaceTable}].[{spSearch}InternalBuild_Default] @PropertiesFilter, @PropertyOrder, @Skip, @Top
 
-		RETURN 201;
+		SELECT * FROM @FilterIds;
+
+		RETURN 200;
 	END TRY
 	BEGIN CATCH
 		SELECT  ERROR_NUMBER() AS ErrorNumber, ERROR_MESSAGE() AS ErrorMessage; 
 		ROLLBACK TRAN;
 		RETURN 500;
 	END CATCH
+END

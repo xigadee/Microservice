@@ -494,7 +494,7 @@ namespace Xigadee
             , Action<RepositoryHolder<K, Tuple<K, string>>> holderAction);
         #endregion
 
-
+        #region Search
         /// <summary>
         /// Searches the entity store.
         /// </summary>
@@ -504,7 +504,8 @@ namespace Xigadee
         /// Returns the holder with the response and data.
         /// </returns>
         public abstract Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest rq, RepositorySettings options = null);
-
+        #endregion
+        #region SearchEntity
         /// <summary>
         /// Searches the entity store.
         /// </summary>
@@ -514,6 +515,7 @@ namespace Xigadee
         /// Returns the holder with the response and entities.
         /// </returns>
         public abstract Task<RepositoryHolder<SearchRequest, SearchResponse<E>>> SearchEntity(SearchRequest rq, RepositorySettings options = null);
+        #endregion
     }
 
     /// <summary>

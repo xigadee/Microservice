@@ -34,6 +34,7 @@ namespace Xigadee
     {
         private readonly Dictionary<RepositoryMethod, string> _spNames;
 
+        #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlStoredProcedureResolver"/> class.
         /// </summary>
@@ -60,12 +61,18 @@ namespace Xigadee
 
             if (overrides != null)
                 overrides.ForEach((o) => _spNames[o.method] = o.spName);
-        }
+        } 
+        #endregion
 
         string Name1(string m) => $"{PreFix}{EntityName}{InterFix}{m.ToString()}{PostFix}";
 
         string Name3(string m) => $"{PreFix}{m.ToString()}{InterFix}{EntityName}{PostFix}";
 
+        /// <summary>
+        /// This iterator returns the specific sql name based on the specific method.
+        /// </summary>
+        /// <param name="o">The method type.</param>
+        /// <returns>Returns a SQL name.</returns>
         public string this[RepositoryMethod o] => _spNames[o];
         /// <summary>
         /// Gets the name of the entity.
@@ -137,9 +144,13 @@ namespace Xigadee
         public virtual string StoredProcedureSearchEntity(string id) => $"{_spNames[RepositoryMethod.SearchEntity]}{id.Trim().ToLowerInvariant()}";
 
         public virtual string StoredProcedureUpsertRP => ExternalSchema + StoredProcedureNameUpsertRP;
-
+        /// <summary>
+        /// This is the upsert sp
+        /// </summary>
         public virtual string StoredProcedureNameUpsertRP => Name1("UpsertRP");
-
+        /// <summary>
+        /// This is for suture support.
+        /// </summary>
         public virtual string StoredProcedureNameHistory => Name1("History");
 
     }

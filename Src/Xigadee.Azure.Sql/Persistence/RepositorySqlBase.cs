@@ -199,6 +199,99 @@ namespace Xigadee
         }
         #endregion
 
+        #region Search
+        /// <summary>
+        /// Searches the entity store.
+        /// </summary>
+        /// <param name="rq">The request.</param>
+        /// <param name="options">The repository options.</param>
+        /// <returns>
+        /// Returns the holder with the response and data.
+        /// </returns>
+        public override async Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest rq, RepositorySettings options = null)
+        {
+            OnBeforeSearchEvent(rq);
+
+
+            var ctx = new SqlEntityContext<SearchRequest, SearchResponse>(SpNamer.StoredProcedureSearch(rq.Id), options, rq);
+
+            await ExecuteSqlCommand(ctx
+                , DbSerializeSearchRequest
+                , DbDeserializeSearchResponse
+                );
+
+            SearchResponse entity = ctx.ResponseEntities.FirstOrDefault();
+            var rs = new RepositoryHolder<SearchRequest, SearchResponse>(rq, null, entity, ctx.ResponseCode, ctx.ResponseMessage);
+
+            OnAfterSearchEvent(rs);
+
+            return rs;        
+        }
+        #endregion
+        #region SearchEntity
+        /// <summary>
+        /// Searches the entity store.
+        /// </summary>
+        /// <param name="rq">The request.</param>
+        /// <param name="options">The repository options.</param>
+        /// <returns>
+        /// Returns the holder with the response and entities.
+        /// </returns>
+        public override async Task<RepositoryHolder<SearchRequest, SearchResponse<E>>> SearchEntity(SearchRequest rq, RepositorySettings options = null)
+        {
+            OnBeforeSearchEvent(rq);
+
+            var ctx = new SqlEntityContext<SearchRequest, SearchResponse<E>>(SpNamer.StoredProcedureSearchEntity(rq.Id), options, rq);
+
+            await ExecuteSqlCommand(ctx
+                , DbSerializeSearchRequestEntity
+                , DbDeserializeSearchResponseEntity
+                );
+
+            SearchResponse<E> entity = ctx.ResponseEntities.FirstOrDefault();
+            var rs = new RepositoryHolder<SearchRequest, SearchResponse<E>>(rq, null, entity, ctx.ResponseCode, ctx.ResponseMessage);
+
+            OnAfterSearchEntityEvent(rs);
+
+            return rs;
+        }
+        #endregion
+
+        /// <summary>
+        /// This method serializes the entity in to the SqlCommand.
+        /// </summary>
+        /// <param name="ctx">The context</param>
+        protected virtual void DbSerializeSearchRequest(SqlEntityContext<SearchRequest, SearchResponse> ctx) => DbSerializeSearchRequestCombined(ctx);
+
+        /// <summary>
+        /// This method serializes the entity in to the SqlCommand.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        protected virtual void DbSerializeSearchRequestEntity(SqlEntityContext<SearchRequest, SearchResponse<E>> ctx) => DbSerializeSearchRequestCombined(ctx);
+
+        /// <summary>
+        /// This is the combined search request.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        protected abstract void DbSerializeSearchRequestCombined(ISqlEntityContextKey<SearchRequest> ctx);
+
+
+        /// <summary>
+        /// This method deserializes the entity in to the SqlCommand.
+        /// </summary>
+        /// <param name="dataReader">The data reader.</param>
+        /// <param name="ctx">The context</param>
+        protected abstract void DbDeserializeSearchResponse(SqlDataReader dataReader, SqlEntityContext<SearchRequest, SearchResponse> ctx);
+
+        /// <summary>
+        /// This method deserializes the entity in to the SqlCommand.
+        /// </summary>
+        /// <param name="dataReader">The data reader.</param>
+        /// <param name="ctx">The context</param>
+        protected abstract void DbDeserializeSearchResponseEntity(SqlDataReader dataReader, SqlEntityContext<SearchRequest, SearchResponse<E>> ctx);
+
+
+
         #region DbSerializeKey(ISqlEntityContextKey<K> ctx)
         /// <summary>
         /// This method serializes the entity key in to the SQL command.
@@ -407,6 +500,7 @@ namespace Xigadee
             }
         } 
         #endregion
+
         /// <summary>
         /// This method serializes the entity in to the SqlCommand.
         /// </summary>

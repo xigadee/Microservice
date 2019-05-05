@@ -1,38 +1,23 @@
 ﻿CREATE PROCEDURE [{NamespaceExternal}].[{spSearch}_Default]
+	@ETag VARCHAR(50),
 	@PropertiesFilter [{NamespaceExternal}].[KvpTableType] READONLY,
 	@PropertyOrder [{NamespaceExternal}].[KvpTableType] READONLY,
 	@Skip INT = 0,
-	@Take INT = 50
+	@Top INT = 50
 AS
+BEGIN
 	BEGIN TRY
+		--Build
+		DECLARE @FilterIds TABLE
+		(
+			Id BIGINT,
+			Score INT
+		);
 
-	--Build
-	DECLARE @FilterIds TABLE
-	(
-		Id BIGINT,
-		Score INT
-
-	);
-
-	--Build
-	INSERT INTO @FilterIds
-	SELECT E.Id
-	FROM [{NamespaceTable}].[{EntityName}] E
-	INNER JOIN [{NamespaceTable}].[{EntityName}Property] P ON E.Id = P.EntityId
-	INNER JOIN [{NamespaceTable}].[{EntityName}PropertyKey] PK ON P.KeyId = PK.Id
-	WHERE PK.[Type] = @RefType AND R.[Value] = @RefValue
-
-		--Output
 		INSERT INTO @FilterIds
-		SELECT E.Id
-		FROM [{NamespaceTable}].[{EntityName}] E
-		INNER JOIN [{NamespaceTable}].[{EntityName}Property] P ON E.Id = P.EntityId
-		INNER JOIN [{NamespaceTable}].[{EntityName}PropertyKey] PK ON P.KeyId = PK.Id
-		WHERE PK.[Type] = @RefType AND R.[Value] = @RefValue
-		ORDER BY TCB.TransactionId
-		OFFSET @Skip ROWS
-		FETCH NEXT @Take ROWS ONLY
+			EXEC [{NamespaceTable}].[{spSearch}InternalBuild_Default] @PropertiesFilter, @PropertyOrder, @Skip, @Top
 
+		SELECT * FROM @FilterIds;
 
 		RETURN 200;
 	END TRY
@@ -41,3 +26,4 @@ AS
 		ROLLBACK TRAN;
 		RETURN 500;
 	END CATCH
+END

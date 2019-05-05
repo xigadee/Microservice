@@ -182,6 +182,10 @@ namespace Xigadee
         /// <summary>
         /// This is the entity search stored procedure.
         /// </summary>
+        public string SpSearchBuild => ProcessTemplate("StoredProcedures.spSearchBuild.sql");
+        /// <summary>
+        /// This is the entity search stored procedure.
+        /// </summary>
         public string SpSearch => ProcessTemplate("StoredProcedures.spSearch.sql");
         /// <summary>
         /// This is the entity search entity stored procedure.
@@ -217,6 +221,13 @@ namespace Xigadee
             sb.AppendLine(SpVersion);
             sb.AppendLine("GO");
             sb.AppendLine(SpVersionByRef);
+            sb.AppendLine("GO");
+
+            sb.AppendLine(SpSearchBuild);
+            sb.AppendLine("GO");
+            sb.AppendLine(SpSearch);
+            sb.AppendLine("GO");
+            sb.AppendLine(SpSearchEntity);
             sb.AppendLine("GO");
 
             if (createoralter)

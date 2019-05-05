@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [{NamespaceTable}].[{EntityName}PropertyKey]
 (
 	[Id] INT NOT NULL PRIMARY KEY IDENTITY(1,1), 
-    [Type] VARCHAR(20) NULL
+    [Type] VARCHAR(30) NULL
 )
 GO
 
