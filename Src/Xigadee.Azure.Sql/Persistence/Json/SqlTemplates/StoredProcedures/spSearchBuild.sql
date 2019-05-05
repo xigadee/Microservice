@@ -7,18 +7,21 @@ AS
 BEGIN
 	DECLARE @ParamCount INT = (SELECT COUNT(*) FROM @PropertiesFilter);
 
-	IF (@ParamCount = 1)
+	IF (@ParamCount = 0)
+		SELECT P.Id
+		FROM [{NamespaceTable}].[{EntityName}] AS P
+	ELSE IF (@ParamCount = 1)
 		SELECT P.EntityId As Id
-		FROM [dbo].[Test1Property] AS P
-		INNER JOIN [dbo].[Test1PropertyKey] PK ON P.KeyId = PK.Id
+		FROM [{NamespaceTable}].[{EntityName}Property] AS P
+		INNER JOIN [{NamespaceTable}].[{EntityName}PropertyKey] PK ON P.KeyId = PK.Id
 		INNER JOIN @PropertiesFilter PF ON PF.RefType = PK.[Type] AND PF.RefValue = P.Value
 	ELSE
 		SELECT R.Id
 		FROM
 		(
 			SELECT P.EntityId As Id, 1 AS Num
-			FROM [dbo].[Test1Property] AS P
-			INNER JOIN [dbo].[Test1PropertyKey] PK ON P.KeyId = PK.Id
+			FROM [{NamespaceTable}].[{EntityName}Property] AS P
+			INNER JOIN [{NamespaceTable}].[{EntityName}PropertyKey] PK ON P.KeyId = PK.Id
 			INNER JOIN @PropertiesFilter PF ON PF.RefType = PK.[Type] AND PF.RefValue = P.Value
 		)AS R
 		GROUP BY R.Id

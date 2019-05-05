@@ -1,4 +1,4 @@
-﻿CREATE TABLE[{NamespaceTable}].[{EntityName}]
+﻿CREATE TABLE [{NamespaceTable}].[{EntityName}]
 (
      [Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1)
 	,[ExternalId] UNIQUEIDENTIFIER NOT NULL

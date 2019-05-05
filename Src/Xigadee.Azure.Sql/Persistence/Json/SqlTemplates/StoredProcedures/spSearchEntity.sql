@@ -10,20 +10,20 @@ BEGIN
 		--Build
 		DECLARE @FilterIds TABLE
 		(
-			Id BIGINT,
-			Score INT
+			Id BIGINT
 		);
 
 		INSERT INTO @FilterIds
 			EXEC [{NamespaceTable}].[{spSearch}InternalBuild_Default] @PropertiesFilter, @PropertyOrder, @Skip, @Top
 
-		SELECT * FROM @FilterIds;
+		SELECT F.Id, E.Body 
+		FROM @FilterIds AS F
+		INNER JOIN [{NamespaceTable}].[{EntityName}] AS E ON F.Id = E.Id;
 
 		RETURN 200;
 	END TRY
 	BEGIN CATCH
-		SELECT  ERROR_NUMBER() AS ErrorNumber, ERROR_MESSAGE() AS ErrorMessage; 
-		ROLLBACK TRAN;
+		SELECT ERROR_NUMBER() AS ErrorNumber, ERROR_MESSAGE() AS ErrorMessage; 
 		RETURN 500;
 	END CATCH
 END
