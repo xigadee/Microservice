@@ -16,13 +16,14 @@ BEGIN
 		INSERT INTO @FilterIds
 			EXEC [{NamespaceTable}].[{spSearch}InternalBuild_Default] @PropertiesFilter, @PropertyOrder, @Skip, @Top
 
+		--Output
 		SELECT E.ExternalId, E.VersionId, 
 		(
-			SELECT PK.[Type] AS 'Property.RefType',P.[Value] AS 'Property.RefValue'
+			SELECT PK.[Type] AS 'Type',P.[Value] AS 'Value'
 			FROM [{NamespaceTable}].[{EntityName}Property] AS P
 			INNER JOIN [{NamespaceTable}].[{EntityName}PropertyKey] PK ON P.KeyId = PK.Id
 			WHERE F.Id = P.EntityId
-			FOR JSON PATH
+			FOR JSON PATH, ROOT('Property')
 		)
 		FROM @FilterIds AS F
 		INNER JOIN [{NamespaceTable}].[{EntityName}] AS E ON F.Id = E.Id;

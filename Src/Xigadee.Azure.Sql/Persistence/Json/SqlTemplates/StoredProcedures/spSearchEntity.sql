@@ -16,6 +16,7 @@ BEGIN
 		INSERT INTO @FilterIds
 			EXEC [{NamespaceTable}].[{spSearch}InternalBuild_Default] @PropertiesFilter, @PropertyOrder, @Skip, @Top
 
+		--Output
 		SELECT E.ExternalId, E.VersionId, E.Body 
 		FROM @FilterIds AS F
 		INNER JOIN [{NamespaceTable}].[{EntityName}] AS E ON F.Id = E.Id;

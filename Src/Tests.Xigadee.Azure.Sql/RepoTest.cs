@@ -35,7 +35,7 @@ namespace Tests.Xigadee.Azure.Sql
                 var v1 = await repo.Version(newUser.Id);
 
 
-                var s1 = await repo.Search(new SearchRequest());
+                var s1 = await repo.SearchEntity(new SearchRequest());
             }
             catch (Exception ex)
             {

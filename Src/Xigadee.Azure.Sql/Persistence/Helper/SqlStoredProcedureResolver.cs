@@ -137,11 +137,11 @@ namespace Xigadee
         /// <summary>
         /// Gets the stored procedure search.
         /// </summary>
-        public virtual string StoredProcedureSearch(string id) => ExternalSchema + $"{_spNames[RepositoryMethod.Search]}_{id.Trim().ToLowerInvariant()}";
+        public virtual string StoredProcedureSearch(string id) => ExternalSchema + $"{_spNames[RepositoryMethod.Search]}_{id?.Trim().ToLowerInvariant()??"Default"}";
         /// <summary>
         /// Gets the stored procedure search entity.
         /// </summary>
-        public virtual string StoredProcedureSearchEntity(string id) => ExternalSchema + $"{_spNames[RepositoryMethod.SearchEntity]}_{id.Trim().ToLowerInvariant()}";
+        public virtual string StoredProcedureSearchEntity(string id) => ExternalSchema + $"{_spNames[RepositoryMethod.SearchEntity]}_{id?.Trim().ToLowerInvariant()??"Default"}";
 
         public virtual string StoredProcedureUpsertRP => ExternalSchema + StoredProcedureNameUpsertRP;
         /// <summary>
