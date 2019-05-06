@@ -21,6 +21,7 @@ namespace Tests.Xigadee.Azure.Sql
             var spNames2 = new SqlStoredProcedureResolver<User>(schemaName: "External", interfix: "_");
 
             var repo = new RepositorySqlJson<Guid, User>(conn, spNamer: spNames2);
+            var repom = new RepositoryMemory<Guid, User>((u) => u.Id);
 
             var newUser = new User();
             newUser.PropertiesSet("email", "pstancer@outlook.com");
@@ -28,14 +29,19 @@ namespace Tests.Xigadee.Azure.Sql
             try
             {
                 var attempt1 = await repo.Create(newUser);
+                var attempt1m = await repom.Create(newUser);
                 var read1 = await repo.Read(newUser.Id);
+                var read1m = await repom.Read(newUser.Id);
                 newUser.PropertiesSet("wahey", "123");
                 var attempt2 = await repo.Update(newUser);
+                var attempt2m = await repom.Update(newUser);
                 var attempt3 = await repo.Update(newUser);
                 var v1 = await repo.Version(newUser.Id);
+                var v1m = await repom.Version(newUser.Id);
 
 
                 var s1 = await repo.SearchEntity(new SearchRequest());
+                var s1m = await repom.SearchEntity(new SearchRequest());
             }
             catch (Exception ex)
             {

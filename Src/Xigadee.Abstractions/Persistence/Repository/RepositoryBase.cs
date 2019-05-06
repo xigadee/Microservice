@@ -179,6 +179,7 @@ namespace Xigadee
 
         #endregion
 
+
         #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="RepositoryBase{TKey, TEntity}"/> class.

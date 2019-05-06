@@ -212,15 +212,18 @@ namespace Xigadee
         {
             OnBeforeSearchEvent(rq);
 
+            var response = new SearchResponse();
+            response.PopulateSearchRequest(rq);
+
             var ctx = new SqlEntityContext<SearchRequest, SearchResponse>(SpNamer.StoredProcedureSearch(rq.Id ?? "Default"), options, rq);
+            ctx.EntityOutgoing = response;
 
             await ExecuteSqlCommand(ctx
                 , DbSerializeSearchRequest
                 , DbDeserializeSearchResponse
                 );
 
-            SearchResponse entity = ctx.ResponseEntities.FirstOrDefault();
-            var rs = new RepositoryHolder<SearchRequest, SearchResponse>(rq, null, entity, ctx.ResponseCode, ctx.ResponseMessage);
+            var rs = new RepositoryHolder<SearchRequest, SearchResponse>(rq, null, ctx.EntityOutgoing, ctx.ResponseCode, ctx.ResponseMessage);
 
             OnAfterSearchEvent(rs);
 
@@ -240,15 +243,18 @@ namespace Xigadee
         {
             OnBeforeSearchEvent(rq);
 
+            var response = new SearchResponse<E>();
+            response.PopulateSearchRequest(rq);
+
             var ctx = new SqlEntityContext<SearchRequest, SearchResponse<E>>(SpNamer.StoredProcedureSearchEntity(rq.Id), options, rq);
+            ctx.EntityOutgoing = response;
 
             await ExecuteSqlCommand(ctx
                 , DbSerializeSearchRequestEntity
                 , DbDeserializeSearchResponseEntity
                 );
 
-            SearchResponse<E> entity = ctx.ResponseEntities.FirstOrDefault();
-            var rs = new RepositoryHolder<SearchRequest, SearchResponse<E>>(rq, null, entity, ctx.ResponseCode, ctx.ResponseMessage);
+            var rs = new RepositoryHolder<SearchRequest, SearchResponse<E>>(rq, null, ctx.EntityOutgoing, ctx.ResponseCode, ctx.ResponseMessage);
 
             OnAfterSearchEntityEvent(rs);
 
@@ -274,7 +280,6 @@ namespace Xigadee
         /// <param name="ctx">The context.</param>
         protected abstract void DbSerializeSearchRequestCombined(ISqlEntityContextKey<SearchRequest> ctx);
 
-
         /// <summary>
         /// This method deserializes the entity in to the SqlCommand.
         /// </summary>
@@ -288,8 +293,6 @@ namespace Xigadee
         /// <param name="dataReader">The data reader.</param>
         /// <param name="ctx">The context</param>
         protected abstract void DbDeserializeSearchResponseEntity(SqlDataReader dataReader, SqlEntityContext<SearchRequest, SearchResponse<E>> ctx);
-
-
 
         #region DbSerializeKey(ISqlEntityContextKey<K> ctx)
         /// <summary>
@@ -497,20 +500,23 @@ namespace Xigadee
                 var incomingVersionId = VersionPolicy.EntityVersionAsString(entity);
                 string newVersion = VersionPolicy.EntityVersionUpdate(ctx.EntityOutgoing);
             }
-        } 
+        }
         #endregion
 
+        #region DbSerializeEntity
         /// <summary>
         /// This method serializes the entity in to the SqlCommand.
         /// </summary>
         /// <param name="ctx">The context</param>
         protected abstract void DbSerializeEntity(SqlEntityContext<E> ctx);
-
+        #endregion
+        #region DbDeserializeEntity
         /// <summary>
         /// This method deserializes a data reader record into an entity.
         /// </summary>
         /// <param name="dataReader">Data reader</param>
         /// <param name="ctx">The context</param>
-        protected abstract void DbDeserializeEntity(SqlDataReader dataReader, SqlEntityContext<E> ctx);
+        protected abstract void DbDeserializeEntity(SqlDataReader dataReader, SqlEntityContext<E> ctx); 
+        #endregion
     }
 }

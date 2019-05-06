@@ -48,7 +48,6 @@ namespace Tests.Xigadee.Azure.Sql
             var anc = generator.ScriptAncillary();
 
             var scr = generator.ScriptEntity();
-
         }
 
         [TestMethod]
@@ -80,12 +79,13 @@ namespace Tests.Xigadee.Azure.Sql
                 var attempt3 = await repo.Update(account);
                 var v1 = await repo.Version(account.Id);
 
+                var s1 = await repo.Search(new SearchRequest());
+                var s1e = await repo.SearchEntity(new SearchRequest());
 
-                var s1 = await repo.SearchEntity(new SearchRequest());
+                var s1m = await repo.Search(new SearchRequest());
             }
             catch (Exception ex)
             {
-
                 throw;
             }
         }

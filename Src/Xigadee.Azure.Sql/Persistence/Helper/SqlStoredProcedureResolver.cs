@@ -142,7 +142,9 @@ namespace Xigadee
         /// Gets the stored procedure search entity.
         /// </summary>
         public virtual string StoredProcedureSearchEntity(string id) => ExternalSchema + $"{_spNames[RepositoryMethod.SearchEntity]}_{id?.Trim().ToLowerInvariant()??"Default"}";
-
+        /// <summary>
+        /// This is the shared internal upsert stored procedure.
+        /// </summary>
         public virtual string StoredProcedureUpsertRP => ExternalSchema + StoredProcedureNameUpsertRP;
         /// <summary>
         /// This is the upsert sp

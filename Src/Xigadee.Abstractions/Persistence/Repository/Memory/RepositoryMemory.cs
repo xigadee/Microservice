@@ -407,6 +407,7 @@ namespace Xigadee
             var result = await SearchInternal(rq, options, (rs) =>
             {
                 var output = new SearchResponse<E>();
+                output.PopulateSearchRequest(rq);
                 output.Data = rs.Select(i => i.Entity).ToList();
                 return output;
             });
@@ -500,6 +501,7 @@ namespace Xigadee
         /// <param name="newReferences">The new references.</param>
         /// <param name="newProperties">The new properties.</param>
         /// <param name="newVersionId">The new version identifier.</param>
+        /// <param name="keyAsString">The key value as a string.</param>
         /// <returns>Returns the new container with the serialized entity.</returns>
         protected virtual EntityContainer<K, E> CreateEntityContainer(K key, E newEntity
                 , IEnumerable<Tuple<string, string>> newReferences
@@ -510,7 +512,14 @@ namespace Xigadee
             return new EntityContainer<K, E>(
                 key, newEntity, newReferences, newProperties, newVersionId, EntityDeserialize, EntitySerialize, keyAsString);
         }
+        #endregion
 
+        #region EntitySerialize(E entity)
+        /// <summary>
+        /// This method serializes the entity and returns it as a blob.
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        /// <returns>The serialized entity.</returns>
         protected virtual byte[] EntitySerialize(E entity)
         {
             if (!SerializationContext.HasSerialization)
@@ -525,7 +534,13 @@ namespace Xigadee
 
             return ctx.Blob;
         }
-
+        #endregion
+        #region EntityDeserialize(byte[] blob)
+        /// <summary>
+        /// This method deserializes an entity from a blob.
+        /// </summary>
+        /// <param name="blob">The byte array.</param>
+        /// <returns>The entity.</returns>
         protected virtual E EntityDeserialize(byte[] blob)
         {
             if (!SerializationContext.HasSerialization)
@@ -540,7 +555,7 @@ namespace Xigadee
             SerializationContext.Serializer.TryDeserialize(ctx);
 
             return (E)ctx.Object;
-        }
+        } 
         #endregion
 
         #region Count

@@ -42,7 +42,6 @@ namespace Xigadee
         } 
         #endregion
 
-
         #region DbDeserializeEntity(SqlDataReader dataReader)
         /// <summary>
         /// This method deserializes a data reader record into an entity.
@@ -170,6 +169,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region DbSerializeSearchRequestCombined(ISqlEntityContextKey<SearchRequest> ctx)
         /// <summary>
         /// This method serializes the search request to a set of SQL parameters. 
         /// </summary>
@@ -190,8 +190,8 @@ namespace Xigadee
 
             cmd.Parameters.Add(new SqlParameter("@Skip", SqlDbType.Int) { Value = entity.SkipValue });
             cmd.Parameters.Add(new SqlParameter("@Top", SqlDbType.Int) { Value = entity.TopValue });
-
-        }
+        } 
+        #endregion
 
         private IEnumerable<Tuple<string, string>> CreateFilterParamsDataTable(SearchRequest sr)
         {
@@ -203,14 +203,80 @@ namespace Xigadee
             return sr.FilterParameters.Select(r => new Tuple<string, string>(r.Key, r.Value));
         }
 
-        protected override void DbDeserializeSearchResponse(SqlDataReader dataReader, SqlEntityContext<SearchRequest, SearchResponse> ctx)
+        private void AddResponseFields(SearchRequest rq, SearchResponse rs)
         {
-            throw new NotImplementedException();
+            rs.Fields.Add(0, new FieldMetadata { Name = "_" });
+
+            rq.Select().ForIndex((i, s) => rs.Fields[i + 1] = new FieldMetadata { Name = s });
+
+            if (rs.Fields.Count > 1)
+                return;
+
+            //OK, check the entity for property hints.
+            var res = EntityHintHelper.Resolve<E>();
+
+            if (!res.SupportsProperties)
+                return;
+
+            res.PropertyNames.ForIndex((i, s) => rs.Fields[i + 1] = new FieldMetadata { Name = s });
         }
 
+        /// <summary>
+        /// THis method deserializes the field search response.
+        /// </summary>
+        /// <param name="dataReader">The dataReader</param>
+        /// <param name="ctx">The Sql context.</param>
+        protected override void DbDeserializeSearchResponse(SqlDataReader dataReader, SqlEntityContext<SearchRequest, SearchResponse> ctx)
+        {
+            var rs = ctx.EntityOutgoing;
+
+            if (rs.Fields.Count == 0)
+                AddResponseFields(ctx.Key, rs);
+
+            var id = dataReader["ExternalId"]?.ToString();
+
+            var json = dataReader["Body"]?.ToString();
+            var entity = JsonConvert.DeserializeObject<SqlProperties>(json);
+
+            var values = new string[rs.Fields.Count];
+            foreach (var field in rs.Fields)
+            {
+                if (field.Value.Name == "_")
+                {
+                    values[field.Key] = id;
+                    continue;
+                }
+                var value = entity.Property.FirstOrDefault(k => k.Type.Equals(field.Value.Name, StringComparison.InvariantCultureIgnoreCase));
+                if (value != null)
+                    values[field.Key] = value.Value;
+            }
+
+            rs.Data.Add(values);
+        }
+
+        private class SqlProperties
+        {
+            public List<SqlProperty> Property { get; set; }
+        }
+
+        private class SqlProperty
+        {
+            public string Type;
+            public string Value;
+        }
+
+        /// <summary>
+        /// This method resolves the reader in to the search response.
+        /// </summary>
+        /// <param name="dataReader">The reader containing the response.</param>
+        /// <param name="ctx">The current context.</param>
         protected override void DbDeserializeSearchResponseEntity(SqlDataReader dataReader, SqlEntityContext<SearchRequest, SearchResponse<E>> ctx)
         {
-            throw new NotImplementedException();
+            var rs = ctx.EntityOutgoing;
+            var json = dataReader["Body"]?.ToString();
+            var entity = JsonConvert.DeserializeObject<E>(json);
+            rs.Data.Add(entity);
+            
         }
 
     }

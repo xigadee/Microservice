@@ -222,7 +222,13 @@ namespace Xigadee
                 var v = ConvertToString(entity, info.Item2);
                 yield return new Tuple<string, string>(info.Item1.Key, v);
             }
-        } 
+        }
+
+        /// <summary>
+        /// This is the list of entity property name keys.
+        /// </summary>
+        public IEnumerable<string> PropertyNames => MethodInfoProperties.Select(i => i.Item1.Key);
+
         #endregion
 
         #region EmptyObjects

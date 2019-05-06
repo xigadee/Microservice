@@ -24,7 +24,7 @@ BEGIN
 			INNER JOIN [{NamespaceTable}].[{EntityName}PropertyKey] PK ON P.KeyId = PK.Id
 			WHERE F.Id = P.EntityId
 			FOR JSON PATH, ROOT('Property')
-		)
+		) AS Body
 		FROM @FilterIds AS F
 		INNER JOIN [{NamespaceTable}].[{EntityName}] AS E ON F.Id = E.Id;
 
