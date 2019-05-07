@@ -12,14 +12,14 @@ namespace Xigadee
     /// <seealso cref="Xigadee.IPropertyBag" />
     public class UserSecurity : EntitySignatureBase, IPropertyBag
     {
+        #region Constructor
         /// <summary>
         /// Initializes a new instance of the <see cref="UserSecurity"/> class.
         /// </summary>
         public UserSecurity()
         {
 
-        }
-
+        } 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserSecurity"/> class.
         /// </summary>
@@ -33,6 +33,7 @@ namespace Xigadee
             foreach (var item in certificates)
                 Certificates.Add(item.Key, item.Value);
         }
+        #endregion
 
         /// <summary>
         /// Gets or sets the authentication collection.
@@ -47,7 +48,15 @@ namespace Xigadee
         /// <summary>
         /// Indicates whether the security record is active or not
         /// </summary>
+        [EntityPropertyHint("isactive")]
         public bool IsActive { get; set; } = true;
+
+        /// <summary>
+        /// The state property can be used to indicate to systems when a user
+        /// requires a certain condition to be completed, i.e. post registration or clean up.
+        /// </summary>
+        [EntityPropertyHint("state")]
+        public string State { get; set; }
 
         /// <summary>
         /// Records any IP address restrictions.
