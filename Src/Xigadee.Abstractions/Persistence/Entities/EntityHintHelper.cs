@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
@@ -64,14 +65,14 @@ namespace Xigadee
                 .SelectMany((m) => m.GetCustomAttributes<EntityPropertyHintAttribute>(), (m, a) => ((EntityPropertyHintAttribute)a, (MethodInfo)m))
                 .Union(EntityType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                         .SelectMany((m) => m.GetCustomAttributes<EntityPropertyHintAttribute>(), (m, a) => ((EntityPropertyHintAttribute)a, (MethodInfo)m.GetMethod))
-                ).ToList();
+                ).ToList().AsReadOnly();
 
             MethodInfoReferences = EntityType
                 .GetMethods(BindingFlags.Public | BindingFlags.Instance)
                 .SelectMany((m) => m.GetCustomAttributes<EntityReferenceHintAttribute>(), (m, a) => ((EntityReferenceHintAttribute)a, (MethodInfo)m))
                 .Union(EntityType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                         .SelectMany((m) => m.GetCustomAttributes<EntityReferenceHintAttribute>(), (m, a) => ((EntityReferenceHintAttribute)a, (MethodInfo)m.GetMethod))
-                ).ToList();
+                ).ToList().AsReadOnly();
 
             MethodInfoId = EntityType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
                 .SelectMany((m) => m.GetCustomAttributes<EntityIdHintAttribute>(), (mt, a) => (a, mt))
@@ -92,7 +93,7 @@ namespace Xigadee
                 ).FirstOrDefault();
         }
         #endregion
-
+        
         #region EntityType
         /// <summary>
         /// Gets the type of the entity.
@@ -104,7 +105,7 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the information identifier method info.
         /// </summary>
-        protected (EntityIdHintAttribute,MethodInfo)? MethodInfoId { get; set; }
+        public (EntityIdHintAttribute,MethodInfo)? MethodInfoId { get; protected set; }
         /// <summary>
         /// Gets a value indicating whether Id is supported.
         /// </summary>
@@ -131,11 +132,11 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the information version.
         /// </summary>
-        protected MethodInfo MethodInfoVersionGet { get; set; }
+        public MethodInfo MethodInfoVersionGet { get; protected set; }
         /// <summary>
         /// Gets or sets the information version set property. This is used for version control.
         /// </summary>
-        protected (EntityVersionHintAttribute, MethodInfo)? MethodInfoVersionSet { get; set; }
+        public (EntityVersionHintAttribute, MethodInfo)? MethodInfoVersionSet { get; protected set; }
 
         /// <summary>
         /// Versions the specified entity.
@@ -181,12 +182,12 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the MethodInfo references.
         /// </summary>
-        protected List<(EntityReferenceHintAttribute, MethodInfo)> MethodInfoReferences { get; set; }
+        public ReadOnlyCollection<(EntityReferenceHintAttribute, MethodInfo)> MethodInfoReferences { get; protected set; }
         /// <summary>
         /// Gets a value indicating whether references are supported.
         /// </summary>
         public bool SupportsReferences => (MethodInfoReferences?.Count ?? 0) > 0;
-
+        
         /// <summary>
         /// Returns the entity references for the specified entity.
         /// </summary>
@@ -202,10 +203,13 @@ namespace Xigadee
         }
         #endregion
         #region Properties...
+
+        //public ReadOnlyCollection<(EntityPropertyHintAttribute, MethodInfo)> ReadOnlyMethodInfoProperties
+        //    => MethodInfoProperties.AsReadOnly();
         /// <summary>
         /// Gets or sets the MethodInfo properties.
         /// </summary>
-        protected List<(EntityPropertyHintAttribute, MethodInfo)> MethodInfoProperties { get; set; }
+        public ReadOnlyCollection<(EntityPropertyHintAttribute, MethodInfo)> MethodInfoProperties { get; protected set; }
         /// <summary>
         /// Gets a value indicating whether properties are supported.
         /// </summary>
