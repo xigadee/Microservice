@@ -33,7 +33,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Folder Include="Interfaces\" />
     <Folder Include="Swagger\" />
     <Folder Include="Properties\" />
   </ItemGroup>

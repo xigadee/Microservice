@@ -1,15 +1,15 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 
 namespace Xigadee
 {
     /// <summary>
     /// This is the root API-based microservice application interface.
     /// </summary>
-    public interface IApiStartupContext
+    public interface IApiStartupContext: Microsoft.Extensions.Hosting.IHostedService
     {
         /// <summary>
         /// Initializes the module with the application environment settings.

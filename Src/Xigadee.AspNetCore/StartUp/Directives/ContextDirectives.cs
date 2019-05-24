@@ -24,6 +24,11 @@ namespace Xigadee
             ;
 
         //Filter for the attribute types that we wish to get.
+        readonly Func<CustomAttributeData, bool> attrFilterStartStop = (d) =>
+            d.AttributeType == typeof(ModuleStartStopAttribute)
+            ;
+
+        //Filter for the attribute types that we wish to get.
         readonly Func<CustomAttributeData, bool> attrFilterSingleton = (d) =>
             d.AttributeType == typeof(RegisterAsSingletonAttribute) ||
             d.AttributeType == typeof(DoNotRegisterAsSingletonAttribute)
@@ -49,7 +54,7 @@ namespace Xigadee
         public IEnumerable<(CustomAttributeData[], MethodInfo)> GetAttributeData(Func<CustomAttributeData, bool> attrFilter)
             => GetAttributeData(_ctx.GetType(), attrFilter);
         #endregion
-        #region GetAttributeData(Func<CustomAttributeData, bool> attrFilter)
+        #region GetAttributeData(Type oType, Func<CustomAttributeData, bool> attrFilter)
         /// <summary>
         /// This method returns the specific attribute data for property and method declarations.
         /// </summary>
@@ -116,7 +121,6 @@ namespace Xigadee
             yield break;
         }
         #endregion
-
         #region RepositoryProcessExtract()
         /// <summary>
         /// This method examines the context and extracts any singleton declarations.
@@ -163,6 +167,29 @@ namespace Xigadee
             }
 
             return coll;
+        }
+        #endregion
+
+        #region ModuleStartStopExtract()
+        /// <summary>
+        /// This method examines the context and extracts any singleton declarations.
+        /// </summary>
+        /// <returns>Returns the list of declarations.</returns>
+        public IEnumerable<IApiModuleService> ModuleStartStopExtract()
+        {
+            //Filter for the attribute types that we wish to get.
+            var results = GetAttributeData(attrFilterStartStop);
+
+            foreach (var result in results)
+            {
+                var mi = result.Item2;
+                var obj = mi.Invoke(_ctx, new object[] { });
+
+                if (obj is IApiModuleService)
+                    yield return obj as IApiModuleService;
+            }
+
+            yield break;
         }
         #endregion
     }

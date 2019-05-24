@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -201,7 +203,26 @@ namespace Xigadee
         /// <summary>
         /// This is the bind name for the health check. Override this if you need to change it.
         /// </summary>
-        protected virtual string BindNameConfigHealthCheck => "ConfigHealthCheck"; 
+        protected virtual string BindNameConfigHealthCheck => "ConfigHealthCheck";
+        #endregion
+
+        #region StartAsync/StopAsync
+        /// <summary>
+        /// This override starts any registered module that have the start stop attribute set in the context.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task StartAsync(CancellationToken cancellationToken)
+        {
+            await Task.WhenAll(Directives.ModuleStartStopExtract().Select(m => m.Start(cancellationToken)));
+        }
+        /// <summary>
+        /// This method stops any modules that have been marked for start stop.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task StopAsync(CancellationToken cancellationToken)
+        {
+            await Task.WhenAll(Directives.ModuleStartStopExtract().Select(m => m.Stop(cancellationToken)));
+        } 
         #endregion
     }
 }

@@ -176,6 +176,7 @@ namespace Tests.Xigadee
 
         }
 
+        [ModuleStartStop]
         [RepositoriesProcess]
         [RegisterAsSingleton]
         public MondayMorningBluesModule MondayMorningBlues { get; set; }

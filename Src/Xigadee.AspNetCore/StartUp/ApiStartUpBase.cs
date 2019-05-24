@@ -114,6 +114,8 @@ namespace Xigadee
             MicroserviceHostedServiceCreate();
 
             services.AddSingleton<IHostedService>(HostedService);
+            //Add the context so that it can inform modules of the start up.
+            services.AddSingleton<IHostedService>(Context);
         }
         #endregion
         #region 3a. MicroserviceCreate()
