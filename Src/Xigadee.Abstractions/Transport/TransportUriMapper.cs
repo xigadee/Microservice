@@ -17,7 +17,7 @@ namespace Xigadee
         #endregion
 
         /// <summary>
-        /// 
+        /// This is the default constructor.
         /// </summary>
         /// <param name="rootUri"></param>
         /// <param name="pathEntity"></param>
@@ -68,6 +68,9 @@ namespace Xigadee
         /// </summary>
         public string PathEntity { get; set; }
 
+        /// <summary>
+        /// This is the uri of the server.
+        /// </summary>
         public Uri Server
         {
             get
@@ -84,7 +87,10 @@ namespace Xigadee
             }
         }
 
-
+        /// <summary>
+        /// This method returns the URI builder.
+        /// </summary>
+        /// <returns></returns>
         protected virtual UriBuilder UriRoot()
         {
             return new UriBuilder(Scheme, Host, PortAdjusted, Path);
@@ -140,14 +146,23 @@ namespace Xigadee
 
             return builder;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="method">The HTTP method.</param>
+        /// <returns>Returns the HTTP method and associated Uri.</returns>
         public virtual KeyValuePair<HttpMethod, Uri> MakeUri(HttpMethod method)
         {
             var builder = UriParts(method);
 
             return new KeyValuePair<HttpMethod, Uri>(method, builder.Uri);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="method">The HTTP method.</param>
+        /// <param name="key">The key value.</param>
+        /// <returns>Returns the HTTP method and associated Uri.</returns>
         public virtual KeyValuePair<HttpMethod, Uri> MakeUri(HttpMethod method, K key)
         {
             var builder = UriParts(method);
@@ -155,7 +170,13 @@ namespace Xigadee
             builder.Path = string.Format("{0}/{1}", builder.Path, Uri.EscapeDataString(mKeyMapper.Serialize(key)));
             return new KeyValuePair<HttpMethod, Uri>(method, builder.Uri);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="method">The HTTP method.</param>
+        /// <param name="refKey">The key value.</param>
+        /// <param name="refValue">The reference value.</param>
+        /// <returns>Returns the HTTP method and associated Uri.</returns>
         public virtual KeyValuePair<HttpMethod, Uri> MakeUri(HttpMethod method, string refKey, string refValue)
         {
             var builder = UriParts(method);
@@ -163,7 +184,12 @@ namespace Xigadee
             return new KeyValuePair<HttpMethod, Uri>(method, builder.Uri);
         }
 
-
+        /// <summary>
+        /// This 
+        /// </summary>
+        /// <param name="method">The HTTP method.</param>
+        /// <param name="rq">The search request.</param>
+        /// <returns>Returns the HTTP method and associated Uri.</returns>
         public virtual KeyValuePair<HttpMethod, Uri> MakeUri(HttpMethod method, SearchRequest rq)
         {
             var builder = UriParts(method);

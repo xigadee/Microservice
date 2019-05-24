@@ -4,9 +4,9 @@ using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography.X509Certificates;
+
 namespace Xigadee
 {
     /// <summary>
@@ -160,20 +160,25 @@ namespace Xigadee
         public HttpClient ClientOverride { get; set; }
         #endregion
 
-        #region Request(HttpMethod verb, Uri uri)
+        #region Request(HttpMethod verb, Uri uri, HttpContent content = null)
         /// <summary>
         /// This method creates the default request message.
         /// </summary>
         /// <param name="verb">The HTTP verb.</param>
         /// <param name="uri">The Uri request.</param>
+        /// <param name="content">The optional Http content request body.</param>
         /// <returns>Returns the message with the full domain request.</returns>
-        protected virtual HttpRequestMessage Request(HttpMethod verb, Uri uri)
+        protected virtual HttpRequestMessage Request(HttpMethod verb, Uri uri, HttpContent content = null)
         {
             HttpRequestMessage rq = new HttpRequestMessage
             {
                 Method = verb,
                 RequestUri = uri
             };
+
+            //Sets the binary content to the request.
+            if (content != null)
+                rq.Content = content;
 
             return rq;
         }
@@ -228,7 +233,7 @@ namespace Xigadee
         /// This method sets the prefer request headers for the Api call.
         /// </summary>
         /// <param name="rq">The http request object.</param>
-        /// <param name="Prefer">The prefer collection.</param>
+        /// <param name="rs">The http response object.</param>
         protected virtual void ResponseHeadersAuth(HttpRequestMessage rq, HttpResponseMessage rs)
         {
         }
@@ -253,148 +258,322 @@ namespace Xigadee
         }
         #endregion
 
-        #region CallClient<KT,ET>...
+        #region UriBaseAppend(string part, string query = null)
         /// <summary>
-        /// This method calls the client using HTTP and returns the response along with the entity in the response if supplied.
+        /// this method safely appends the part and the query to the base uri
         /// </summary>
-        /// <typeparam name="KT">The key type.</typeparam>
-        /// <typeparam name="ET">The entity type.</typeparam>
-        /// <param name="uri">The request Uri.</param>
-        /// <param name="options">The repository settings passed from the caller.</param>
-        /// <param name="content">The HttpContent to send to the API.</param>
-        /// <param name="adjustIn">Any message adjustment.</param>
-        /// <param name="mapOut">Any response adjustment before returning to the caller.</param>
-        /// <param name="deserializer">Deserialize the response content into the entity</param>
-        /// <returns>Returns the repository holder.</returns>
-        protected virtual Task<RepositoryHolder<KT, ET>> CallClient<KT, ET>(
-              KeyValuePair<HttpMethod, Uri> uri
-            , RepositorySettings options
-            , HttpContent content = null
-            , Action<HttpRequestMessage> adjustIn = null
-            , Action<HttpResponseMessage, RepositoryHolder<KT, ET>> mapOut = null
-            , Action<HttpResponseMessage, byte[]
-            , RepositoryHolder<KT, ET>> deserializer = null) =>
-            CallClient(uri.Key, uri.Value, options, content, adjustIn, mapOut, deserializer);
+        /// <param name="part">The query part.</param>
+        /// <param name="query">The optional query string.</param>
+        /// <returns>Returns the combined uri.</returns>
+        protected virtual Uri UriBaseAppend(string part, string query = null)
+        {
+            var end = string.Concat(mUri.LocalPath, part).Replace("//", "/");
+            var bd = new UriBuilder(mUri.Scheme, mUri.Host, mUri.Port, end);
+            bd.Query = query;
+            return bd.Uri;
+        }
+        #endregion
 
+        #region NotImplemented...
+        /// <summary>
+        /// This allows a Not Implemented response (501) for methods in the API that are not supported.
+        /// </summary>
+        /// <typeparam name="O">The entity response type.</typeparam>
+        /// <param name="errorObject">This is the optional error object passed back.</param>
+        /// <returns>Returns the response with a not implemented error code.</returns>
+        protected virtual Task<ApiResponse<O>> NotImplemented<O>(object errorObject = null)
+        {
+            var result = new ApiResponse<O>() { ResponseCode = 501 };
+            result.ErrorObject = errorObject;
+
+            return Task.FromResult(result);
+        }
+        /// <summary>
+        /// This allows a Not Implemented response (501) for methods in the API that are not supported.
+        /// </summary>
+        /// <param name="errorObject">This is the optional error object passed back.</param>
+        /// <returns>Returns the response with a not implemented error code.</returns>
+        protected virtual Task<ApiResponse> NotImplemented(object errorObject = null)
+        {
+            var result = new ApiResponse() { ResponseCode = 501 };
+            result.ErrorObject = errorObject;
+
+            return Task.FromResult(result);
+        }
+        #endregion
+
+        #region CallApiClient<O, R>
         /// <summary>
         /// This method calls the client using HTTP and returns the response along with the entity in the response if supplied.
         /// </summary>
-        /// <typeparam name="KT">The key type.</typeparam>
-        /// <typeparam name="ET">The entity type.</typeparam>
+        /// <typeparam name="O">The response object type.</typeparam>
+        /// <typeparam name="R">The response object type.</typeparam>
         /// <param name="method">The HTTP method.</param>
         /// <param name="uri">The request Uri.</param>
-        /// <param name="options">The repository settings passed from the caller.</param>
-        /// <param name="content">The HttpContent to send to the API.</param>
+        /// <param name="model">The optional model.</param>
         /// <param name="adjustIn">Any message adjustment.</param>
+        /// <param name="adjustOut">Any message adjustment.</param>
+        /// <param name="errorObjectDeserializer">Deserialize the response content into the error object if content is present on failure.</param>
         /// <param name="mapOut">Any response adjustment before returning to the caller.</param>
-        /// <param name="deserializer">Deserialize the response content into the entity</param>
-        /// <returns>Returns the repository holder.</returns>
-        protected virtual async Task<RepositoryHolder<KT, ET>> CallClient<KT, ET>(
-              HttpMethod method, Uri uri
-            , RepositorySettings options
-            , HttpContent content = null
+        /// <param name="requestmodelSerializer">The optional model serializer.</param>
+        /// <param name="responsemodelDeserializer">The optional deserializer for the response.</param>
+        /// <returns>Returns the response wrapper.</returns>
+        protected virtual async Task<R> CallApiClient<O, R>(
+              HttpMethod method
+            , Uri uri
+            , object model = null
             , Action<HttpRequestMessage> adjustIn = null
-            , Action<HttpResponseMessage, RepositoryHolder<KT, ET>> mapOut = null
-            , Action<HttpResponseMessage, byte[], RepositoryHolder<KT, ET>> deserializer = null)
+            , Action<HttpRequestMessage, HttpResponseMessage> adjustOut = null
+            , Func<HttpContent, Task<object>> errorObjectDeserializer = null
+            , Action<HttpResponseMessage, R> mapOut = null
+            , Func<object, HttpContent> requestmodelSerializer = null
+            , Func<HttpContent, Task<O>> responsemodelDeserializer = null
+            )
+            where O : class
+            where R : ApiResponse<O>, new()
         {
-            var response = new RepositoryHolder<KT, ET>();
+            var response = new R();
 
             try
             {
-                //Create the message
-                HttpRequestMessage httpRq = Request(method, uri);
-                //Set the headers
-                RequestHeadersSet(httpRq);
-                //Sets the supported transport mechanisms
-                RequestHeadersSetTransport(httpRq);
-                //Sets the prefer headers
-                RequestHeadersPreferSet(httpRq, options?.Prefer);
-                //Sets the authentication.
-                RequestHeadersAuth(httpRq);
-                //Any manual adjustments.
-                adjustIn?.Invoke(httpRq);
+                var httpRs = await CallApiClientBase(method, uri, model, adjustIn, adjustOut, requestmodelSerializer);
 
-                //Sets the binary content to the request.
-                if (content != null)
-                    httpRq.Content = content;
+                await ProcessResponse(response, httpRs, responsemodelDeserializer, errorObjectDeserializer);
 
-                //Executes the request to the remote header.
-                var httpRs = await Client.SendAsync(httpRq);
+                //Maps any additional properties or adjustments to the response.
+                mapOut?.Invoke(httpRs, response);
+            }
+            catch (Exception ex)
+            {
+                response.ResponseCode = 503;
+                response.ResponseMessage = ex.AppendInnerExceptions();
+            }
 
-                //Processes any response headers.
-                ResponseHeadersAuth(httpRq, httpRs);
+            return response;
+        }
+        /// <summary>
+        /// This method calls the client using HTTP and returns the response along with the entity in the response if supplied.
+        /// </summary>
+        /// <typeparam name="O">The response object type.</typeparam>
+        /// <typeparam name="R">The response object type.</typeparam>
+        /// <param name="method">The HTTP method.</param>
+        /// <param name="uri">The request Uri.</param>
+        /// <param name="content">The HttpContent to send to the API.</param>
+        /// <param name="adjustIn">Any message adjustment.</param>
+        /// <param name="adjustOut">Any message adjustment.</param>
+        /// <param name="errorObjectDeserializer">Deserialize the response content into the error object if content is present on failure.</param>
+        /// <param name="mapOut">Any response adjustment before returning to the caller.</param>
+        /// <param name="responsemodelDeserializer">The optional deserializer for the response.</param>
+        /// <returns>Returns the repository holder.</returns>
+        protected virtual async Task<R> CallApiClient<O,R>(
+              HttpMethod method
+            , Uri uri
+            , HttpContent content = null
+            , Action<HttpRequestMessage> adjustIn = null
+            , Action<HttpRequestMessage, HttpResponseMessage> adjustOut = null
+            , Func<HttpContent, Task<object>> errorObjectDeserializer = null
+            , Action<HttpResponseMessage, R> mapOut = null
+            , Func<HttpContent, Task<O>> responsemodelDeserializer = null
+            )
+            where O : class
+            where R : ApiResponse<O>, new()
+        {
+            var response = new R();
 
-                //OK, set the response content if set
-                if (httpRs.Content != null && httpRs.Content.Headers.ContentLength > 0)
-                {
-                    byte[] httpRsContent = await httpRs.Content.ReadAsByteArrayAsync();
+            try
+            {
+                var httpRs = await CallApiClientBase(method, uri, content, adjustIn, adjustOut);
 
-                    if (httpRs.IsSuccessStatusCode)
-                        deserializer?.Invoke(httpRs, httpRsContent, response);
-                    else
-                        // So that we can see error messages such as schema validation fail
-                        response.ResponseMessage = Encoding.UTF8.GetString(httpRsContent);
-                }
-
-                //Get any outgoing trace headers and set them in to the response.
-                //IEnumerable<string> trace;
-                //if (httpRs.Headers.TryGetValues(ApimConstants.AzureTraceHeaderLocation, out trace))
-                //    response.Settings.Prefer.Add(ApimConstants.AzureTraceHeaderLocation, trace.First());
-
-                //Set the HTTP Response code.
-                response.ResponseCode = (int)httpRs.StatusCode;
+                await ProcessResponse(response, httpRs, responsemodelDeserializer, errorObjectDeserializer);
 
                 //Maps any additional properties to the response.
                 mapOut?.Invoke(httpRs, response);
             }
             catch (Exception ex)
             {
-                response.ResponseMessage = FormatExceptionChain(ex);
                 response.ResponseCode = 503;
+                response.ResponseMessage = ex.AppendInnerExceptions();
             }
 
             return response;
         }
         #endregion
-
-        #region EntitySerialize<ET>(ET entity)
+        #region CallApiClient <O> ...
         /// <summary>
-        /// This method turns the entity in to binary content using
-        /// the primary transport
+        /// This method calls the client using HTTP and returns the response.
         /// </summary>
-        /// <param name="entity">The entity to convert.</param>
-        /// <returns>The ByteArrayContent to transmit.</returns>
-        protected virtual ByteArrayContent EntitySerialize<ET>(ET entity)
-        {
-            if (Equals(entity, default(ET)))
-                throw new ArgumentNullException("entity");
+        /// <param name="method">The HTTP method.</param>
+        /// <param name="uri">The request Uri.</param>
+        /// <param name="model">The optional model.</param>
+        /// <param name="adjustIn">Any message adjustment.</param>
+        /// <param name="adjustOut">Any message adjustment.</param>
+        /// <param name="errorObjectDeserializer">Deserialize the response content into the error object if content is present on failure.</param>
+        /// <param name="mapOut">Any response adjustment before returning to the caller.</param>
+        /// <param name="requestmodelSerializer">The optional model serializer.</param>
+        /// <returns>Returns an API response wrapper.</returns>
+        protected virtual Task<ApiResponse> CallApiClient(
+              HttpMethod method
+            , Uri uri
+            , object model = null
+            , Action<HttpRequestMessage> adjustIn = null
+            , Action<HttpRequestMessage, HttpResponseMessage> adjustOut = null
+            , Func<HttpContent, Task<object>> errorObjectDeserializer = null
+            , Action<HttpResponseMessage, ApiResponse> mapOut = null
+            , Func<object, HttpContent> requestmodelSerializer = null
+            ) 
+            =>
+            CallApiClient<object, ApiResponse>(method, uri, model, adjustIn, adjustOut, errorObjectDeserializer, mapOut, requestmodelSerializer);
 
-            var data = TransportSerializerDefault.GetData(entity);
-            var content = new ByteArrayContent(data);
-            content.Headers.ContentType = new MediaTypeWithQualityHeaderValue(mTransportOutDefault);
+        /// <summary>
+        /// This method calls the client using HTTP and returns the response object.
+        /// </summary>
+        /// <typeparam name="O">The return object type.</typeparam>
+        /// <param name="method">The HTTP method.</param>
+        /// <param name="uri">The request Uri.</param>
+        /// <param name="model">The optional model.</param>
+        /// <param name="adjustIn">Any message adjustment.</param>
+        /// <param name="adjustOut">Any message adjustment.</param>
+        /// <param name="errorObjectDeserializer">Deserialize the response content into the error object if content is present on failure.</param>
+        /// <param name="mapOut">Any response adjustment before returning to the caller.</param>
+        /// <param name="requestmodelSerializer">The optional model serializer.</param>
+        /// <param name="responsemodelDeserializer"></param>
+        /// <returns>Returns an API response wrapper with an entity payload.</returns>
+        protected virtual Task<ApiResponse<O>> CallApiClient<O>(
+              HttpMethod method
+            , Uri uri
+            , object model = null
+            , Action<HttpRequestMessage> adjustIn = null
+            , Action<HttpRequestMessage, HttpResponseMessage> adjustOut = null
+            , Func<HttpContent, Task<object>> errorObjectDeserializer = null
+            , Action<HttpResponseMessage, ApiResponse<O>> mapOut = null
+            , Func<object, HttpContent> requestmodelSerializer = null
+            , Func<HttpContent, Task<O>> responsemodelDeserializer = null
+            )
+            where O:class
+            =>
+            CallApiClient<O, ApiResponse<O>>(method, uri, model, adjustIn, adjustOut, errorObjectDeserializer, mapOut, requestmodelSerializer, responsemodelDeserializer);
 
-            return content;
-        }
+
         #endregion
-        #region EntityDeserialize<ET>(HttpResponseMessage rs, byte[] data)
+
+        #region CallApiClientBase ...
         /// <summary>
-        /// This method resolves the appropriate transport serializer from the incoming accept header.
+        /// This is the raw HTTP request method.
         /// </summary>
-        /// <param name="rs">The response</param>
-        /// <param name="data">The response content</param>
-        /// <returns>Returns true if the serializer can be resolved.</returns>
-        protected virtual ET EntityDeserialize<ET>(HttpResponseMessage rs, byte[] data)
+        /// <param name="httpRq">The http request.</param>
+        /// <param name="adjustIn">The optional adjustment input action.</param>
+        /// <param name="adjustOut">The optional adjustment output action.</param>
+        /// <returns>Returns the Http response.</returns>
+        protected virtual async Task<HttpResponseMessage> CallApiClientBase(HttpRequestMessage httpRq
+            , Action<HttpRequestMessage> adjustIn = null
+            , Action<HttpRequestMessage, HttpResponseMessage> adjustOut = null
+            )
         {
-            string mediaType = rs.Content.Headers.ContentType.MediaType;
+            //Set the headers
+            RequestHeadersSet(httpRq);
+            //Sets the supported transport mechanisms
+            RequestHeadersSetTransport(httpRq);
+            //Sets the authentication.
+            RequestHeadersAuth(httpRq);
 
-            if (mTransportSerializers.ContainsKey(mediaType.ToLowerInvariant()))
+            //Any manual adjustments.
+            adjustIn?.Invoke(httpRq);
+
+            //Executes the request to the remote header.
+            var httpRs = await Client.SendAsync(httpRq);
+
+            //Processes any response headers.
+            ResponseHeadersAuth(httpRq, httpRs);
+
+            //Process any output extensions.
+            adjustOut?.Invoke(httpRq, httpRs);
+
+            return httpRs;
+        }
+
+        /// <summary>
+        /// This is the raw HTTP request method.
+        /// </summary>
+        /// <param name="method">The Http method.</param>
+        /// <param name="uri">The request uri.</param>
+        /// <param name="model">The optional model object to serialize.</param>
+        /// <param name="adjustIn">The optional adjustment input action.</param>
+        /// <param name="adjustOut">The optional adjustment output action.</param>
+        /// <param name="requestModelSerializer">The optional model serializer.</param>
+        /// <returns>Returns the Http response.</returns>
+        protected virtual Task<HttpResponseMessage> CallApiClientBase(HttpMethod method
+            , Uri uri
+            , object model = null
+            , Action<HttpRequestMessage> adjustIn = null
+            , Action<HttpRequestMessage, HttpResponseMessage> adjustOut = null
+            , Func<object, HttpContent> requestModelSerializer = null
+            ) => CallApiClientBase(method, uri, HttpContentHelper.Convert(model, requestModelSerializer), adjustIn, adjustOut);
+
+
+        /// <summary>
+        /// This is the raw HTTP request method.
+        /// </summary>
+        /// <param name="method">The Http method.</param>
+        /// <param name="uri">The request uri.</param>
+        /// <param name="content">The Http content.</param>
+        /// <param name="adjustIn">The optional adjustment input action.</param>
+        /// <param name="adjustOut">The optional adjustment output action.</param>
+        /// <returns>Returns the Http response.</returns>
+        protected virtual Task<HttpResponseMessage> CallApiClientBase(HttpMethod method
+            , Uri uri
+            , HttpContent content = null
+            , Action<HttpRequestMessage> adjustIn = null
+            , Action<HttpRequestMessage, HttpResponseMessage> adjustOut = null
+            ) => CallApiClientBase(Request(method, uri, content), adjustIn, adjustOut);
+
+        #endregion
+        #region ProcessResponse ...
+        /// <summary>
+        /// This method processes the response and sets the payload object.
+        /// </summary>
+        /// <typeparam name="O">The response type.</typeparam>
+        /// <typeparam name="R">The API response holder type.</typeparam>
+        /// <param name="response">The response wrapper</param>
+        /// <param name="httpRs">The Http Response object.</param>
+        /// <param name="objectDeserializer">The optional object entity deserializer.</param>
+        /// <param name="errorObjectDeserializer">The optional error object deserializer.</param>
+        protected async Task ProcessResponse<O,R>(R response
+            , HttpResponseMessage httpRs
+            , Func<HttpContent, Task<O>> objectDeserializer
+            , Func<HttpContent, Task<object>> errorObjectDeserializer = null)
+            where O : class
+            where R: ApiResponse<O>, new()
+        {
+            //Set the HTTP Response code.
+            response.ResponseCode = (int)httpRs.StatusCode;
+
+            if (httpRs.HasContent()) 
             {
-                var transport = mTransportSerializers[mediaType];
-                return transport.GetObject<ET>(data);
-            }
+                if ((response.IsException || response.IsFailure)) //Error path
+                {
+                    if (errorObjectDeserializer != null)
+                        response.ErrorObject = await errorObjectDeserializer(httpRs.Content);
+                    else
+                    {
+                        byte[] httpRsContent = await httpRs.Content.ReadAsByteArrayAsync();
 
-            throw new TransportSerializerResolutionException(mediaType);
-        } 
+                        var err = new ApiResponse.ErrorObjectDefault();
+
+                        err.Blob = httpRsContent;
+
+                        response.ErrorObject = err;
+                    }
+                }
+                else //Success path
+                {
+                    if (objectDeserializer == null)
+                        objectDeserializer = (c) => c.FromJsonUTF8<O>();
+
+                    if (response.IsSuccess && httpRs.HasContent())
+                        response.Entity = await objectDeserializer(httpRs.Content);
+                }
+            }
+        }
         #endregion
     }
 }

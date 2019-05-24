@@ -306,5 +306,149 @@ namespace Xigadee
             return $"{base.UserAgentGet()} {typeof(E).Name}";
         }
         #endregion
+
+        #region CallClient<KT,ET>...
+        /// <summary>
+        /// This method calls the client using HTTP and returns the response along with the entity in the response if supplied.
+        /// </summary>
+        /// <typeparam name="KT">The key type.</typeparam>
+        /// <typeparam name="ET">The entity type.</typeparam>
+        /// <param name="uri">The request Uri.</param>
+        /// <param name="options">The repository settings passed from the caller.</param>
+        /// <param name="content">The HttpContent to send to the API.</param>
+        /// <param name="adjustIn">Any message adjustment.</param>
+        /// <param name="mapOut">Any response adjustment before returning to the caller.</param>
+        /// <param name="deserializer">Deserialize the response content into the entity</param>
+        /// <returns>Returns the repository holder.</returns>
+        protected virtual Task<RepositoryHolder<KT, ET>> CallClient<KT, ET>(
+              KeyValuePair<HttpMethod, Uri> uri
+            , RepositorySettings options
+            , HttpContent content = null
+            , Action<HttpRequestMessage> adjustIn = null
+            , Action<HttpResponseMessage, RepositoryHolder<KT, ET>> mapOut = null
+            , Action<HttpResponseMessage, byte[], RepositoryHolder<KT, ET>> deserializer = null) =>
+            CallClient(uri.Key, uri.Value, options, content, adjustIn, mapOut, deserializer);
+
+        /// <summary>
+        /// This method calls the client using HTTP and returns the response along with the entity in the response if supplied.
+        /// </summary>
+        /// <typeparam name="KT">The key type.</typeparam>
+        /// <typeparam name="ET">The entity type.</typeparam>
+        /// <param name="method">The HTTP method.</param>
+        /// <param name="uri">The request Uri.</param>
+        /// <param name="options">The repository settings passed from the caller.</param>
+        /// <param name="content">The HttpContent to send to the API.</param>
+        /// <param name="adjustIn">Any message adjustment.</param>
+        /// <param name="mapOut">Any response adjustment before returning to the caller.</param>
+        /// <param name="deserializer">Deserialize the response content into the entity</param>
+        /// <returns>Returns the repository holder.</returns>
+        protected virtual async Task<RepositoryHolder<KT, ET>> CallClient<KT, ET>(
+              HttpMethod method, Uri uri
+            , RepositorySettings options
+            , HttpContent content = null
+            , Action<HttpRequestMessage> adjustIn = null
+            , Action<HttpResponseMessage, RepositoryHolder<KT, ET>> mapOut = null
+            , Action<HttpResponseMessage, byte[], RepositoryHolder<KT, ET>> deserializer = null)
+        {
+            var response = new RepositoryHolder<KT, ET>();
+
+            try
+            {
+                //Create the message
+                HttpRequestMessage httpRq = Request(method, uri);
+                //Set the headers
+                RequestHeadersSet(httpRq);
+                //Sets the supported transport mechanisms
+                RequestHeadersSetTransport(httpRq);
+                //Sets the prefer headers
+                RequestHeadersPreferSet(httpRq, options?.Prefer);
+                //Sets the authentication.
+                RequestHeadersAuth(httpRq);
+                //Any manual adjustments.
+                adjustIn?.Invoke(httpRq);
+
+                //Sets the binary content to the request.
+                if (content != null)
+                    httpRq.Content = content;
+
+                //Executes the request to the remote header.
+                var httpRs = await Client.SendAsync(httpRq);
+
+                //Processes any response headers.
+                ResponseHeadersAuth(httpRq, httpRs);
+
+                //OK, set the response content if set
+                if (httpRs.Content != null && httpRs.Content.Headers.ContentLength > 0)
+                {
+                    byte[] httpRsContent = await httpRs.Content.ReadAsByteArrayAsync();
+
+                    if (httpRs.IsSuccessStatusCode)
+                        deserializer?.Invoke(httpRs, httpRsContent, response);
+                    else
+                        // So that we can see error messages such as schema validation fail
+                        response.ResponseMessage = Encoding.UTF8.GetString(httpRsContent);
+                }
+
+                //Get any outgoing trace headers and set them in to the response.
+                //IEnumerable<string> trace;
+                //if (httpRs.Headers.TryGetValues(ApimConstants.AzureTraceHeaderLocation, out trace))
+                //    response.Settings.Prefer.Add(ApimConstants.AzureTraceHeaderLocation, trace.First());
+
+                //Set the HTTP Response code.
+                response.ResponseCode = (int)httpRs.StatusCode;
+
+                //Maps any additional properties to the response.
+                mapOut?.Invoke(httpRs, response);
+            }
+            catch (Exception ex)
+            {
+                response.ResponseMessage = FormatExceptionChain(ex);
+                response.ResponseCode = 503;
+            }
+
+            return response;
+        }
+        #endregion
+
+        #region EntitySerialize<ET>(ET entity)
+        /// <summary>
+        /// This method turns the entity in to binary content using
+        /// the primary transport
+        /// </summary>
+        /// <param name="entity">The entity to convert.</param>
+        /// <returns>The ByteArrayContent to transmit.</returns>
+        protected virtual ByteArrayContent EntitySerialize<ET>(ET entity)
+        {
+            if (Equals(entity, default(ET)))
+                throw new ArgumentNullException("entity");
+
+            var data = TransportSerializerDefault.GetData(entity);
+            var content = new ByteArrayContent(data);
+            content.Headers.ContentType = new MediaTypeWithQualityHeaderValue(mTransportOutDefault);
+
+            return content;
+        }
+        #endregion
+        #region EntityDeserialize<ET>(HttpResponseMessage rs, byte[] data)
+        /// <summary>
+        /// This method resolves the appropriate transport serializer from the incoming accept header.
+        /// </summary>
+        /// <param name="rs">The response</param>
+        /// <param name="data">The response content</param>
+        /// <returns>Returns true if the serializer can be resolved.</returns>
+        protected virtual ET EntityDeserialize<ET>(HttpResponseMessage rs, byte[] data)
+        {
+            string mediaType = rs.Content.Headers.ContentType.MediaType;
+
+            if (mTransportSerializers.ContainsKey(mediaType.ToLowerInvariant()))
+            {
+                var transport = mTransportSerializers[mediaType];
+                return transport.GetObject<ET>(data);
+            }
+
+            throw new TransportSerializerResolutionException(mediaType);
+        }
+        #endregion
+
     }
 }
