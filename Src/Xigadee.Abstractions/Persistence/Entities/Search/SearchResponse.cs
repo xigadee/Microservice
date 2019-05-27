@@ -28,13 +28,12 @@ namespace Xigadee
         /// This is the set of entities for the response.
         /// </summary>
         public virtual List<E> Data { get; set; } = new List<E>();
-
     }
 
     /// <summary>
     /// This is the search response base class.
     /// </summary>
-    public class SearchResponseBase
+    public class SearchResponseBase:IPropertyBag
     {
         /// <summary>
         /// This is the etag value.
@@ -48,6 +47,10 @@ namespace Xigadee
         /// This is the skip value of the result set.
         /// </summary>
         public int? Skip { get; set; }
+        /// <summary>
+        /// This is the optional property bag that additional properties can be appended to.
+        /// </summary>
+        public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
         /// This method populates the base request values to allow them to be passed though back to the client.
