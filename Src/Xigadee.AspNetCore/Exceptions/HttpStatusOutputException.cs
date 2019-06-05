@@ -18,12 +18,20 @@ namespace Xigadee
         /// <param name="ex">The optional inner exception.</param>
         /// <param name="eid">The event id. The default is default(EventId).</param>
         /// <param name="statusSubcode">Gets the status error sub code. This can be used to give a more detailed error state.</param>
-        public HttpStatusOutputException(int code, string description = null, LogLevel level = LogLevel.Warning, Exception ex = null, EventId eid = default(EventId), int? statusSubcode = null) : base(description, ex)
+        /// <param name="errorPayload">This is the optional error payload. If this is specified it is returned in the HTTP response.</param>
+        public HttpStatusOutputException(int code, string description = null
+            , LogLevel level = LogLevel.Warning
+            , Exception ex = null
+            , EventId eid = default(EventId)
+            , int? statusSubcode = null
+            , object errorPayload = null
+            ) : base(description, ex)
         {
             StatusCode = code;
             EventId = eid;
             Level = level;
             StatusSubcode = statusSubcode;
+            ErrorPayload = errorPayload;
         }
 
         /// <summary>
@@ -42,6 +50,11 @@ namespace Xigadee
         /// Gets or sets the event id.
         /// </summary>
         public EventId EventId { get; }
+
+        /// <summary>
+        /// This is the optional payload to be returned to the user in the HTTP response.
+        /// </summary>
+        public object ErrorPayload { get; }
 
         /// <summary>
         /// Logs the specified details to the logger..

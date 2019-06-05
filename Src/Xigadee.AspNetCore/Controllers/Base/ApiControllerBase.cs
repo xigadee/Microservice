@@ -49,6 +49,9 @@ namespace Xigadee
                 if (extendErrors)
                     return StatusCode(hex.StatusCode, ErrorFormat(hex));
 
+                if (hex.ErrorPayload != null)
+                    return StatusCode(hex.StatusCode, hex.ErrorPayload);
+
                 return StatusCode(hex.StatusCode);
             }
             catch (Exception ex)
