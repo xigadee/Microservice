@@ -160,6 +160,10 @@ namespace Xigadee
 
             userRoles?.Roles?.ForEach((c) => identity.AddClaim(new Claim(ClaimTypes.Role, c)));
 
+            //Do we have any customer claims defined in the user session.
+            if (uSess.HasCustomClaims)
+                uSess.CustomClaims().ForEach(c => identity.AddClaim(new Claim(c.type, c.value)));
+
             var principal = new ClaimsPrincipal(identity);
 
             var ticket = new AuthenticationTicket(principal, authtype);

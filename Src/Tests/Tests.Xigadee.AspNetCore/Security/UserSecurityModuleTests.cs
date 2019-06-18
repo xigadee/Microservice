@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -14,6 +15,18 @@ namespace Tests.Xigadee
     [TestCategory("Unit")]
     public class UserSecurityModuleTests
     {
+        [TestMethod]
+        public async Task TestMethodUSession()
+        {
+            var uSess = new UserSession();
+
+            uSess.AddCustomClaim("One", "two");
+
+            Assert.IsTrue(uSess.HasCustomClaims);
+            var claim = uSess.CustomClaims().First();
+            Assert.IsTrue(claim.type == "One");
+        }
+
         [TestMethod]
         public async Task TestMethod1()
         {

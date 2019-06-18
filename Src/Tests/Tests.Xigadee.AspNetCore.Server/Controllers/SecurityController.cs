@@ -42,6 +42,8 @@ namespace Tests.Xigadee.AspNetCore.Server.Controllers
         {
             var uSess = new UserSession();
 
+            uSess.AddCustomClaim("paul", "wahey!");
+
             var rsC = await _manager.UserSessions.Create(uSess);
 
             if (!rsC.IsSuccess)
