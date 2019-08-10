@@ -10,7 +10,7 @@ namespace Xigadee
     /// This class holds the incoming OData parameters.
     /// </summary>
     [DebuggerDisplay("{ToString()}")]
-    public class SearchRequest: IEquatable<SearchRequest>
+    public class SearchRequest: IEquatable<SearchRequest>, IPropertyBag
     {
         #region Constructors
         /// <summary>
@@ -147,6 +147,11 @@ namespace Xigadee
         /// </summary>
         public string Select { get; set; }
 
+        /// <summary>
+        /// This is a set of additional properties that can be attached to a search request for logging later.
+        /// </summary>
+        public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
+
         #region Equals...
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -231,6 +236,7 @@ namespace Xigadee
 
             return true;
         }
+
 
         /// <summary>
         /// Implicitly converts a string in to a resource profile.
