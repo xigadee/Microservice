@@ -4,10 +4,6 @@ AS
 BEGIN
 	BEGIN TRY
 		
-		DECLARE @ETag UNIQUEIDENTIFIER;
-
-		EXEC [{NamespaceInternal}].spSearchLog @ETag, '{EntityName}', '{spSearch}', @Body;
-
 
 		RETURN 405;
 	END TRY

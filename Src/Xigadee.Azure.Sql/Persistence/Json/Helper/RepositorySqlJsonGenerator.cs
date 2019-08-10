@@ -78,6 +78,8 @@ namespace Xigadee
 
         public string AncillaryIdTableType => ProcessTemplate("Ancillary.IdTableType.sql");
 
+        public string AncillarySearch => ProcessTemplate("Ancillary.spSearchLog.sql");
+
         #region ScriptAncillary()
         /// <summary>
         /// This method returns the Ancillary SQL for the application. This is the set of helper definitions that are needed to make the stored procedures work.
@@ -92,6 +94,9 @@ namespace Xigadee
             sb.AppendLine(AncillaryKvpTableType);
             sb.AppendLine("GO");
             sb.AppendLine(AncillaryIdTableType);
+            sb.AppendLine("GO");
+
+            sb.AppendLine(AncillarySearch);
             sb.AppendLine("GO");
 
             return sb.ToString();
@@ -110,6 +115,8 @@ namespace Xigadee
         public string TableReference => ProcessTemplate("Tables.TableReference.sql");
 
         public string TableReferenceKey => ProcessTemplate("Tables.TableReferenceKey.sql");
+
+        public string TableSearchHistory => ProcessTemplate("Tables.TableSearchHistory.sql");
         #endregion
 
         #region ScriptTable()
@@ -132,6 +139,8 @@ namespace Xigadee
             sb.AppendLine(TableProperty);
             sb.AppendLine("GO");
             sb.AppendLine(TableReference);
+            sb.AppendLine("GO");
+            sb.AppendLine(TableSearchHistory);
             sb.AppendLine("GO");
 
             return sb.ToString();
@@ -183,6 +192,7 @@ namespace Xigadee
         /// This is the entity search stored procedure.
         /// </summary>
         public string SpSearchBuild => ProcessTemplate("StoredProcedures.spSearchBuild.sql");
+
         /// <summary>
         /// This is the entity search stored procedure.
         /// </summary>
@@ -191,6 +201,15 @@ namespace Xigadee
         /// This is the entity search entity stored procedure.
         /// </summary>
         public string SpSearchEntity => ProcessTemplate("StoredProcedures.spSearchEntity.sql");
+
+        /// <summary>
+        /// This is the entity search stored procedure.
+        /// </summary>
+        public string SpSearchJson => ProcessTemplate("StoredProcedures.spSearchJson.sql");
+        /// <summary>
+        /// This is the entity search entity stored procedure.
+        /// </summary>
+        public string SpSearchEntityJson => ProcessTemplate("StoredProcedures.spSearchEntityJson.sql");
 
 
         /// <summary>
@@ -228,6 +247,11 @@ namespace Xigadee
             sb.AppendLine(SpSearch);
             sb.AppendLine("GO");
             sb.AppendLine(SpSearchEntity);
+            sb.AppendLine("GO");
+            //Json Search
+            sb.AppendLine(SpSearchJson);
+            sb.AppendLine("GO");
+            sb.AppendLine(SpSearchEntityJson);
             sb.AppendLine("GO");
 
             if (createoralter)

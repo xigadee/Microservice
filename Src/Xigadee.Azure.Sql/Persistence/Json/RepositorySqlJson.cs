@@ -254,12 +254,12 @@ namespace Xigadee
             rs.Data.Add(values);
         }
 
-        private class SqlProperties
+        protected class SqlProperties
         {
             public List<SqlProperty> Property { get; set; }
         }
 
-        private class SqlProperty
+        protected class SqlProperty
         {
             public string Type;
             public string Value;

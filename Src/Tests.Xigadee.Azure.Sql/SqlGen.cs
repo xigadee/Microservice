@@ -11,7 +11,6 @@ namespace Tests.Xigadee.Azure.Sql
         [TestMethod]
         public void Verify_SqlStoredProcedureResolver()
         {
-
             var spNames = new SqlStoredProcedureResolver<Account>(schemaName: "External", interfix: "_");
             var generator = new RepositorySqlJsonGenerator<Account>(spNames);
 
