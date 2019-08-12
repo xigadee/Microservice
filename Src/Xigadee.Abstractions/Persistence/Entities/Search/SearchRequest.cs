@@ -108,6 +108,7 @@ namespace Xigadee
         /// This is the search algorithm that is used to search against the parameters specified.
         /// </summary>
         public string Id { get; set; }
+
         /// <summary>
         /// This is the search collection identifier. It allows pagination to occur with a cached sample.
         /// </summary>

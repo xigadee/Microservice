@@ -9,6 +9,14 @@ namespace Tests.Xigadee.Azure.Sql
     public class SqlGen
     {
         [TestMethod]
+        public void Verify_SqlStoredProcedureResolverUser()
+        {
+            var sgUser = new SqlJsonGenerator<User>();
+            var sgTest1 = new SqlJsonGenerator<Test1>();
+
+        }
+
+        [TestMethod]
         public void Verify_SqlStoredProcedureResolver()
         {
             var spNames = new SqlStoredProcedureResolver<Account>(schemaName: "External", interfix: "_");

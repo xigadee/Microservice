@@ -137,11 +137,30 @@ namespace Xigadee
         /// <summary>
         /// Gets the stored procedure search.
         /// </summary>
+        /// <param name="id">The search identifier.</param>
+        /// <returns>Returns the combined string which matches to a specific search stored procedure.</returns>
         public virtual string StoredProcedureSearch(string id) => ExternalSchema + $"{_spNames[RepositoryMethod.Search]}_{id?.Trim().ToLowerInvariant()??"Default"}";
         /// <summary>
         /// Gets the stored procedure search entity.
         /// </summary>
+        /// <param name="id">The search identifier.</param>
+        /// <returns>Returns the combined string which matches to a specific search stored procedure.</returns>
         public virtual string StoredProcedureSearchEntity(string id) => ExternalSchema + $"{_spNames[RepositoryMethod.SearchEntity]}_{id?.Trim().ToLowerInvariant()??"Default"}";
+
+        /// <summary>
+        /// This is the new Json based search request.
+        /// </summary>
+        /// <param name="id">The search identifier.</param>
+        /// <returns>Returns the combined string which matches to a specific search stored procedure.</returns>
+        public virtual string StoredProcedureSearchJson(string id) => ExternalSchema + $"{_spNames[RepositoryMethod.Search]}_{id?.Trim().ToLowerInvariant() ?? "Default_Json"}";
+        /// <summary>
+        /// This is the new entity based Json search request.
+        /// </summary>
+        /// <param name="id">The search identifier.</param>
+        /// <returns>Returns the combined string which matches to a specific search stored procedure.</returns>
+        public virtual string StoredProcedureSearchEntityJson(string id) => ExternalSchema + $"{_spNames[RepositoryMethod.Search]}_{id?.Trim().ToLowerInvariant() ?? "Default_Json"}";
+
+
         /// <summary>
         /// This is the shared internal upsert stored procedure.
         /// </summary>

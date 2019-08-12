@@ -4,12 +4,14 @@ AS
 BEGIN
 	BEGIN TRY
 		
-		DECLARE @ETag UNIQUEIDENTIFIER;
+		DECLARE @ETag UNIQUEIDENTIFIER = NEWID();
+		DECLARE @Result INT = 405;
 
-		EXEC [{NamespaceInternal}].spSearchLog @ETag, '{EntityName}', '{spSearch}', @Body;
+		
+		EXEC [{NamespaceInternal}].spSearchLog @ETag, '{EntityName}', '{spSearch}_Json',@Result, @Body;
 
 
-		RETURN 405;
+		RETURN @Result;
 	END TRY
 	BEGIN CATCH
 		SELECT ERROR_NUMBER() AS ErrorNumber, ERROR_MESSAGE() AS ErrorMessage; 

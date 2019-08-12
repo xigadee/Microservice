@@ -18,4 +18,9 @@
     <ProjectReference Include="..\Xigadee\Xigadee.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Ancillary\" />
+    <Folder Include="Entities\" />
+  </ItemGroup>
+
 </Project>

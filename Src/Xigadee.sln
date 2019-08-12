@@ -15,6 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_system", "_system", "{35D4
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_docs", "_docs", "{DCA58A2C-4AC0-4978-944C-DC8ABB50DC42}"
 	ProjectSection(SolutionItems) = preProject
+		Local.runsettings = Local.runsettings
 		..\README.md = ..\README.md
 		..\docs\whatsnew.md = ..\docs\whatsnew.md
 	EndProjectSection
@@ -255,7 +256,7 @@ Global
 		{BD4E6BE8-00E5-4F61-9B3A-0F82DFE769B4} = {2D95B4DF-5B82-402D-859A-92492C4DCF22}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
 		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
+		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
 	EndGlobalSection
 EndGlobal

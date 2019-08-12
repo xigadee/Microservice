@@ -10,13 +10,13 @@ GO
 CREATE TABLE [dbo].[Test1PropertyKey]
 (
 	[Id] INT NOT NULL PRIMARY KEY IDENTITY(1,1), 
-    [Type] VARCHAR(20) NULL
+    [Type] VARCHAR(30) NULL
 )
 GO
 
 CREATE UNIQUE INDEX [IX_Test1PropertyKey_Type] ON [dbo].[Test1PropertyKey] ([Type])
 GO
-CREATE TABLE[dbo].[Test1]
+CREATE TABLE [dbo].[Test1]
 (
      [Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1)
 	,[ExternalId] UNIQUEIDENTIFIER NOT NULL
@@ -79,7 +79,7 @@ CREATE INDEX [IX_Test1Reference_KeyId] ON [dbo].[Test1Reference] ([KeyId],[Entit
 
 GO
 
-CREATE PROCEDURE [dbo].[spTest1_UpsertRP]
+CREATE PROCEDURE [dbo].[spTest1UpsertRP]
 	@EntityId BIGINT,
 	@References [External].[KvpTableType] READONLY,
 	@Properties [External].[KvpTableType] READONLY
@@ -138,7 +138,53 @@ AS
 	END CATCH
 
 GO
-CREATE PROCEDURE [External].[spTest1_Create]
+CREATE PROCEDURE [dbo].[spTest1History]
+	 @EntityId BIGINT
+	,@ExternalId UNIQUEIDENTIFIER
+	,@VersionIdNew UNIQUEIDENTIFIER 
+    ,@UserIdAudit UNIQUEIDENTIFIER 
+	,@Body NVARCHAR (MAX)
+	,@DateCreated DATETIME 
+	,@DateUpdated DATETIME 
+	,@Sig VARCHAR(256) 
+AS
+	BEGIN TRY
+
+		--Process the reference first.
+		INSERT INTO [dbo].[Test1History] 
+		(
+			 [EntityId]
+			,[ExternalId] 
+			,[VersionId] 
+			,[UserIdAudit] 
+			,[DateCreated] 
+			,[DateUpdated] 
+			,[Sig] 
+			,[Body]
+		)
+		VALUES
+		(
+			 @EntityId 
+			,@ExternalId 
+			,@VersionIdNew  
+			,@UserIdAudit  
+			,@DateCreated  
+			,@DateUpdated  
+			,@Sig 
+			,@Body 
+		)
+
+		RETURN 200;
+	END TRY
+	BEGIN CATCH
+		IF (ERROR_NUMBER() = 2601)
+			RETURN 409; --Conflict - duplicate reference key to other transaction.
+		ELSE
+			THROW;
+	END CATCH
+
+GO
+CREATE PROCEDURE [External].[spTest1Create]
 	 @ExternalId UNIQUEIDENTIFIER
 	,@VersionId UNIQUEIDENTIFIER = NULL
 	,@VersionIdNew UNIQUEIDENTIFIER = NULL
@@ -178,12 +224,15 @@ AS
 	
 		-- Create references and properties
 		DECLARE @RPResponse INT;
-		EXEC @RPResponse = [dbo].[spTest1_UpsertRP] @Id, @References, @Properties
+		EXEC @RPResponse = [dbo].[spTest1UpsertRP] @Id, @References, @Properties
 		IF (@RPResponse = 409)
 		BEGIN
 			ROLLBACK TRAN;
 			RETURN 409; --Conflict with other entities.
 		END
+
+		--Record the audit history.
+		EXEC [dbo].[spTest1History] @Id, @ExternalId, @VersionIdNew, @UserIdAudit, @Body, @DateCreated, @DateUpdated, @Sig
 
 		COMMIT TRAN;
 
@@ -196,7 +245,7 @@ AS
 	END CATCH
 
 GO
-CREATE PROCEDURE [External].[spTest1_Delete]
+CREATE PROCEDURE [External].[spTest1Delete]
 	@ExternalId UNIQUEIDENTIFIER
 AS
 SET NOCOUNT ON;
@@ -233,7 +282,7 @@ SET NOCOUNT ON;
 		RETURN 500;
 	END CATCH
 GO
-CREATE PROCEDURE [External].[spTest1_DeleteByRef]
+CREATE PROCEDURE [External].[spTest1DeleteByRef]
 	@RefType VARCHAR(30),
 	@RefValue NVARCHAR(250) 
 AS
@@ -276,7 +325,7 @@ SET NOCOUNT ON;
 		RETURN 500
 	END CATCH
 GO
-CREATE PROCEDURE [External].[spTest1_Read]
+CREATE PROCEDURE [External].[spTest1Read]
 	@ExternalId UNIQUEIDENTIFIER
 AS
 SET NOCOUNT ON;
@@ -298,7 +347,7 @@ SET NOCOUNT ON;
 		RETURN 500
 	END CATCH
 GO
-CREATE PROCEDURE [External].[spTest1_ReadByRef]
+CREATE PROCEDURE [External].[spTest1ReadByRef]
 	@RefType VARCHAR(30),
 	@RefValue NVARCHAR(250) 
 AS
@@ -323,7 +372,7 @@ SET NOCOUNT ON;
 		RETURN 500
 	END CATCH
 GO
-CREATE PROCEDURE [External].[spTest1_Update]
+CREATE PROCEDURE [External].[spTest1Update]
 	 @ExternalId UNIQUEIDENTIFIER
 	,@VersionId UNIQUEIDENTIFIER = NULL
 	,@VersionIdNew UNIQUEIDENTIFIER = NULL
@@ -343,7 +392,7 @@ AS
 		IF (@VersionId IS NOT NULL)
 		BEGIN
 			DECLARE @ExistingVersion UNIQUEIDENTIFIER;
-			SELECT @Id = [Id], @VersionId = [VersionId] FROM [dbo].[Test1] WHERE [ExternalId] = @ExternalId
+			SELECT @Id = [Id], @ExistingVersion = [VersionId] FROM [dbo].[Test1] WHERE [ExternalId] = @ExternalId
 			IF (@Id IS NOT NULL AND @ExistingVersion != @VersionId)
 			BEGIN
 				ROLLBACK TRAN;
@@ -379,16 +428,19 @@ AS
 	
 		-- Create references and properties
 		DECLARE @RPResponse INT;
-		EXEC @RPResponse = [dbo].[spTest1_UpsertRP] @Id, @References, @Properties
+		EXEC @RPResponse = [dbo].[spTest1UpsertRP] @Id, @References, @Properties
 		IF (@RPResponse = 409)
 		BEGIN
 			ROLLBACK TRAN;
 			RETURN 409; --Not found
 		END
 
+	    --Record the audit history.
+		EXEC [dbo].[spTest1History] @Id, @ExternalId, @VersionIdNew, @UserIdAudit, @Body, @DateCreated, @DateUpdated, @Sig
+
 		COMMIT TRAN;
 
-		RETURN 201;
+		RETURN 200;
 	END TRY
 	BEGIN CATCH
 		SELECT  ERROR_NUMBER() AS ErrorNumber, ERROR_MESSAGE() AS ErrorMessage; 
@@ -398,7 +450,7 @@ AS
 	END CATCH
 
 GO
-CREATE PROCEDURE [External].[spTest1_Version]
+CREATE PROCEDURE [External].[spTest1Version]
 	@ExternalId UNIQUEIDENTIFIER
 AS
 SET NOCOUNT ON;
@@ -420,7 +472,7 @@ SET NOCOUNT ON;
 		RETURN 500
 	END CATCH
 GO
-CREATE PROCEDURE [External].[spTest1_VersionByRef]
+CREATE PROCEDURE [External].[spTest1VersionByRef]
 	@RefType VARCHAR(30),
 	@RefValue NVARCHAR(250) 
 AS
@@ -444,5 +496,162 @@ SET NOCOUNT ON;
 		SELECT  ERROR_NUMBER() AS ErrorNumber, ERROR_MESSAGE() AS ErrorMessage;
 		RETURN 500
 	END CATCH
+GO
+CREATE PROCEDURE [dbo].[spTest1SearchInternalBuild_Default]
+	@PropertiesFilter [External].[KvpTableType] READONLY,
+	@PropertyOrder [External].[KvpTableType] READONLY,
+	@Skip INT = 0,
+	@Top INT = 50
+AS
+BEGIN
+	DECLARE @ParamCount INT = (SELECT COUNT(*) FROM @PropertiesFilter);
+
+	IF (@Skip IS NULL)
+		SET @Skip = 0;
+	IF (@Top IS NULL)
+		SET @Top = 50;
+
+	IF (@ParamCount = 0)
+		SELECT P.Id
+		FROM [dbo].[Test1] AS P
+		ORDER BY P.Id
+		OFFSET @Skip ROWS
+		FETCH NEXT @Top ROWS ONLY
+	ELSE IF (@ParamCount = 1)
+		SELECT P.EntityId As Id
+		FROM [dbo].[Test1Property] AS P
+		INNER JOIN [dbo].[Test1PropertyKey] PK ON P.KeyId = PK.Id
+		INNER JOIN @PropertiesFilter PF ON PF.RefType = PK.[Type] AND PF.RefValue = P.Value
+		ORDER BY P.EntityId
+		OFFSET @Skip ROWS
+		FETCH NEXT @Top ROWS ONLY
+	ELSE
+		SELECT R.Id
+		FROM
+		(
+			SELECT P.EntityId As Id, 1 AS Num
+			FROM [dbo].[Test1Property] AS P
+			INNER JOIN [dbo].[Test1PropertyKey] PK ON P.KeyId = PK.Id
+			INNER JOIN @PropertiesFilter PF ON PF.RefType = PK.[Type] AND PF.RefValue = P.Value
+		)AS R
+		GROUP BY R.Id
+		HAVING SUM(R.Num) = @ParamCount
+		ORDER BY R.Id
+		OFFSET @Skip ROWS
+		FETCH NEXT @Top ROWS ONLY
+
+
+END
+GO
+CREATE PROCEDURE [External].[spTest1Search_Default]
+	@ETag VARCHAR(50) = NULL,
+	@PropertiesFilter [External].[KvpTableType] READONLY,
+	@PropertyOrder [External].[KvpTableType] READONLY,
+	@Skip INT = 0,
+	@Top INT = 50
+AS
+BEGIN
+	BEGIN TRY
+		--Build
+		DECLARE @FilterIds TABLE
+		(
+			Id BIGINT
+		);
+
+		INSERT INTO @FilterIds
+			EXEC [dbo].[spTest1SearchInternalBuild_Default] @PropertiesFilter, @PropertyOrder, @Skip, @Top
+
+		--Output
+		SELECT E.ExternalId, E.VersionId, 
+		(
+			SELECT PK.[Type] AS 'Type',P.[Value] AS 'Value'
+			FROM [dbo].[Test1Property] AS P
+			INNER JOIN [dbo].[Test1PropertyKey] PK ON P.KeyId = PK.Id
+			WHERE F.Id = P.EntityId
+			FOR JSON PATH, ROOT('Property')
+		) AS Body
+		FROM @FilterIds AS F
+		INNER JOIN [dbo].[Test1] AS E ON F.Id = E.Id;
+
+		RETURN 200;
+	END TRY
+	BEGIN CATCH
+		SELECT ERROR_NUMBER() AS ErrorNumber, ERROR_MESSAGE() AS ErrorMessage; 
+		RETURN 500;
+	END CATCH
+END
+GO
+CREATE PROCEDURE [External].[spTest1SearchEntity_Default]
+	@ETag VARCHAR(50) = NULL,
+	@PropertiesFilter [External].[KvpTableType] READONLY,
+	@PropertyOrder [External].[KvpTableType] READONLY,
+	@Skip INT = 0,
+	@Top INT = 50
+AS
+BEGIN
+	BEGIN TRY
+		--Build
+		DECLARE @FilterIds TABLE
+		(
+			Id BIGINT
+		);
+
+		INSERT INTO @FilterIds
+			EXEC [dbo].[spTest1SearchInternalBuild_Default] @PropertiesFilter, @PropertyOrder, @Skip, @Top
+
+		--Output
+		SELECT E.ExternalId, E.VersionId, E.Body 
+		FROM @FilterIds AS F
+		INNER JOIN [dbo].[Test1] AS E ON F.Id = E.Id;
+
+		RETURN 200;
+	END TRY
+	BEGIN CATCH
+		SELECT ERROR_NUMBER() AS ErrorNumber, ERROR_MESSAGE() AS ErrorMessage; 
+		RETURN 500;
+	END CATCH
+END
+GO
+CREATE PROCEDURE [External].[spTest1Search_Json]
+	@Body NVARCHAR(MAX)
+AS
+BEGIN
+	BEGIN TRY
+		
+		DECLARE @ETag UNIQUEIDENTIFIER = NEWID();
+		DECLARE @Result INT = 405;
+
+		
+		EXEC [{NamespaceInternal}].spSearchLog @ETag, 'Test1', 'spTest1Search_Json',@Result, @Body;
+
+
+		RETURN @Result;
+	END TRY
+	BEGIN CATCH
+		SELECT ERROR_NUMBER() AS ErrorNumber, ERROR_MESSAGE() AS ErrorMessage; 
+		RETURN 500;
+	END CATCH
+END
+GO
+CREATE PROCEDURE [External].[spTest1SearchEntity_Json]
+	@Body NVARCHAR(MAX)
+AS
+BEGIN
+	BEGIN TRY
+
+		DECLARE @ETag UNIQUEIDENTIFIER = NEWID();
+		DECLARE @Result INT = 405;
+
+
+		EXEC [{NamespaceInternal}].spSearchLog @ETag, 'Test1', 'spTest1SearchEntity_Json',@Result, @Body;
+
+
+		RETURN @Result;
+	END TRY
+	BEGIN CATCH
+		SELECT ERROR_NUMBER() AS ErrorNumber, ERROR_MESSAGE() AS ErrorMessage; 
+		RETURN 500;
+	END CATCH
+END
 GO
 

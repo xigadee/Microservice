@@ -63,5 +63,15 @@
         /// Gets the search entity stored procedure name.
         /// </summary>
         string StoredProcedureSearchEntity(string id);
+
+
+        /// <summary>
+        /// Gets the search stored procedure name.
+        /// </summary>
+        string StoredProcedureSearchJson(string id);
+        /// <summary>
+        /// Gets the search entity stored procedure name.
+        /// </summary>
+        string StoredProcedureSearchEntityJson(string id);
     }
 }

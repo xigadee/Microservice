@@ -8,3 +8,5 @@
 	,[Sig] VARCHAR(256) NULL
 	,[Body] NVARCHAR(MAX) NULL
 )
+GO 
+CREATE UNIQUE INDEX[IX_SearchHistory_ETag] ON [{NamespaceTable}].[SearchHistory] ([ETag]) 
