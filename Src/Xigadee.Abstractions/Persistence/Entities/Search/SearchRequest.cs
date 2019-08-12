@@ -107,15 +107,20 @@ namespace Xigadee
         /// </summary>
         public Dictionary<string, string> FilterParameters { get; set; } = new Dictionary<string, string>();
 
-        public Dictionary<int, FilterParameter> ParamsFilter => BuildFilters().ToDictionary(r => r.Position, r => r);
+        public Dictionary<int, FilterParameter> ParamsFilter => 
+            BuildParameters<FilterParameter>(Filter, FilterParameter.ODataConditionals).ToDictionary(r => r.Position, r => r);
 
-        //public Dictionary<int, OrderByParameter> ParamsOrderBy => BuildFilters().ToDictionary(r => r.Position, r => r);
+        public Dictionary<int, OrderByParameter> ParamsOrderBy =>
+            BuildParameters<OrderByParameter>(OrderBy, new[] { "," }).ToDictionary(r => r.Position, r => r);
 
-        //public Dictionary<int, SelectParameter> ParamsSelect => BuildFilters().ToDictionary(r => r.Position, r => r);
+        public Dictionary<int, SelectParameter> ParamsSelect =>
+            BuildParameters<SelectParameter>(Select, new[] { "," }).ToDictionary(r => r.Position, r => r);
 
-        protected IEnumerable<FilterParameter> BuildFilters()
+
+
+        protected static IEnumerable<P> BuildParameters<P>(string value, IEnumerable<string> splits) where P : ParameterBase, new()
         {
-            var parts = Filter.Split(FilterParameter.ODataConditionals.ToArray(), StringSplitOptions.RemoveEmptyEntries);
+            var parts = value.Split(splits.ToArray(), StringSplitOptions.RemoveEmptyEntries);
 
             if (parts.Length == 0)
                 yield break;
@@ -123,7 +128,9 @@ namespace Xigadee
             int pos = 0;
             foreach (var part in parts)
             {
-                yield return new FilterParameter(pos, part);
+                var p = new P();
+                p.Load(pos, part);
+                yield return p;
                 pos++;
             }
         }
@@ -288,17 +295,50 @@ namespace Xigadee
         public string Parameter { get; set; }
 
         protected static bool CompareOperator(string op, string value) => string.Equals(value?.Trim(), op, StringComparison.InvariantCultureIgnoreCase);
+
+        public virtual void Load(int position, string value)
+        {
+            Position = position;
+            Parse(value);
+        }
+
+        /// <summary>
+        /// This abstract method is used to parse the string value in to the relevant properties.
+        /// </summary>
+        /// <param name="value"></param>
+        protected abstract void Parse(string value);
+
     }
 
     public class OrderByParameter: ParameterBase
     {
-        public bool IsDescending { get; set; }
-    }
+        public const string ODataAscending = "asc";
+        public const string ODataDecending = "desc";
 
+        /// <summary>
+        /// Specifies whether the parameter should be ordered in descending order.
+        /// </summary>
+        public bool IsDescending { get; set; }
+
+        protected override void Parse(string value)
+        {
+            var parts = value?.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length == 0)
+                return;
+
+            Parameter = parts[0].Trim();
+
+            IsDescending = parts.Length > 1 && string.Equals(parts[1].Trim(), ODataDecending, StringComparison.InvariantCultureIgnoreCase);
+        }
+    }
 
     public class SelectParameter : ParameterBase
     {
-
+        protected override void Parse(string value)
+        {
+            Parameter = value?.Trim();
+        }
     }
 
     /// <summary>
@@ -324,26 +364,6 @@ namespace Xigadee
         public static IReadOnlyList<string> ODataConditionals => new []{ ODataConditionalAnd, ODataConditionalOr };
         #endregion
 
-        public FilterParameter() { }
-
-        public FilterParameter(int position, string value)
-        {
-            this.Position = position;
-
-            var parts = value.Trim().Split(new[]{' '}, StringSplitOptions.RemoveEmptyEntries);
-
-            if (parts.Length == 0)
-                return;
-            this.Parameter = parts[0];
-            if (parts.Length == 1)
-                return;
-
-            this.Operator = parts[1];
-            if (parts.Length == 2)
-                return;
-
-            this.Value = parts[2];
-        }
 
         public string Operator { get; set; }
 
@@ -363,11 +383,31 @@ namespace Xigadee
 
         private bool CompareOperator(string op) => CompareOperator(op, Operator);
 
+        /// <summary>
+        /// This method parses the incoming value and sets the relevant properties.
+        /// </summary>
+        /// <param name="value"></param>
+        protected override void Parse(string value)
+        {
+            var parts = value.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length == 0)
+                return;
+            this.Parameter = parts[0];
+            if (parts.Length == 1)
+                return;
+
+            this.Operator = parts[1];
+            if (parts.Length == 2)
+                return;
+
+            this.Value = parts[2];
+        }
     }
 
 
 
-
+    #region SearchRequestHelper
     /// <summary>
     /// This is the helper class that is used to extend the SearchRequest functionality.
     /// </summary>
@@ -420,7 +460,7 @@ namespace Xigadee
                 , new[] { ',' }, new[] { ' ' }, s => s.Trim());
 
             foreach (var res in resL)
-                yield return (res.Key, res.Value?.Equals("ASC", StringComparison.InvariantCultureIgnoreCase)??true);
+                yield return (res.Key, res.Value?.Equals("ASC", StringComparison.InvariantCultureIgnoreCase) ?? true);
 
         }
 
@@ -443,5 +483,6 @@ namespace Xigadee
                 yield return res.Key;
 
         }
-    }
+    } 
+    #endregion
 }
