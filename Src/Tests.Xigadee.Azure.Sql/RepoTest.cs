@@ -8,14 +8,6 @@ namespace Tests.Xigadee.Azure.Sql
     [TestClass]
     public class RepoTest
     {
-        //static TestContext _context;
-    
-        //[ClassInitialize]
-        //public static void TestClassInitialize(TestContext context)
-        //{
-        //    _context = context;
-        //}
-
         #region TestContext
         /// <summary>
         /// All hail the Microsoft test magic man!
@@ -65,13 +57,14 @@ namespace Tests.Xigadee.Azure.Sql
                 //var v1 = await repo.Version(newUser.Id);
                 //var v1m = await repom.Version(newUser.Id);
 
+                var srq1 = (SearchRequest)"$top=100&$id=default&$skip=3&$select=Type,Group,DateCreated&$orderby=Group desc, Type desc&$filter=id eq '123' and ertp gt 610 and CustomerID eq null";
 
-                var s1 = await repo.SearchEntity(new SearchRequest());
+                var s1 = await repo.SearchEntity(srq1);
+                var s2 = await repo.Search(new SearchRequest());
                 var s1m = await repom.SearchEntity(new SearchRequest());
             }
             catch (Exception ex)
             {
-
                 throw;
             }
         }

@@ -215,7 +215,7 @@ namespace Xigadee
             var response = new SearchResponse();
             response.PopulateSearchRequest(rq);
 
-            var ctx = new SqlEntityContext<SearchRequest, SearchResponse>(SpNamer.StoredProcedureSearch(rq.Id ?? "Default"), options, rq);
+            var ctx = new SqlEntityContext<SearchRequest, SearchResponse>(SearchSpName(rq.Id), options, rq);
             ctx.EntityOutgoing = response;
 
             await ExecuteSqlCommand(ctx
@@ -246,7 +246,7 @@ namespace Xigadee
             var response = new SearchResponse<E>();
             response.PopulateSearchRequest(rq);
 
-            var ctx = new SqlEntityContext<SearchRequest, SearchResponse<E>>(SpNamer.StoredProcedureSearchEntity(rq.Id), options, rq);
+            var ctx = new SqlEntityContext<SearchRequest, SearchResponse<E>>(SearchEntitySpName(rq.Id), options, rq);
             ctx.EntityOutgoing = response;
 
             await ExecuteSqlCommand(ctx
@@ -261,6 +261,19 @@ namespace Xigadee
             return rs;
         }
         #endregion
+
+        /// <summary>
+        /// This returns the name of the search stored procedure.
+        /// </summary>
+        /// <param name="id">The search type. This will be set to Default if left as null.</param>
+        /// <returns>Returns the stored procedure name.</returns>
+        protected virtual string SearchSpName(string id) => SpNamer.StoredProcedureSearch(id ?? "Default");
+        /// <summary>
+        /// This returns the name of the search entity stored procedure.
+        /// </summary>
+        /// <param name="id">The search type. This will be set to Default if left as null.</param>
+        /// <returns>Returns the stored procedure name.</returns>
+        protected virtual string SearchEntitySpName(string id) => SpNamer.StoredProcedureSearchEntity(id ?? "Default");
 
         /// <summary>
         /// This method serializes the entity in to the SqlCommand.

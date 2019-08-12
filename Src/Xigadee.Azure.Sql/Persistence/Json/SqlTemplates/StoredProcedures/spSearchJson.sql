@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [{NamespaceExternal}].[{spSearch}_Json]
+﻿CREATE PROCEDURE [{NamespaceExternal}].[{spSearch}_Default_Json]
 	@Body NVARCHAR(MAX)
 AS
 BEGIN
@@ -8,7 +8,7 @@ BEGIN
 		DECLARE @Result INT = 405;
 
 		
-		EXEC [{NamespaceInternal}].spSearchLog @ETag, '{EntityName}', '{spSearch}_Json',@Result, @Body;
+		EXEC [{NamespaceTable}].spSearchLog @ETag, '{EntityName}', '{spSearch}_Json', @Body;
 
 
 		RETURN @Result;

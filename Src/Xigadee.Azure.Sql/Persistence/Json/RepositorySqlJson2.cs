@@ -64,8 +64,20 @@ namespace Xigadee
         protected string CreateSearchBody(SearchRequest entity)
         {
             return JsonConvert.SerializeObject(entity);
-        } 
+        }
         #endregion
 
+        /// <summary>
+        /// This returns the name of the search stored procedure.
+        /// </summary>
+        /// <param name="id">The search type. This will be set to Default if left as null.</param>
+        /// <returns>Returns the stored procedure name.</returns>
+        protected override string SearchSpName(string id) => SpNamer.StoredProcedureSearchJson(id ?? "Default");
+        /// <summary>
+        /// This returns the name of the search entity stored procedure.
+        /// </summary>
+        /// <param name="id">The search type. This will be set to Default if left as null.</param>
+        /// <returns>Returns the stored procedure name.</returns>
+        protected override string SearchEntitySpName(string id) => SpNamer.StoredProcedureSearchEntityJson(id ?? "Default");
     }
 }

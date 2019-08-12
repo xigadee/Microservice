@@ -10,7 +10,7 @@ namespace Xigadee
     /// This class holds the incoming OData parameters.
     /// </summary>
     [DebuggerDisplay("{ToString()}")]
-    public class SearchRequest: IEquatable<SearchRequest>, IPropertyBag
+    public class SearchRequest : IEquatable<SearchRequest>, IPropertyBag
     {
         #region Constructors
         /// <summary>
@@ -41,15 +41,17 @@ namespace Xigadee
         }
         #endregion
 
+        #region Assign(KeyValuePair<string,string> toSet)
         /// <summary>
         /// Assigns the kvp to the collection.
         /// </summary>
         /// <param name="toSet">The KeyValuePair to set.</param>
-        protected void Assign(KeyValuePair<string,string> toSet)
+        protected void Assign(KeyValuePair<string, string> toSet)
         {
             Assign(toSet.Key, toSet.Value);
         }
-
+        #endregion
+        #region Assign(string key, string value)
         /// <summary>
         /// Assigns the specified key and value to the search collection.
         /// </summary>
@@ -93,6 +95,7 @@ namespace Xigadee
 
             IsSet |= isSet;
         }
+        #endregion
 
         /// <summary>
         /// Gets a value indicating whether this instance is set.
@@ -103,6 +106,27 @@ namespace Xigadee
         /// Gets or sets the parameter collection.
         /// </summary>
         public Dictionary<string, string> FilterParameters { get; set; } = new Dictionary<string, string>();
+
+        public Dictionary<int, FilterParameter> ParamsFilter => BuildFilters().ToDictionary(r => r.Position, r => r);
+
+        //public Dictionary<int, OrderByParameter> ParamsOrderBy => BuildFilters().ToDictionary(r => r.Position, r => r);
+
+        //public Dictionary<int, SelectParameter> ParamsSelect => BuildFilters().ToDictionary(r => r.Position, r => r);
+
+        protected IEnumerable<FilterParameter> BuildFilters()
+        {
+            var parts = Filter.Split(FilterParameter.ODataConditionals.ToArray(), StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length == 0)
+                yield break;
+
+            int pos = 0;
+            foreach (var part in parts)
+            {
+                yield return new FilterParameter(pos, part);
+                pos++;
+            }
+        }
 
         /// <summary>
         /// This is the search algorithm that is used to search against the parameters specified.
@@ -256,6 +280,93 @@ namespace Xigadee
             return sr?.ToString();
         }
     }
+
+    public abstract class ParameterBase
+    {
+        public int Position { get; set; }
+
+        public string Parameter { get; set; }
+
+        protected static bool CompareOperator(string op, string value) => string.Equals(value?.Trim(), op, StringComparison.InvariantCultureIgnoreCase);
+    }
+
+    public class OrderByParameter: ParameterBase
+    {
+        public bool IsDescending { get; set; }
+    }
+
+
+    public class SelectParameter : ParameterBase
+    {
+
+    }
+
+    /// <summary>
+    /// https://www.ibm.com/support/knowledgecenter/en/SSYJJF_1.0.0/ApplicationSecurityonCloud/api_odata2.html
+    /// </summary>
+    public class FilterParameter : ParameterBase
+    {
+        #region OData constants
+        public const string ODataNull = "null";
+
+        public const string ODataEqual = "eq";
+        public const string ODataNotEqual = "ne";
+
+        public const string ODataLessThan = "lt";
+        public const string ODataLessThanOrEqual = "le";
+
+        public const string ODataGreaterThan = "gt";
+        public const string ODataGreaterThanOrEqual = "ge";
+
+        public const string ODataConditionalAnd = "and";
+        public const string ODataConditionalOr = "or";
+
+        public static IReadOnlyList<string> ODataConditionals => new []{ ODataConditionalAnd, ODataConditionalOr };
+        #endregion
+
+        public FilterParameter() { }
+
+        public FilterParameter(int position, string value)
+        {
+            this.Position = position;
+
+            var parts = value.Trim().Split(new[]{' '}, StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length == 0)
+                return;
+            this.Parameter = parts[0];
+            if (parts.Length == 1)
+                return;
+
+            this.Operator = parts[1];
+            if (parts.Length == 2)
+                return;
+
+            this.Value = parts[2];
+        }
+
+        public string Operator { get; set; }
+
+        public string Value { get; set; }
+
+        public string ValueRaw => Value?.Trim('\'');
+
+        public bool IsNullOperator => CompareOperator(ODataNull, ValueRaw);
+
+        public bool IsEqual => CompareOperator(ODataEqual);
+
+        public bool IsNotEqual => CompareOperator(ODataNotEqual);
+
+        public bool IsLessThan => CompareOperator(ODataLessThan);
+
+        public bool IsGreaterThan => CompareOperator(ODataGreaterThan);
+
+        private bool CompareOperator(string op) => CompareOperator(op, Operator);
+
+    }
+
+
+
 
     /// <summary>
     /// This is the helper class that is used to extend the SearchRequest functionality.

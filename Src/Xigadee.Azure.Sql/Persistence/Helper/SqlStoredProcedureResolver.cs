@@ -152,13 +152,13 @@ namespace Xigadee
         /// </summary>
         /// <param name="id">The search identifier.</param>
         /// <returns>Returns the combined string which matches to a specific search stored procedure.</returns>
-        public virtual string StoredProcedureSearchJson(string id) => ExternalSchema + $"{_spNames[RepositoryMethod.Search]}_{id?.Trim().ToLowerInvariant() ?? "Default_Json"}";
+        public virtual string StoredProcedureSearchJson(string id) => ExternalSchema + $"{_spNames[RepositoryMethod.Search]}_{id?.Trim().ToLowerInvariant() ?? "Default"}_Json";
         /// <summary>
         /// This is the new entity based Json search request.
         /// </summary>
         /// <param name="id">The search identifier.</param>
         /// <returns>Returns the combined string which matches to a specific search stored procedure.</returns>
-        public virtual string StoredProcedureSearchEntityJson(string id) => ExternalSchema + $"{_spNames[RepositoryMethod.Search]}_{id?.Trim().ToLowerInvariant() ?? "Default_Json"}";
+        public virtual string StoredProcedureSearchEntityJson(string id) => ExternalSchema + $"{_spNames[RepositoryMethod.Search]}_{id?.Trim().ToLowerInvariant() ?? "Default"}_Json";
 
 
         /// <summary>

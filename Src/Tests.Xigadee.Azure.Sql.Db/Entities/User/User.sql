@@ -612,7 +612,7 @@ BEGIN
 	END CATCH
 END
 GO
-CREATE PROCEDURE [External].[spUserSearch_Json]
+CREATE PROCEDURE [External].[spUserSearch_Default_Json]
 	@Body NVARCHAR(MAX)
 AS
 BEGIN
@@ -622,7 +622,7 @@ BEGIN
 		DECLARE @Result INT = 405;
 
 		
-		EXEC [{NamespaceInternal}].spSearchLog @ETag, 'User', 'spUserSearch_Json',@Result, @Body;
+		EXEC [dbo].spSearchLog @ETag, 'User', 'spUserSearch_Json', @Body;
 
 
 		RETURN @Result;
@@ -633,7 +633,7 @@ BEGIN
 	END CATCH
 END
 GO
-CREATE PROCEDURE [External].[spUserSearchEntity_Json]
+CREATE PROCEDURE [External].[spUserSearchEntity_Default_Json]
 	@Body NVARCHAR(MAX)
 AS
 BEGIN
@@ -643,7 +643,7 @@ BEGIN
 		DECLARE @Result INT = 405;
 
 
-		EXEC [{NamespaceInternal}].spSearchLog @ETag, 'User', 'spUserSearchEntity_Json',@Result, @Body;
+		EXEC [dbo].spSearchLog @ETag, 'User', 'spUserSearchEntity_Json', @Body;
 
 
 		RETURN @Result;
