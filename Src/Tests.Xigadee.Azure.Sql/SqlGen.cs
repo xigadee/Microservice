@@ -13,7 +13,6 @@ namespace Tests.Xigadee.Azure.Sql
         {
             var sgUser = new SqlJsonGenerator<User>();
             var sgTest1 = new SqlJsonGenerator<Test1>();
-
         }
 
         [TestMethod]
@@ -47,7 +46,7 @@ namespace Tests.Xigadee.Azure.Sql
 
             var spsearch = generator.SpSearch;
             var spsearchb = generator.SpSearchEntity;
-            var spsearche = generator.SpSearchBuild;
+            var spsearche = generator.SpSearchInternalBuild;
 
             var sps = generator.ScriptStoredProcedures(true);
             var spc = generator.ScriptStoredProcedures(false);

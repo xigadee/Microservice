@@ -612,6 +612,52 @@ BEGIN
 	END CATCH
 END
 GO
+CREATE PROCEDURE [dbo].[spUserSearchInternalBuild_Json]
+	@ETag UNIQUEIDENTIFIER,
+	@Body NVARCHAR(MAX)
+AS
+BEGIN
+	DECLARE @Skip INT = ISNULL(CAST(JSON_VALUE(@Body,'lax $.SkipValue') AS INT), 0);
+	DECLARE @Top INT = ISNULL(CAST(JSON_VALUE(@Body,'lax $.TopValue') AS INT), 50);
+
+	SELECT P.Id AS [Id], 1 AS [Score]
+	FROM [dbo].[User] AS P
+	ORDER BY P.Id
+	OFFSET @Skip ROWS
+	FETCH NEXT @Top ROWS ONLY;
+
+	--IF (@ParamCount = 0)
+	--	SELECT P.Id
+	--	FROM [dbo].[User] AS P
+	--	ORDER BY P.Id
+	--	OFFSET @Skip ROWS
+	--	FETCH NEXT @Top ROWS ONLY
+	--ELSE IF (@ParamCount = 1)
+	--	SELECT P.EntityId As Id
+	--	FROM [dbo].[UserProperty] AS P
+	--	INNER JOIN [dbo].[UserPropertyKey] PK ON P.KeyId = PK.Id
+	--	INNER JOIN @PropertiesFilter PF ON PF.RefType = PK.[Type] AND PF.RefValue = P.Value
+	--	ORDER BY P.EntityId
+	--	OFFSET @Skip ROWS
+	--	FETCH NEXT @Top ROWS ONLY
+	--ELSE
+	--	SELECT R.Id
+	--	FROM
+	--	(
+	--		SELECT P.EntityId As Id, 1 AS Num
+	--		FROM [dbo].[UserProperty] AS P
+	--		INNER JOIN [dbo].[UserPropertyKey] PK ON P.KeyId = PK.Id
+	--		INNER JOIN @PropertiesFilter PF ON PF.RefType = PK.[Type] AND PF.RefValue = P.Value
+	--	)AS R
+	--	GROUP BY R.Id
+	--	HAVING SUM(R.Num) = @ParamCount
+	--	ORDER BY R.Id
+	--	OFFSET @Skip ROWS
+	--	FETCH NEXT @Top ROWS ONLY
+
+	RETURN 200;
+END
+GO
 CREATE PROCEDURE [External].[spUserSearch_Default_Json]
 	@Body NVARCHAR(MAX)
 AS
@@ -638,13 +684,28 @@ CREATE PROCEDURE [External].[spUserSearchEntity_Default_Json]
 AS
 BEGIN
 	BEGIN TRY
+		--Build
+		DECLARE @FilterIds TABLE
+		(
+			Id BIGINT,
+			Score INT
+		);
 
-		DECLARE @ETag UNIQUEIDENTIFIER = NEWID();
+		DECLARE @ETag UNIQUEIDENTIFIER;
+		SET @ETag = ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(@Body,'lax $.ETag')), NEWID());
+
 		DECLARE @Result INT = 405;
-
 
 		EXEC [dbo].spSearchLog @ETag, 'User', 'spUserSearchEntity_Json', @Body;
 
+		INSERT INTO @FilterIds
+			EXEC @Result = [dbo].[spUserSearchInternalBuild_Json] @ETag, @Body
+
+		--Output
+		SELECT E.ExternalId, E.VersionId, E.Body 
+		FROM @FilterIds AS F
+		INNER JOIN [dbo].[User] AS E ON F.Id = E.Id
+		ORDER BY F.Score;
 
 		RETURN @Result;
 	END TRY

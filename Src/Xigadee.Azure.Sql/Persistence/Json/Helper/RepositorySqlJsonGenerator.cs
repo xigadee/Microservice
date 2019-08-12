@@ -192,7 +192,11 @@ namespace Xigadee
         /// <summary>
         /// This is the entity search stored procedure.
         /// </summary>
-        public string SpSearchBuild => ProcessTemplate("StoredProcedures.spSearchBuild.sql");
+        public string SpSearchInternalBuild => ProcessTemplate("StoredProcedures.spSearchInternalBuild.sql");
+        /// <summary>
+        /// This is the SP that collates the Id from the incoming JSON search request.
+        /// </summary>
+        public string SpSearchInternalBuildJson => ProcessTemplate("StoredProcedures.spSearchInternalBuildJson.sql");
 
         /// <summary>
         /// This is the entity search stored procedure.
@@ -243,13 +247,16 @@ namespace Xigadee
             sb.AppendLine(SpVersionByRef);
             sb.AppendLine("GO");
 
-            sb.AppendLine(SpSearchBuild);
+            sb.AppendLine(SpSearchInternalBuild);
             sb.AppendLine("GO");
             sb.AppendLine(SpSearch);
             sb.AppendLine("GO");
             sb.AppendLine(SpSearchEntity);
             sb.AppendLine("GO");
+
             //Json Search
+            sb.AppendLine(SpSearchInternalBuildJson);
+            sb.AppendLine("GO");
             sb.AppendLine(SpSearchJson);
             sb.AppendLine("GO");
             sb.AppendLine(SpSearchEntityJson);

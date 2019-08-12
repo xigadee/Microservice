@@ -116,10 +116,11 @@ namespace Xigadee
         public Dictionary<int, SelectParameter> ParamsSelect =>
             BuildParameters<SelectParameter>(Select, new[] { "," }).ToDictionary(r => r.Position, r => r);
 
-
-
         protected static IEnumerable<P> BuildParameters<P>(string value, IEnumerable<string> splits) where P : ParameterBase, new()
         {
+            if (value == null)
+                yield break;
+
             var parts = value.Split(splits.ToArray(), StringSplitOptions.RemoveEmptyEntries);
 
             if (parts.Length == 0)
@@ -143,7 +144,7 @@ namespace Xigadee
         /// <summary>
         /// This is the search collection identifier. It allows pagination to occur with a cached sample.
         /// </summary>
-        public string ETag { get; set; }
+        public string ETag { get; set; } = Guid.NewGuid().ToString();
 
         /// <summary>
         /// The raw $filter query value from the incoming request, this maps to the filter algorithm defined
@@ -269,7 +270,6 @@ namespace Xigadee
             return true;
         }
 
-
         /// <summary>
         /// Implicitly converts a string in to a resource profile.
         /// </summary>
@@ -312,6 +312,7 @@ namespace Xigadee
 
     public class OrderByParameter: ParameterBase
     {
+        //Specify as ascending. 
         public const string ODataAscending = "asc";
         public const string ODataDecending = "desc";
 

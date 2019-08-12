@@ -33,6 +33,41 @@ namespace Tests.Xigadee.Azure.Sql
             return conn;
         }
 
+        readonly Guid[] Accounts = { new Guid("{C9BD832A-DFDC-41D6-934C-853EC1272C37}"), new Guid("{48693BD8-05D2-49D0-BCAA-4B588303D2C6}") };
+
+        [TestMethod]
+        public async Task SqlJsonTest1Test()
+        {
+            var conn = BuildSqlConnection();
+
+            var repo = new RepositorySqlJson2<Guid, Test1>(conn);
+
+
+            for (int i = 0; i < 100; i++)
+            {
+                var t = new Test1();
+                t.UserId = Guid.NewGuid();
+                t.AccountId = Accounts[i % Accounts.Length];
+
+                var rs1 = await repo.Create(t);
+            }
+
+        }
+
+        [TestMethod]
+        public async Task SqlJsonTest1Search()
+        {
+            var conn = BuildSqlConnection();
+
+            var repo = new RepositorySqlJson2<Guid, Test1>(conn);
+
+            var srq1 = (SearchRequest)$"$top=100&$id=default&$skip=3&$orderby=DateCreated desc&$filter=accountid eq '{Accounts[0]}'";
+
+            var s1 = await repo.SearchEntity(srq1);
+
+        }
+
+
         [TestMethod]
         public async Task SqlJsonTest()
         {
