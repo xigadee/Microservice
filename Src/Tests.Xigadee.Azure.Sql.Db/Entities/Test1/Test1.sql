@@ -687,27 +687,79 @@ BEGIN
 		--Build
 		DECLARE @FilterIds TABLE
 		(
-			Id BIGINT,
-			Score INT
+			Id BIGINT PRIMARY KEY NOT NULL,
+			[Rank] INT
 		);
 
 		DECLARE @ETag UNIQUEIDENTIFIER;
 		SET @ETag = ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(@Body,'lax $.ETag')), NEWID());
 
-		DECLARE @Result INT = 405;
+		DECLARE @Skip INT = ISNULL(CAST(JSON_VALUE(@Body,'lax $.SkipValue') AS INT), 0);
+		DECLARE @Top INT = ISNULL(CAST(JSON_VALUE(@Body,'lax $.TopValue') AS INT), 50);
 
 		EXEC [dbo].spSearchLog @ETag, 'Test1', 'spTest1SearchEntity_Json', @Body;
-
+	
+		;WITH Entities(Id, Score)AS
+		(
+			SELECT u.Id,SUM(u.Position)
+			FROM OPENJSON(@Body, N'lax $.Filters.Params') F
+			CROSS APPLY [dbo].[udfFilterTest1Property] (F.value) u
+			GROUP BY u.Id
+		)
 		INSERT INTO @FilterIds
-			EXEC @Result = [dbo].[spTest1SearchInternalBuild_Json] @ETag, @Body
+		SELECT E.Id,0 FROM Entities E
+		INNER JOIN OPENJSON(@Body, N'lax $.Filters.Validity') V ON V.value = E.Score;
+
+		DECLARE @Order NVARCHAR(MAX) = (SELECT TOP 1 value FROM OPENJSON(@Body, N'lax $.ParamsOrderBy'))
+		DECLARE @IsDescending BIT = 0;
+		--Rank
+		IF (@Order IS NOT NULL)
+		BEGIN
+			DECLARE @IsDateField BIT = ISNULL(CAST(JSON_VALUE(@Order,'lax $.IsDateField') AS BIT), 0);
+			SET @IsDescending = ISNULL(CAST(JSON_VALUE(@Order,'lax $.IsDescending') AS BIT), 0);
+			DECLARE @OrderParameter VARCHAR(50) = LOWER(CAST(JSON_VALUE(@Order,'lax $.Parameter') AS VARCHAR(50)));
+
+			IF (@IsDateField = 1)
+			BEGIN
+				;WITH R1(Id,Score)AS
+				(
+				  SELECT [Id]
+				  , CASE @OrderParameter 
+						WHEN 'datecreated' THEN RANK() OVER(ORDER BY [DateCreated]) 
+						WHEN 'dateupdated' THEN RANK() OVER(ORDER BY ISNULL([DateUpdated],[DateCreated])) 
+					END
+				  FROM [dbo].[Test1]
+				)
+				UPDATE @FilterIds
+					SET [Rank] = R1.[Score]
+				FROM @FilterIds f
+				INNER JOIN R1 ON R1.Id = f.Id
+			END
+		END
 
 		--Output
-		SELECT E.ExternalId, E.VersionId, E.Body 
-		FROM @FilterIds AS F
-		INNER JOIN [dbo].[Test1] AS E ON F.Id = E.Id
-		ORDER BY F.Score;
-
-		RETURN @Result;
+		IF (@IsDescending = 0)
+		BEGIN
+			--Output
+			SELECT E.ExternalId, E.VersionId, E.Body 
+			FROM @FilterIds AS F
+			INNER JOIN [dbo].[Test1] AS E ON F.Id = E.Id
+			ORDER BY F.[Rank]
+			OFFSET @Skip ROWS
+			FETCH NEXT @Top ROWS ONLY
+		END
+		ELSE
+		BEGIN
+			--Output
+			SELECT E.ExternalId, E.VersionId, E.Body 
+			FROM @FilterIds AS F
+			INNER JOIN [dbo].[Test1] AS E ON F.Id = E.Id
+			ORDER BY F.[Rank] DESC
+			OFFSET @Skip ROWS
+			FETCH NEXT @Top ROWS ONLY
+		END
+	
+		RETURN 200;
 	END TRY
 	BEGIN CATCH
 		SELECT ERROR_NUMBER() AS ErrorNumber, ERROR_MESSAGE() AS ErrorMessage; 
@@ -746,9 +798,12 @@ DECLARE @OutputPosition INT = POWER(2, @Position);
 DECLARE @Value NVARCHAR(250) = JSON_VALUE(@Body,'lax $.ValueRaw');
 DECLARE @IsNullOperator BIT = TRY_CONVERT(BIT, JSON_VALUE(@Body,'lax $.IsNullOperator'));
 DECLARE @IsEqual BIT = TRY_CONVERT(BIT, JSON_VALUE(@Body,'lax $.IsEqual'));
+
 DECLARE @IsNotEqual BIT = TRY_CONVERT(BIT, JSON_VALUE(@Body,'lax $.IsNotEqual'));
 
-IF (@IsNullOperator = 1 AND @IsEqual = 1)
+DECLARE @IsNegation BIT = ISNULL(TRY_CONVERT(BIT, JSON_VALUE(@Body,'lax $.IsNegation')),0);
+
+IF (@IsNullOperator = 1 AND (@IsNegation = 0 AND @IsEqual = 1) OR (@IsNegation = 1 AND @IsEqual = 0))
 BEGIN
    WITH EntitySet(Id) AS(
    SELECT Id FROM [dbo].[Test1]
@@ -760,7 +815,7 @@ BEGIN
    RETURN;
 END
 
-IF (@IsNullOperator = 1 AND @IsEqual = 0)
+IF (@IsNullOperator = 1 AND (@IsNegation = 0 AND @IsEqual = 0) OR (@IsNegation = 1 AND @IsEqual = 1))
 BEGIN
    WITH EntitySet(Id) AS(
    SELECT DISTINCT EntityId FROM [dbo].[Test1Property] WHERE [KeyId] = @PropertyKey
@@ -769,6 +824,16 @@ BEGIN
    SELECT Id, @OutputPosition FROM EntitySet;
    RETURN;
 END
+
+IF (@IsNegation = 1)
+	SET @Operator = CASE @Operator 
+		WHEN 'eq' THEN 'ne' 
+		WHEN 'ne' THEN 'eq' 
+		WHEN 'lt' THEN 'ge' 
+		WHEN 'le' THEN 'gt' 
+		WHEN 'gt' THEN 'le' 
+		WHEN 'ge' THEN 'lt' 
+	END;
 
 IF (@Operator = 'eq')
 BEGIN
@@ -832,6 +897,5 @@ END
 
 RETURN;
 END;  
-GO
 GO
 

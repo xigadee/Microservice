@@ -158,7 +158,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="id">The search identifier.</param>
         /// <returns>Returns the combined string which matches to a specific search stored procedure.</returns>
-        public virtual string StoredProcedureSearchEntityJson(string id) => ExternalSchema + $"{_spNames[RepositoryMethod.Search]}_{id?.Trim().ToLowerInvariant() ?? "Default"}_Json";
+        public virtual string StoredProcedureSearchEntityJson(string id) => ExternalSchema + $"{_spNames[RepositoryMethod.SearchEntity]}_{id?.Trim().ToLowerInvariant() ?? "Default"}_Json";
 
 
         /// <summary>

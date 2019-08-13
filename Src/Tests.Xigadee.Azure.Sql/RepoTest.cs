@@ -61,7 +61,7 @@ namespace Tests.Xigadee.Azure.Sql
 
             var repo = new RepositorySqlJson2<Guid, Test1>(conn);
 
-            var srq1 = (SearchRequest)$"$top=100&$id=default&$skip=3&$orderby=DateCreated desc&$filter=accountid eq '{Accounts[0]}' or userid eq null";
+            var srq1 = (SearchRequest)$"$top=100&$id=default&$skip=3&$orderby=DateUpdated desc&$filter=accountid eq '{Accounts[0]}' or userid eq null";
 
             var s1 = await repo.SearchEntity(srq1);
 
