@@ -31,6 +31,13 @@ namespace Xigadee
                 , new[] { '&' }, new[] { '=' })
                 .ForEach(kv => Assign(kv));
 
+            Filters = new FilterCollection(Filter);
+
+            ParamsOrderBy =
+            SearchRequestHelper.BuildParameters<OrderByParameter>(OrderBy, new[] { "," }).ToDictionary(r => r.Position, r => r);
+
+            ParamsSelect =
+            SearchRequestHelper.BuildParameters<SelectParameter>(Select, new[] { "," }).ToDictionary(r => r.Position, r => r);
         }
         /// <summary>
         /// Initializes a new instance of the <see cref="SearchRequest"/> class.
@@ -107,34 +114,20 @@ namespace Xigadee
         /// </summary>
         public Dictionary<string, string> FilterParameters { get; set; } = new Dictionary<string, string>();
 
-        public Dictionary<int, FilterParameter> ParamsFilter => 
-            BuildParameters<FilterParameter>(Filter, FilterParameter.ODataConditionals).ToDictionary(r => r.Position, r => r);
+        /// <summary>
+        /// This is the filter collection, along with the verification options.
+        /// </summary>
+        public FilterCollection Filters { get; } 
 
-        public Dictionary<int, OrderByParameter> ParamsOrderBy =>
-            BuildParameters<OrderByParameter>(OrderBy, new[] { "," }).ToDictionary(r => r.Position, r => r);
+        /// <summary>
+        /// This is the set of order by parameters.
+        /// </summary>
+        public Dictionary<int, OrderByParameter> ParamsOrderBy { get; }
 
-        public Dictionary<int, SelectParameter> ParamsSelect =>
-            BuildParameters<SelectParameter>(Select, new[] { "," }).ToDictionary(r => r.Position, r => r);
-
-        protected static IEnumerable<P> BuildParameters<P>(string value, IEnumerable<string> splits) where P : ParameterBase, new()
-        {
-            if (value == null)
-                yield break;
-
-            var parts = value.Split(splits.ToArray(), StringSplitOptions.RemoveEmptyEntries);
-
-            if (parts.Length == 0)
-                yield break;
-
-            int pos = 0;
-            foreach (var part in parts)
-            {
-                var p = new P();
-                p.Load(pos, part);
-                yield return p;
-                pos++;
-            }
-        }
+        /// <summary>
+        /// This is a set of select parameters. If this is an entity request then this is skipped.
+        /// </summary>
+        public Dictionary<int, SelectParameter> ParamsSelect { get; }
 
         /// <summary>
         /// This is the search algorithm that is used to search against the parameters specified.
@@ -278,6 +271,7 @@ namespace Xigadee
         {
             return new SearchRequest(query??"");
         }
+
         /// <summary>
         /// Implicitly converts a string in to a resource profile.
         /// </summary>
@@ -287,6 +281,7 @@ namespace Xigadee
             return sr?.ToString();
         }
     }
+
 
     public abstract class ParameterBase
     {
@@ -321,6 +316,8 @@ namespace Xigadee
         /// </summary>
         public bool IsDescending { get; set; }
 
+        public bool IsDateField { get; private set; }
+
         protected override void Parse(string value)
         {
             var parts = value?.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -331,6 +328,9 @@ namespace Xigadee
             Parameter = parts[0].Trim();
 
             IsDescending = parts.Length > 1 && string.Equals(parts[1].Trim(), ODataDecending, StringComparison.InvariantCultureIgnoreCase);
+
+            IsDateField = string.Equals(Parameter, "DateCreated", StringComparison.InvariantCultureIgnoreCase)
+                || string.Equals(Parameter, "DateUpdated", StringComparison.InvariantCultureIgnoreCase);
         }
     }
 
@@ -358,17 +358,13 @@ namespace Xigadee
 
         public const string ODataGreaterThan = "gt";
         public const string ODataGreaterThanOrEqual = "ge";
-
-        public const string ODataConditionalAnd = "and";
-        public const string ODataConditionalOr = "or";
-
-        public static IReadOnlyList<string> ODataConditionals => new []{ ODataConditionalAnd, ODataConditionalOr };
         #endregion
-
 
         public string Operator { get; set; }
 
         public string Value { get; set; }
+
+        public bool IsNegation { get; set; }
 
         public string ValueRaw => Value?.Trim('\'');
 
@@ -394,19 +390,103 @@ namespace Xigadee
 
             if (parts.Length == 0)
                 return;
-            this.Parameter = parts[0];
-            if (parts.Length == 1)
+
+            int offset = 0;
+
+            if (string.Equals(parts[0].Trim(), "not", StringComparison.InvariantCultureIgnoreCase))
+            {
+                if (parts.Length == 1)
+                    return;
+
+                IsNegation = true;
+                offset = 1;
+            }
+
+
+            this.Parameter = parts[offset];
+            if (parts.Length == 1 + offset)
                 return;
 
-            this.Operator = parts[1];
-            if (parts.Length == 2)
+            this.Operator = parts[1 + offset];
+            if (parts.Length == 2 + offset)
                 return;
 
-            this.Value = parts[2];
+            this.Value = parts[2 + offset];
         }
     }
 
+    /// <summary>
+    /// This class holds the filter collection.
+    /// </summary>
+    public class FilterCollection
+    {
+        #region Static declarations
+        /// <summary>
+        /// And
+        /// </summary>
+        public const string ODataConditionalAnd = "and";
+        /// <summary>
+        /// Or
+        /// </summary>
+        public const string ODataConditionalOr = "or";
+        /// <summary>
+        /// And, Or
+        /// </summary>
+        public static IReadOnlyList<string> ODataConditionals => new[] { ODataConditionalAnd, ODataConditionalOr };
+        #endregion
 
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="filter">The incoming filter to parse.</param>
+        public FilterCollection(string filter)
+        {
+            Params = SearchRequestHelper.BuildParameters<FilterParameter>(filter, ODataConditionals).ToDictionary(r => r.Position, r => r);
+
+            var words = filter.Split(' ').Where(w => ODataConditionals.Contains(w)).ToArray();
+
+            var valids = new List<int>();
+
+            //OK, let's quickly do this really easily. There are better ways but I don't have the time.
+            int max = 1 << Params.Count;
+            for (int i = 0; i < max; i++)
+            {
+                var options = new bool[Params.Count];
+                for (int check = 0; check < Params.Count; check++)
+                {
+                    var power = 1 << check;
+                    options[check] = (i & power) > 0;
+                }
+
+                bool valid = options[0];
+
+                for (int verify = 0; verify < words.Length; verify++)
+                {
+                    switch (words[verify].Trim().ToLowerInvariant())
+                    {
+                        case ODataConditionalAnd:
+                            valid &= options[verify + 1];
+                            break;
+                        case ODataConditionalOr:
+                            valid |= options[verify + 1];
+                            break;
+                    }
+                }
+
+                if (valid)
+                    valids.Add(i);
+            }
+
+            Validity = valids;
+        }
+
+        public List<int> Validity { get; }
+
+        /// <summary>
+        /// The search parameters.
+        /// </summary>
+        public Dictionary<int, FilterParameter> Params { get; }
+    }
 
     #region SearchRequestHelper
     /// <summary>
@@ -414,6 +494,33 @@ namespace Xigadee
     /// </summary>
     public static class SearchRequestHelper
     {
+        /// <summary>
+        /// This method builds the necessary parameters.
+        /// </summary>
+        /// <typeparam name="P">The parameter type.</typeparam>
+        /// <param name="value">The string value.</param>
+        /// <param name="splits">The arrays value.</param>
+        /// <returns>Returns the relevant set of parameters.</returns>
+        public static IEnumerable<P> BuildParameters<P>(string value, IEnumerable<string> splits) where P : ParameterBase, new()
+        {
+            if (value == null)
+                yield break;
+
+            var parts = value.Split(splits.ToArray(), StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length == 0)
+                yield break;
+
+            int pos = 0;
+            foreach (var part in parts)
+            {
+                var p = new P();
+                p.Load(pos, part);
+                yield return p;
+                pos++;
+            }
+        }
+
         /// <summary>
         /// Converts the search request to a URI.
         /// </summary>
@@ -427,6 +534,7 @@ namespace Xigadee
 
             return sr.ToUri(new Uri(baseUri));
         }
+
         /// <summary>
         /// Converts the search request to a URI.
         /// </summary>

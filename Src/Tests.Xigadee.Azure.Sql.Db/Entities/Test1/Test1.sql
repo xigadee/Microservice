@@ -715,4 +715,123 @@ BEGIN
 	END CATCH
 END
 GO
+CREATE FUNCTION [dbo].[udfFilterTest1Property] (@Body AS NVARCHAR(MAX))  
+RETURNS @Results TABLE   
+(  
+    Id BIGINT PRIMARY KEY NOT NULL,
+    Position INT NOT NULL
+)  
+--Returns a result set that lists all the employees who report to the   
+--specific employee directly or indirectly.*/  
+AS  
+BEGIN  
+
+DECLARE @Parameter VARCHAR(30) = JSON_VALUE(@Body,'lax $.Parameter');
+IF (@Parameter IS NULL)
+	RETURN;
+
+DECLARE @PropertyKey INT = (SELECT Id FROM [dbo].[Test1PropertyKey] WHERE [Type] = @Parameter);
+IF (@PropertyKey IS NULL)
+	RETURN;
+
+DECLARE @Operator VARCHAR(30) = JSON_VALUE(@Body,'lax $.Operator');
+IF (@Operator IS NULL)
+	RETURN;
+
+DECLARE @Position INT = TRY_CONVERT(INT, JSON_VALUE(@Body,'lax $.Position'));
+IF (@Position IS NULL)
+	RETURN;
+DECLARE @OutputPosition INT = POWER(2, @Position);
+
+DECLARE @Value NVARCHAR(250) = JSON_VALUE(@Body,'lax $.ValueRaw');
+DECLARE @IsNullOperator BIT = TRY_CONVERT(BIT, JSON_VALUE(@Body,'lax $.IsNullOperator'));
+DECLARE @IsEqual BIT = TRY_CONVERT(BIT, JSON_VALUE(@Body,'lax $.IsEqual'));
+DECLARE @IsNotEqual BIT = TRY_CONVERT(BIT, JSON_VALUE(@Body,'lax $.IsNotEqual'));
+
+IF (@IsNullOperator = 1 AND @IsEqual = 1)
+BEGIN
+   WITH EntitySet(Id) AS(
+   SELECT Id FROM [dbo].[Test1]
+   EXCEPT
+   SELECT EntityId FROM [dbo].[Test1Property] WHERE [KeyId] = @PropertyKey
+   )
+   INSERT @Results (Id, Position)
+   SELECT Id, @OutputPosition FROM EntitySet
+   RETURN;
+END
+
+IF (@IsNullOperator = 1 AND @IsEqual = 0)
+BEGIN
+   WITH EntitySet(Id) AS(
+   SELECT DISTINCT EntityId FROM [dbo].[Test1Property] WHERE [KeyId] = @PropertyKey
+   )
+   INSERT @Results (Id, Position)
+   SELECT Id, @OutputPosition FROM EntitySet;
+   RETURN;
+END
+
+IF (@Operator = 'eq')
+BEGIN
+   WITH EntitySet(Id) AS(
+   SELECT DISTINCT EntityId FROM [dbo].[Test1Property] WHERE [KeyId] = @PropertyKey AND [Value]=@Value
+   )
+   INSERT @Results (Id, Position)
+   SELECT Id, @OutputPosition FROM EntitySet;
+   RETURN;
+END
+
+IF (@Operator = 'ne')
+BEGIN
+   WITH EntitySet(Id) AS(
+   SELECT DISTINCT EntityId FROM [dbo].[Test1Property] WHERE [KeyId] = @PropertyKey AND [Value]!=@Value
+   )
+   INSERT @Results (Id, Position)
+   SELECT Id, @OutputPosition FROM EntitySet;
+   RETURN;
+END
+
+IF (@Operator = 'lt')
+BEGIN
+   WITH EntitySet(Id) AS(
+   SELECT DISTINCT EntityId FROM [dbo].[Test1Property] WHERE [KeyId] = @PropertyKey AND [Value]<@Value
+   )
+   INSERT @Results (Id, Position)
+   SELECT Id, @OutputPosition FROM EntitySet;
+   RETURN;
+END
+
+IF (@Operator = 'le')
+BEGIN
+   WITH EntitySet(Id) AS(
+   SELECT DISTINCT EntityId FROM [dbo].[Test1Property] WHERE [KeyId] = @PropertyKey AND [Value]<=@Value
+   )
+   INSERT @Results (Id, Position)
+   SELECT Id, @OutputPosition FROM EntitySet;
+   RETURN;
+END
+
+IF (@Operator = 'gt')
+BEGIN
+   WITH EntitySet(Id) AS(
+   SELECT DISTINCT EntityId FROM [dbo].[Test1Property] WHERE [KeyId] = @PropertyKey AND [Value]>@Value
+   )
+   INSERT @Results (Id, Position)
+   SELECT Id, @OutputPosition FROM EntitySet;
+   RETURN;
+END
+
+IF (@Operator = 'ge')
+BEGIN
+   WITH EntitySet(Id) AS(
+   SELECT DISTINCT EntityId FROM [dbo].[Test1Property] WHERE [KeyId] = @PropertyKey AND [Value]>=@Value
+   )
+   INSERT @Results (Id, Position)
+   SELECT Id, @OutputPosition FROM EntitySet;
+   RETURN;
+END
+
+RETURN;
+END;  
+GO
+GO
 

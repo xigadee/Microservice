@@ -215,7 +215,10 @@ namespace Xigadee
         /// This is the entity search entity stored procedure.
         /// </summary>
         public string SpSearchEntityJson => ProcessTemplate("StoredProcedures.spSearchEntityJson.sql");
-
+        /// <summary>
+        /// This is the function filter for the SQL.
+        /// </summary>
+        public string FnPropertyFilter => ProcessTemplate("Functions.fnFilter.sql");
 
         /// <summary>
         /// This method returns all the stored procedures.
@@ -262,6 +265,9 @@ namespace Xigadee
             sb.AppendLine(SpSearchEntityJson);
             sb.AppendLine("GO");
 
+            sb.AppendLine(FnPropertyFilter);
+            sb.AppendLine("GO");
+           
             if (createoralter)
                 return sb.ToString().Replace("CREATE PROCEDURE", "CREATE OR ALTER PROCEDURE");
             else

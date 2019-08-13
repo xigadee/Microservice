@@ -24,7 +24,9 @@ namespace Test.Xigadee
         [TestMethod]
         public void Filter1()
         {
-            var sr = (SearchRequest)"$filter=Address eq 'Redmond' and Price gt 200";
+            var sr = (SearchRequest)"$filter=Address eq 'Redmond' or not Price gt 200 or Other eq 'hello'";
+
+
         }
     }
 }

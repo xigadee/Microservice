@@ -18,6 +18,7 @@
     <None Remove="Persistence\Json\SqlTemplates\Ancillary\KvpTableType.sql" />
     <None Remove="Persistence\Json\SqlTemplates\Ancillary\Schema.sql" />
     <None Remove="Persistence\Json\SqlTemplates\Ancillary\Security.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\Functions\fnFilter.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spCreate.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spDelete.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spDeleteByRef.sql" />
@@ -46,6 +47,7 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\Functions\fnFilter.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Security\Security.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Ancillary\Schema.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Ancillary\IdTableType.sql" />
