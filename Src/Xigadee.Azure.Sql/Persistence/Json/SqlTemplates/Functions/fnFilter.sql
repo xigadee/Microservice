@@ -24,6 +24,7 @@ IF (@Operator IS NULL)
 DECLARE @Position INT = TRY_CONVERT(INT, JSON_VALUE(@Body,'lax $.Position'));
 IF (@Position IS NULL)
 	RETURN;
+
 DECLARE @OutputPosition INT = POWER(2, @Position);
 
 DECLARE @Value NVARCHAR(250) = JSON_VALUE(@Body,'lax $.ValueRaw');

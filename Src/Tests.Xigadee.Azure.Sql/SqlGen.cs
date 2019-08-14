@@ -13,6 +13,8 @@ namespace Tests.Xigadee.Azure.Sql
         {
             var sgUser = new SqlJsonGenerator<User>();
             var sgTest1 = new SqlJsonGenerator<Test1>();
+
+            var ancillary = sgTest1.Generator.ScriptAncillary();
         }
 
         [TestMethod]
