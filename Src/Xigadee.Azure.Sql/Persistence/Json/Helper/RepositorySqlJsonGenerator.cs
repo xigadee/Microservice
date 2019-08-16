@@ -78,8 +78,6 @@ namespace Xigadee
 
         public string AncillaryIdTableType => ProcessTemplate("Ancillary.IdTableType.sql");
 
-        public string AncillarySearch => ProcessTemplate("Ancillary.spSearchLog.sql");
-
         #region ScriptAncillary()
         /// <summary>
         /// This method returns the Ancillary SQL for the application. This is the set of helper definitions that are needed to make the stored procedures work.
@@ -97,9 +95,6 @@ namespace Xigadee
             sb.AppendLine("GO");
 
             sb.AppendLine(TableSearchHistory);
-            sb.AppendLine("GO");
-
-            sb.AppendLine(AncillarySearch);
             sb.AppendLine("GO");
 
             return sb.ToString();

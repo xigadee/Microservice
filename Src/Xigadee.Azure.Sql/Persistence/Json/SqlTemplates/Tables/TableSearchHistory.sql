@@ -7,9 +7,10 @@
 	,[TimeStamp] DATETIME NOT NULL DEFAULT(GETUTCDATE())
 	,[Sig] VARCHAR(256) NULL
 	,[Body] NVARCHAR(MAX) NULL
+	,[HistoryIndex] BIGINT NULL
 )
 GO 
-CREATE UNIQUE INDEX[IX_SearchHistory_ETag] ON [{NamespaceTable}].[SearchHistory] ([ETag]) 
+CREATE UNIQUE INDEX[IX_SearchHistory_ETag] ON [{NamespaceTable}].[SearchHistory] ([ETag]) INCLUDE([HistoryIndex])
 GO
 CREATE TABLE [{NamespaceTable}].[SearchHistoryCache]
 (

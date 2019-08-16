@@ -4,6 +4,36 @@
 	@CollectionId BIGINT OUTPUT
 AS
 BEGIN
+	DECLARE @ETag UNIQUEIDENTIFIER = ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(@Body,'lax $.ETag')), NEWID());
+
+	DECLARE @HistoryIndexId BIGINT;
+
+	--OK, check whether the ETag is already assigned to a results set
+	SELECT TOP 1 @CollectionId = Id, @HistoryIndexId = [HistoryIndex] 
+	FROM [{NamespaceTable}].[SearchHistory] WHERE ETag = @ETag;
+
+	--OK, we need to check that the collection is still valid.
+	DECLARE @CurrentHistoryIndexId BIGINT = (SELECT TOP 1 Id FROM [{NamespaceTable}].[{EntityName}History] ORDER BY Id DESC);
+
+	IF (@CollectionId IS NOT NULL 
+		AND @CurrentHistoryIndexId IS NOT NULL
+		AND @HistoryIndexId IS NOT NULL
+		AND @HistoryIndexId = @CurrentHistoryIndexId)
+	BEGIN
+		RETURN 202;
+	END
+	ELSE
+	BEGIN
+		--We need to create a new search collection and change the ETag.
+		SET @ETag = NEWID();
+	END
+
+	INSERT INTO [{NamespaceTable}].[SearchHistory]
+	([ETag],[EntityType],[SearchType],[Sig],[Body],[HistoryIndex])
+	VALUES
+	(@ETag, '{EntityName}', '{spSearch}Entity_Json', '', @Body, @CurrentHistoryIndexId);
+
+	SET @CollectionId = @@IDENTITY;
 
 	--Build
 	DECLARE @FilterIds TABLE
@@ -12,15 +42,7 @@ BEGIN
 		[Rank] INT
 	);
 
-	DECLARE @ETag UNIQUEIDENTIFIER = ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(@Body,'lax $.ETag')), NEWID());
-
-	EXEC [{NamespaceTable}].spSearchLog @ETag, '{EntityName}', '{spSearch}Entity_Json', @Body;
-
-	INSERT INTO [{NamespaceTable}].[SearchHistory]
-	([ETag],[EntityType],[SearchType],[Sig],[Body])
-	VALUES
-	(@ETag, @EntityType, @SearchType, '', @Body);
-	
+	--OK, build the entity collection.
 	;WITH Entities(Id, Score)AS
 	(
 		SELECT u.Id,SUM(u.Position)
