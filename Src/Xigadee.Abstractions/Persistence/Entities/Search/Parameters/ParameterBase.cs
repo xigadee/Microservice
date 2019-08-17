@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Xigadee
 {
@@ -20,6 +22,35 @@ namespace Xigadee
         /// Entity data updated, or if null, date created.
         /// </summary>
         public const string ODataEntityDateCombined = "datecombined";
+
+        /// <summary>
+        /// This is the hash parameter that can be used to identify the same set of parameters for a parameter.
+        /// </summary>
+        public string Hash => HashBuild();
+
+        /// <summary>
+        /// This method combines the filter parameters in to a Base64 encoded hash.
+        /// </summary>
+        /// <returns>Returns the hash.</returns>
+        protected virtual string HashBuild()
+        {
+            using (var sha256 = SHA256Managed.Create())
+            {
+                var sb = new StringBuilder();
+                HashParts().ForEach(p => sb.Append($"{p}|"));
+
+                byte[] bytes = Encoding.UTF8.GetBytes(sb.ToString());
+                byte[] hash = sha256.ComputeHash(bytes);
+                //hash.
+                return Convert.ToBase64String(hash);
+            }
+        }
+
+        /// <summary>
+        /// This override provides the parts used to create the parameter hash.
+        /// </summary>
+        /// <returns></returns>
+        protected abstract IEnumerable<string> HashParts();
 
         /// <summary>
         /// Date created, updated or a combination of both.

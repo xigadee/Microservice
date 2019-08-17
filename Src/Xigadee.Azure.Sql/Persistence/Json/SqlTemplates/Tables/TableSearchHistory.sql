@@ -8,6 +8,7 @@
 	,[Sig] VARCHAR(256) NULL
 	,[Body] NVARCHAR(MAX) NULL
 	,[HistoryIndex] BIGINT NULL
+	,[RecordCount] BIGINT NOT NULL DEFAULT(-1)
 )
 GO 
 CREATE UNIQUE INDEX[IX_{EntityName}SearchHistory_ETag] ON [{NamespaceTable}].[{EntityName}SearchHistory] ([ETag]) INCLUDE([HistoryIndex])
@@ -23,3 +24,4 @@ CREATE TABLE [{NamespaceTable}].[{EntityName}SearchHistoryCache]
 GO
 CREATE INDEX[IX_{EntityName}SearchHistoryCache_SearchHistory] ON [{NamespaceTable}].[{EntityName}SearchHistoryCache] ([SearchId]) INCLUDE ([EntityId]) 
 GO
+

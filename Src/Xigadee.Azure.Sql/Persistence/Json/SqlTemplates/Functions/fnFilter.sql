@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [{NamespaceTable}].[udfFilter{EntityName}Property] (@Body AS NVARCHAR(MAX))  
+﻿CREATE FUNCTION [{NamespaceTable}].[udf{EntityName}FilterProperty] (@Body AS NVARCHAR(MAX))  
 RETURNS @Results TABLE   
 (  
     Id BIGINT PRIMARY KEY NOT NULL,

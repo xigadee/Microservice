@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [{NamespaceTable}].[udfPaginate{EntityName}Property] (@CollectionId BIGINT, @Body AS NVARCHAR(MAX))  
+﻿CREATE FUNCTION [{NamespaceTable}].[udf{EntityName}PaginateProperty] (@CollectionId BIGINT, @Body AS NVARCHAR(MAX))  
 RETURNS @Results TABLE   
 (  
     Id BIGINT PRIMARY KEY NOT NULL,

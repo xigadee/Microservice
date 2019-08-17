@@ -9,7 +9,7 @@ BEGIN
 	SET @ETag = ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(@Body,'lax $.ETag')), NEWID());
 
 	--OK, check whether the ETag is already assigned to a results set
-	SELECT TOP 1 @CollectionId = Id, @HistoryIndexId = [HistoryIndex], @TimeStamp = [TimeStamp]
+	SELECT TOP 1 @CollectionId = Id, @HistoryIndexId = [HistoryIndex], @TimeStamp = [TimeStamp], @RecordResult = [RecordCount]
 	FROM [{NamespaceTable}].[{EntityName}SearchHistory] 
 	WHERE ETag = @ETag;
 
@@ -32,7 +32,7 @@ BEGIN
 	INSERT INTO [{NamespaceTable}].[{EntityName}SearchHistory]
 	([ETag],[EntityType],[SearchType],[Sig],[Body],[HistoryIndex])
 	VALUES
-	(@ETag, '{EntityName}', '{spSearch}Entity_Json', '', @Body, @CurrentHistoryIndexId);
+	(@ETag, '{EntityName}', '{spSearch}InternalBuild_Json', '', @Body, @CurrentHistoryIndexId);
 
 	SET @CollectionId = @@IDENTITY;
 	
@@ -43,7 +43,7 @@ BEGIN
 	(
 		SELECT u.Id,SUM(u.Position)
 		FROM OPENJSON(@Body, N'lax $.Filters.Params') F
-		CROSS APPLY [{NamespaceTable}].[udfFilter{EntityName}Property] (F.value) u
+		CROSS APPLY [{NamespaceTable}].[udf{EntityName}FilterProperty] (F.value) u
 		GROUP BY u.Id
 	)
 	INSERT INTO [{NamespaceTable}].[{EntityName}SearchHistoryCache]
@@ -52,6 +52,10 @@ BEGIN
 	INNER JOIN OPENJSON(@Body, N'lax $.Filters.Solutions') V ON V.value = E.Score;
 
 	SET @RecordResult = ROWCOUNT_BIG();
+
+	UPDATE [{NamespaceTable}].[{EntityName}SearchHistory]
+		SET [RecordCount] = @RecordResult
+	WHERE [Id] = @CollectionId;
 
 	RETURN 200;
 END

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Xigadee
 {
@@ -60,7 +61,7 @@ namespace Xigadee
         /// <summary>
         /// Specifies whether this is a null check.
         /// </summary>
-        public bool IsNullOperator => CompareOperator(ODataNull, ValueRaw);
+        public bool IsNullOperator => CompareOperator(ODataNull, Value);
 
         /// <summary>
         /// This is an equal filter search.
@@ -105,8 +106,19 @@ namespace Xigadee
                 return;
 
             this.Value = parts[2 + offset];
-        } 
+        }
         #endregion
+
+        /// <summary>
+        /// This returns the set of hash parts.
+        /// </summary>
+        /// <returns>Returns a set of strings.</returns>
+        protected override IEnumerable<string> HashParts()
+        {
+            yield return Parameter.ToLowerInvariant();
+            yield return Operator.ToLowerInvariant();
+            yield return IsNullOperator? "null" : ValueRaw;
+        }
     }
 
 }

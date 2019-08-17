@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Xigadee
 {
@@ -35,6 +36,16 @@ namespace Xigadee
             Parameter = parts[0].Trim();
 
             IsDescending = parts.Length > 1 && string.Equals(parts[1]?.Trim(), ODataDecending, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        /// <summary>
+        /// This returns the set of hash parts.
+        /// </summary>
+        /// <returns>Returns a set of strings.</returns>
+        protected override IEnumerable<string> HashParts()
+        {
+            yield return Parameter.ToLowerInvariant();
+            yield return IsDescending ? "true" : "false";
         }
     }
 }
