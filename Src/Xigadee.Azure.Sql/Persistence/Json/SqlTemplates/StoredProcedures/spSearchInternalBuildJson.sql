@@ -10,7 +10,7 @@ BEGIN
 
 	--OK, check whether the ETag is already assigned to a results set
 	SELECT TOP 1 @CollectionId = Id, @HistoryIndexId = [HistoryIndex] 
-	FROM [{NamespaceTable}].[SearchHistory] WHERE ETag = @ETag;
+	FROM [{NamespaceTable}].[{EntityName}SearchHistory] WHERE ETag = @ETag;
 
 	--OK, we need to check that the collection is still valid.
 	DECLARE @CurrentHistoryIndexId BIGINT = (SELECT TOP 1 Id FROM [{NamespaceTable}].[{EntityName}History] ORDER BY Id DESC);
@@ -28,7 +28,7 @@ BEGIN
 		SET @ETag = NEWID();
 	END
 
-	INSERT INTO [{NamespaceTable}].[SearchHistory]
+	INSERT INTO [{NamespaceTable}].[{EntityName}SearchHistory]
 	([ETag],[EntityType],[SearchType],[Sig],[Body],[HistoryIndex])
 	VALUES
 	(@ETag, '{EntityName}', '{spSearch}Entity_Json', '', @Body, @CurrentHistoryIndexId);

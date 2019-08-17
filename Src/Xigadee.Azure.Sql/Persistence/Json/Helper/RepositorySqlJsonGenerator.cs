@@ -94,9 +94,6 @@ namespace Xigadee
             sb.AppendLine(AncillaryIdTableType);
             sb.AppendLine("GO");
 
-            sb.AppendLine(TableSearchHistory);
-            sb.AppendLine("GO");
-
             return sb.ToString();
         } 
         #endregion
@@ -137,6 +134,8 @@ namespace Xigadee
             sb.AppendLine(TableProperty);
             sb.AppendLine("GO");
             sb.AppendLine(TableReference);
+            sb.AppendLine("GO");
+            sb.AppendLine(TableSearchHistory);
             sb.AppendLine("GO");
 
             return sb.ToString();

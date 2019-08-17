@@ -1,4 +1,4 @@
-﻿CREATE TABLE [{NamespaceTable}].[SearchHistory]
+﻿CREATE TABLE [{NamespaceTable}].[{EntityName}SearchHistory]
 (
      [Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1)
 	,[ETag] UNIQUEIDENTIFIER NOT NULL
@@ -10,16 +10,16 @@
 	,[HistoryIndex] BIGINT NULL
 )
 GO 
-CREATE UNIQUE INDEX[IX_SearchHistory_ETag] ON [{NamespaceTable}].[SearchHistory] ([ETag]) INCLUDE([HistoryIndex])
+CREATE UNIQUE INDEX[IX_{EntityName}SearchHistory_ETag] ON [{NamespaceTable}].[{EntityName}SearchHistory] ([ETag]) INCLUDE([HistoryIndex])
 GO
-CREATE TABLE [{NamespaceTable}].[SearchHistoryCache]
+CREATE TABLE [{NamespaceTable}].[{EntityName}SearchHistoryCache]
 (
      [Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1)
     ,[SearchId] BIGINT NOT NULL 
     ,[EntityId] BIGINT NOT NULL 
 	,[Score] INT NOT NULL
-	,CONSTRAINT [FK_SearchHistoryCache_SearchId] FOREIGN KEY ([SearchId]) REFERENCES [{NamespaceTable}].[SearchHistory]([Id]), 
+	,CONSTRAINT [FK_{EntityName}SearchHistoryCache_SearchId] FOREIGN KEY ([SearchId]) REFERENCES [{NamespaceTable}].[{EntityName}SearchHistory]([Id]), 
 )
 GO
-CREATE INDEX[IX_SearchHistoryCache_SearchHistory] ON [{NamespaceTable}].[SearchHistoryCache] ([SearchId],[EntityId]) INCLUDE ([Score]) 
+CREATE INDEX[IX_{EntityName}SearchHistoryCache_SearchHistory] ON [{NamespaceTable}].[{EntityName}SearchHistoryCache] ([SearchId],[EntityId]) INCLUDE ([Score]) 
 GO
