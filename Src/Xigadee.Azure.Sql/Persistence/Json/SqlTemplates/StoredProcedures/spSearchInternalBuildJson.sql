@@ -52,7 +52,7 @@ BEGIN
 	)
 	INSERT INTO @FilterIds
 	SELECT E.Id,0 FROM Entities E
-	INNER JOIN OPENJSON(@Body, N'lax $.Filters.Validity') V ON V.value = E.Score;
+	INNER JOIN OPENJSON(@Body, N'lax $.Filters.Solutions') V ON V.value = E.Score;
 
 	
 	DECLARE @Order NVARCHAR(MAX) = (SELECT TOP 1 value FROM OPENJSON(@Body, N'lax $.ParamsOrderBy'))

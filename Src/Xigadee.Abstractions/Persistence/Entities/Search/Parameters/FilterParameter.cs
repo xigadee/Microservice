@@ -10,6 +10,7 @@ namespace Xigadee
     public class FilterParameter : ParameterBase
     {
         #region OData constants
+
         public const string ODataNull = "null";
 
         public const string ODataEqual = "eq";
@@ -20,6 +21,7 @@ namespace Xigadee
 
         public const string ODataGreaterThan = "gt";
         public const string ODataGreaterThanOrEqual = "ge";
+
         #endregion
 
         public string Operator { get; set; }

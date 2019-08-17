@@ -37,5 +37,8 @@ namespace Tests.Xigadee.Azure.Sql
         [JsonIgnore]
         [EntityReferenceHint(EntityKeyReferenceId)]
         public string ReferenceId => ReferenceFormat(UserId, AccountId);
+
+        [EntityPropertyHint("second")]
+        public int? Second { get; set; }
     }
 }

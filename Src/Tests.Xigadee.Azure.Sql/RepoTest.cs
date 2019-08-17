@@ -42,16 +42,27 @@ namespace Tests.Xigadee.Azure.Sql
 
             var repo = new RepositorySqlJson2<Guid, Test1>(conn);
 
-
             for (int i = 0; i < 100; i++)
             {
-                var t = new Test1();
-                t.UserId = Guid.NewGuid();
-                t.AccountId = Accounts[i % Accounts.Length];
+                RepositoryHolder<Guid, Test1> rs;
+                try
+                {
+                    var t = new Test1();
 
-                var rs1 = await repo.Create(t);
+                    t.UserId = Guid.NewGuid();
+                    t.AccountId = Accounts[i % Accounts.Length];
+                    var ms = DateTime.UtcNow.Millisecond;
+
+                    if (ms > 100)
+                        t.Second = DateTime.UtcNow.Millisecond;
+
+                    rs = await repo.Create(t);
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
             }
-
         }
 
         [TestMethod]
@@ -61,7 +72,7 @@ namespace Tests.Xigadee.Azure.Sql
 
             var repo = new RepositorySqlJson2<Guid, Test1>(conn);
 
-            var srq1 = (SearchRequest)$"$top=100&$id=default&$skip=3&$orderby=DateUpdated desc&$filter=accountid eq '{Accounts[0]}' or userid eq null";
+            var srq1 = (SearchRequest)$"$top=100&$id=default&$skip=50&$orderby=DateCombined desc&$second is null and filter=accountid eq '{Accounts[0]}'";
 
             var s1 = await repo.SearchEntity(srq1);
 

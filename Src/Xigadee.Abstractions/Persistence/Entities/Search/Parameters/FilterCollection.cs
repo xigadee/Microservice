@@ -19,10 +19,15 @@ namespace Xigadee
         /// Or
         /// </summary>
         public const string ODataConditionalOr = "or";
+
         /// <summary>
-        /// And, Or
+        /// XOr
         /// </summary>
-        public static IReadOnlyList<string> ODataConditionals => new[] { ODataConditionalAnd, ODataConditionalOr };
+        public const string ODataConditionalXOr = "xor";
+        /// <summary>
+        /// And, Or, XOr
+        /// </summary>
+        public static IReadOnlyList<string> ODataConditionals => new[] { ODataConditionalAnd, ODataConditionalOr, ODataConditionalXOr };
         #endregion
 
         /// <summary>
@@ -35,7 +40,7 @@ namespace Xigadee
 
             var words = filter.Split(' ').Where(w => ODataConditionals.Contains(w)).ToArray();
 
-            var valids = new List<int>();
+            var solutions = new List<int>();
 
             //OK, let's quickly do this really easily. There are better ways but I don't have the time.
             int max = 1 << Params.Count;
@@ -48,29 +53,35 @@ namespace Xigadee
                     options[check] = (i & power) > 0;
                 }
 
-                bool valid = options[0];
+                bool solution = options[0];
 
                 for (int verify = 0; verify < words.Length; verify++)
                 {
                     switch (words[verify].Trim().ToLowerInvariant())
                     {
                         case ODataConditionalAnd:
-                            valid &= options[verify + 1];
+                            solution &= options[verify + 1];
                             break;
                         case ODataConditionalOr:
-                            valid |= options[verify + 1];
+                            solution |= options[verify + 1];
+                            break;
+                        case ODataConditionalXOr:
+                            solution ^= options[verify + 1];
                             break;
                     }
                 }
 
-                if (valid)
-                    valids.Add(i);
+                if (solution)
+                    solutions.Add(i);
             }
 
-            Validity = valids;
+            Solutions = solutions;
         }
 
-        public List<int> Validity { get; }
+        /// <summary>
+        /// This is a list of valid solutions for the logical collection.
+        /// </summary>
+        public List<int> Solutions { get; }
 
         /// <summary>
         /// The search parameters.
