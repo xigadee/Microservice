@@ -1,16 +1,16 @@
-﻿CREATE FUNCTION [{NamespaceTable}].[udfPaginate{EntityName}Property] (@Body AS NVARCHAR(MAX))  
+﻿CREATE FUNCTION [{NamespaceTable}].[udfPaginate{EntityName}Property] (@CollectionId BIGINT, @Body AS NVARCHAR(MAX))  
 RETURNS @Results TABLE   
 (  
     Id BIGINT PRIMARY KEY NOT NULL,
     Position INT NOT NULL
-)  
+)
 --Returns a result set that lists all the employees who report to the   
 --specific employee directly or indirectly.*/  
 AS  
 BEGIN  
-
 	DECLARE @Order NVARCHAR(MAX) = (SELECT TOP 1 value FROM OPENJSON(@Body, N'lax $.ParamsOrderBy'))
 	DECLARE @IsDescending BIT = 0;
+
 	--Rank
 	IF (@Order IS NOT NULL)
 	BEGIN
@@ -21,22 +21,16 @@ BEGIN
 
 		IF (@IsDateField = 1)
 		BEGIN
-			;WITH R1(Id,Score)AS
-			(
-				SELECT [Id]
-				, CASE @OrderParameter 
-					WHEN 'datecreated' THEN RANK() OVER(ORDER BY [DateCreated]) 
-					WHEN 'dateupdated' THEN RANK() OVER(ORDER BY [DateUpdated]) 
-					WHEN 'datecombined' THEN RANK() OVER(ORDER BY ISNULL([DateUpdated],[DateCreated])) 
-				END
-				FROM [{NamespaceTable}].[{EntityName}]
-			)
-			UPDATE @FilterIds
-				SET [Rank] = R1.[Score]
-			FROM @FilterIds f
-			INNER JOIN R1 ON R1.Id = f.Id
+			SELECT [Id]
+			, CASE @OrderParameter 
+				WHEN 'datecreated' THEN RANK() OVER(ORDER BY [E.DateCreated]) 
+				WHEN 'dateupdated' THEN RANK() OVER(ORDER BY [E.DateUpdated]) 
+				ELSE RANK() OVER(ORDER BY ISNULL([E.DateUpdated],[E.DateCreated]))
+			  END
+			FROM [{NamespaceTable}].[{EntityName}SearchHistoryCache] AS C
+			INNER JOIN [{NamespaceTable}].[{EntityName}] AS E ON E.Id = C.EntityId
+			
+			RETURN;
 		END
 	END
-
-RETURN;
-END;  
+END

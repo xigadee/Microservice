@@ -17,9 +17,9 @@ CREATE TABLE [{NamespaceTable}].[{EntityName}SearchHistoryCache]
      [Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1)
     ,[SearchId] BIGINT NOT NULL 
     ,[EntityId] BIGINT NOT NULL 
-	,[Score] BIGINT NOT NULL DEFAULT(-1)
-	,CONSTRAINT [FK_{EntityName}SearchHistoryCache_SearchId] FOREIGN KEY ([SearchId]) REFERENCES [{NamespaceTable}].[{EntityName}SearchHistory]([Id]), 
+	,CONSTRAINT [FK_{EntityName}SearchHistoryCache_SearchId] FOREIGN KEY ([SearchId]) REFERENCES [{NamespaceTable}].[{EntityName}SearchHistory]([Id])
+	,CONSTRAINT [FK_{EntityName}SearchHistoryCache_EntityId] FOREIGN KEY ([EntityId]) REFERENCES [{NamespaceTable}].[{EntityName}]([Id])
 )
 GO
-CREATE INDEX[IX_{EntityName}SearchHistoryCache_SearchHistory] ON [{NamespaceTable}].[{EntityName}SearchHistoryCache] ([SearchId],[EntityId]) INCLUDE ([Score]) 
+CREATE INDEX[IX_{EntityName}SearchHistoryCache_SearchHistory] ON [{NamespaceTable}].[{EntityName}SearchHistoryCache] ([SearchId]) INCLUDE ([EntityId]) 
 GO

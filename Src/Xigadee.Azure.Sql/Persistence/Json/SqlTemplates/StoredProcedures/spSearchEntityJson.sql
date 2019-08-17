@@ -18,26 +18,12 @@ BEGIN
 	DECLARE @Top INT = ISNULL(CAST(JSON_VALUE(@Body,'lax $.TopValue') AS INT), 50);
 
 	--Output
-	IF (@IsDescending = 0)
-	BEGIN
-		--Output
-		SELECT E.ExternalId, E.VersionId, E.Body 
-		FROM [{NamespaceTable}].[udfPaginate{EntityName}Property](@CollectionId, @Body) AS F
-		INNER JOIN [{NamespaceTable}].[{EntityName}] AS E ON F.Id = E.Id
-		ORDER BY F.[Rank]
-		OFFSET @Skip ROWS
-		FETCH NEXT @Top ROWS ONLY
-	END
-	ELSE
-	BEGIN
-		--Output
-		SELECT E.ExternalId, E.VersionId, E.Body 
-		FROM [{NamespaceTable}].[udfPaginate{EntityName}Property](@CollectionId, @Body) AS F
-		INNER JOIN [{NamespaceTable}].[{EntityName}] AS E ON F.Id = E.Id
-		ORDER BY F.[Rank] DESC
-		OFFSET @Skip ROWS
-		FETCH NEXT @Top ROWS ONLY
-	END
+	SELECT E.ExternalId, E.VersionId, E.Body 
+	FROM [{NamespaceTable}].[udfPaginate{EntityName}Property](@CollectionId, @Body) AS F
+	INNER JOIN [{NamespaceTable}].[{EntityName}] AS E ON F.Id = E.Id
+	ORDER BY CASE WHEN (@IsDescending = 0) THEN F.[Rank] ELSE [F].[Rank] * -1 END
+	OFFSET @Skip ROWS
+	FETCH NEXT @Top ROWS ONLY
 	
 	RETURN 200;
 
