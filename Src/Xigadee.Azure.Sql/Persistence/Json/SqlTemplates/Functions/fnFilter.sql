@@ -35,6 +35,8 @@ DECLARE @IsNotEqual BIT = TRY_CONVERT(BIT, JSON_VALUE(@Body,'lax $.IsNotEqual'))
 
 DECLARE @IsNegation BIT = ISNULL(TRY_CONVERT(BIT, JSON_VALUE(@Body,'lax $.IsNegation')),0);
 
+DECLARE @IsDateFieldParameter BIT = ISNULL(TRY_CONVERT(BIT, JSON_VALUE(@Body,'lax $.IsDateFieldParameter')),0);
+
 IF (@IsNullOperator = 1 AND (@IsNegation = 0 AND @IsEqual = 1) OR (@IsNegation = 1 AND @IsEqual = 0))
 BEGIN
    WITH EntitySet(Id) AS(

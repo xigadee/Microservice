@@ -9,123 +9,34 @@ RETURNS @Results TABLE
 AS  
 BEGIN  
 
-DECLARE @Parameter VARCHAR(30) = JSON_VALUE(@Body,'lax $.Parameter');
-IF (@Parameter IS NULL)
-	RETURN;
+	DECLARE @Order NVARCHAR(MAX) = (SELECT TOP 1 value FROM OPENJSON(@Body, N'lax $.ParamsOrderBy'))
+	DECLARE @IsDescending BIT = 0;
+	--Rank
+	IF (@Order IS NOT NULL)
+	BEGIN
+		DECLARE @IsDateField BIT = ISNULL(CAST(JSON_VALUE(@Order,'lax $.IsDateFieldParameter') AS BIT), 0);
 
-DECLARE @PropertyKey INT = (SELECT Id FROM [{NamespaceTable}].[{EntityName}PropertyKey] WHERE [Type] = @Parameter);
-IF (@PropertyKey IS NULL)
-	RETURN;
+		SET @IsDescending = ISNULL(CAST(JSON_VALUE(@Order,'lax $.IsDescending') AS BIT), 0);
+		DECLARE @OrderParameter VARCHAR(50) = LOWER(CAST(JSON_VALUE(@Order,'lax $.Parameter') AS VARCHAR(50)));
 
-DECLARE @Operator VARCHAR(30) = JSON_VALUE(@Body,'lax $.Operator');
-IF (@Operator IS NULL)
-	RETURN;
-
-DECLARE @Position INT = TRY_CONVERT(INT, JSON_VALUE(@Body,'lax $.Position'));
-IF (@Position IS NULL)
-	RETURN;
-
-DECLARE @OutputPosition INT = POWER(2, @Position);
-
-DECLARE @Value NVARCHAR(250) = JSON_VALUE(@Body,'lax $.ValueRaw');
-DECLARE @IsNullOperator BIT = TRY_CONVERT(BIT, JSON_VALUE(@Body,'lax $.IsNullOperator'));
-DECLARE @IsEqual BIT = TRY_CONVERT(BIT, JSON_VALUE(@Body,'lax $.IsEqual'));
-
-DECLARE @IsNotEqual BIT = TRY_CONVERT(BIT, JSON_VALUE(@Body,'lax $.IsNotEqual'));
-
-DECLARE @IsNegation BIT = ISNULL(TRY_CONVERT(BIT, JSON_VALUE(@Body,'lax $.IsNegation')),0);
-
-IF (@IsNullOperator = 1 AND (@IsNegation = 0 AND @IsEqual = 1) OR (@IsNegation = 1 AND @IsEqual = 0))
-BEGIN
-   WITH EntitySet(Id) AS(
-   SELECT Id FROM [{NamespaceTable}].[{EntityName}]
-   EXCEPT
-   SELECT EntityId FROM [{NamespaceTable}].[{EntityName}Property] WHERE [KeyId] = @PropertyKey
-   )
-   INSERT @Results (Id, Position)
-   SELECT Id, @OutputPosition FROM EntitySet
-   RETURN;
-END
-
-IF (@IsNullOperator = 1 AND (@IsNegation = 0 AND @IsEqual = 0) OR (@IsNegation = 1 AND @IsEqual = 1))
-BEGIN
-   WITH EntitySet(Id) AS(
-   SELECT DISTINCT EntityId FROM [{NamespaceTable}].[{EntityName}Property] WHERE [KeyId] = @PropertyKey
-   )
-   INSERT @Results (Id, Position)
-   SELECT Id, @OutputPosition FROM EntitySet;
-   RETURN;
-END
-
-IF (@IsNegation = 1)
-	SET @Operator = CASE @Operator 
-		WHEN 'eq' THEN 'ne' 
-		WHEN 'ne' THEN 'eq' 
-		WHEN 'lt' THEN 'ge' 
-		WHEN 'le' THEN 'gt' 
-		WHEN 'gt' THEN 'le' 
-		WHEN 'ge' THEN 'lt' 
-	END;
-
-IF (@Operator = 'eq')
-BEGIN
-   WITH EntitySet(Id) AS(
-   SELECT DISTINCT EntityId FROM [{NamespaceTable}].[{EntityName}Property] WHERE [KeyId] = @PropertyKey AND [Value]=@Value
-   )
-   INSERT @Results (Id, Position)
-   SELECT Id, @OutputPosition FROM EntitySet;
-   RETURN;
-END
-
-IF (@Operator = 'ne')
-BEGIN
-   WITH EntitySet(Id) AS(
-   SELECT DISTINCT EntityId FROM [{NamespaceTable}].[{EntityName}Property] WHERE [KeyId] = @PropertyKey AND [Value]!=@Value
-   )
-   INSERT @Results (Id, Position)
-   SELECT Id, @OutputPosition FROM EntitySet;
-   RETURN;
-END
-
-IF (@Operator = 'lt')
-BEGIN
-   WITH EntitySet(Id) AS(
-   SELECT DISTINCT EntityId FROM [{NamespaceTable}].[{EntityName}Property] WHERE [KeyId] = @PropertyKey AND [Value]<@Value
-   )
-   INSERT @Results (Id, Position)
-   SELECT Id, @OutputPosition FROM EntitySet;
-   RETURN;
-END
-
-IF (@Operator = 'le')
-BEGIN
-   WITH EntitySet(Id) AS(
-   SELECT DISTINCT EntityId FROM [{NamespaceTable}].[{EntityName}Property] WHERE [KeyId] = @PropertyKey AND [Value]<=@Value
-   )
-   INSERT @Results (Id, Position)
-   SELECT Id, @OutputPosition FROM EntitySet;
-   RETURN;
-END
-
-IF (@Operator = 'gt')
-BEGIN
-   WITH EntitySet(Id) AS(
-   SELECT DISTINCT EntityId FROM [{NamespaceTable}].[{EntityName}Property] WHERE [KeyId] = @PropertyKey AND [Value]>@Value
-   )
-   INSERT @Results (Id, Position)
-   SELECT Id, @OutputPosition FROM EntitySet;
-   RETURN;
-END
-
-IF (@Operator = 'ge')
-BEGIN
-   WITH EntitySet(Id) AS(
-   SELECT DISTINCT EntityId FROM [{NamespaceTable}].[{EntityName}Property] WHERE [KeyId] = @PropertyKey AND [Value]>=@Value
-   )
-   INSERT @Results (Id, Position)
-   SELECT Id, @OutputPosition FROM EntitySet;
-   RETURN;
-END
+		IF (@IsDateField = 1)
+		BEGIN
+			;WITH R1(Id,Score)AS
+			(
+				SELECT [Id]
+				, CASE @OrderParameter 
+					WHEN 'datecreated' THEN RANK() OVER(ORDER BY [DateCreated]) 
+					WHEN 'dateupdated' THEN RANK() OVER(ORDER BY [DateUpdated]) 
+					WHEN 'datecombined' THEN RANK() OVER(ORDER BY ISNULL([DateUpdated],[DateCreated])) 
+				END
+				FROM [{NamespaceTable}].[{EntityName}]
+			)
+			UPDATE @FilterIds
+				SET [Rank] = R1.[Score]
+			FROM @FilterIds f
+			INNER JOIN R1 ON R1.Id = f.Id
+		END
+	END
 
 RETURN;
 END;  

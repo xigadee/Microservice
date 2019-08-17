@@ -29,7 +29,7 @@ namespace Xigadee
         /// <summary>
         /// Returns true if the paramter field is a reserved data parameter name.
         /// </summary>
-        public bool IsDateField => !string.IsNullOrEmpty(Parameter) 
+        public bool IsDateFieldParameter => !string.IsNullOrEmpty(Parameter) 
             && ODataDateParameters.Contains(r => CompareOperator(r, Parameter));
 
         /// <summary>

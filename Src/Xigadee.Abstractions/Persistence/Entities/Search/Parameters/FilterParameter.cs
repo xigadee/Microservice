@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Xigadee
 {
@@ -10,40 +8,72 @@ namespace Xigadee
     public class FilterParameter : ParameterBase
     {
         #region OData constants
-
+        /// <summary>
+        /// Null
+        /// </summary>
         public const string ODataNull = "null";
-
+        /// <summary>
+        /// Equal
+        /// </summary>
         public const string ODataEqual = "eq";
+        /// <summary>
+        /// Not equal
+        /// </summary>
         public const string ODataNotEqual = "ne";
-
+        /// <summary>
+        /// Less than
+        /// </summary>
         public const string ODataLessThan = "lt";
+        /// <summary>
+        /// Less than or equal
+        /// </summary>
         public const string ODataLessThanOrEqual = "le";
-
+        /// <summary>
+        /// Greater than
+        /// </summary>
         public const string ODataGreaterThan = "gt";
+        /// <summary>
+        /// Greater than or equal
+        /// </summary>
         public const string ODataGreaterThanOrEqual = "ge";
-
         #endregion
 
+        /// <summary>
+        /// The logical operator specified in the query.
+        /// </summary>
         public string Operator { get; set; }
-
+        /// <summary>
+        /// The value specified.
+        /// </summary>
         public string Value { get; set; }
 
+        /// <summary>
+        /// Specifies whether this filter is a negation, i.e. not result
+        /// </summary>
         public bool IsNegation { get; set; }
 
+        /// <summary>
+        /// The raw value specified with any speech marks removed.
+        /// </summary>
         public string ValueRaw => Value?.Trim('\'');
 
+        /// <summary>
+        /// Specifies whether this is a null check.
+        /// </summary>
         public bool IsNullOperator => CompareOperator(ODataNull, ValueRaw);
 
+        /// <summary>
+        /// This is an equal filter search.
+        /// </summary>
         public bool IsEqual => CompareOperator(ODataEqual);
-
+        /// <summary>
+        /// This is a not equal filter request.
+        /// </summary>
         public bool IsNotEqual => CompareOperator(ODataNotEqual);
-
-        public bool IsLessThan => CompareOperator(ODataLessThan);
-
-        public bool IsGreaterThan => CompareOperator(ODataGreaterThan);
 
         private bool CompareOperator(string op) => CompareOperator(op, Operator);
 
+        #region Parse(string value)
         /// <summary>
         /// This method parses the incoming value and sets the relevant properties.
         /// </summary>
@@ -66,7 +96,6 @@ namespace Xigadee
                 offset = 1;
             }
 
-
             this.Parameter = parts[offset];
             if (parts.Length == 1 + offset)
                 return;
@@ -76,7 +105,8 @@ namespace Xigadee
                 return;
 
             this.Value = parts[2 + offset];
-        }
+        } 
+        #endregion
     }
 
 }

@@ -1,13 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the order by parameter.
+    /// </summary>
     public class OrderByParameter : ParameterBase
     {
-        //Specify as ascending. 
+        /// <summary>
+        /// ASC: the ascending parameter.
+        /// </summary>
         public const string ODataAscending = "asc";
+        /// <summary>
+        /// DESC: the descending parameter.
+        /// </summary>
         public const string ODataDecending = "desc";
 
         /// <summary>
@@ -15,8 +21,10 @@ namespace Xigadee
         /// </summary>
         public bool IsDescending { get; set; }
 
-        public bool IsDateField { get; private set; }
-
+        /// <summary>
+        /// Parses the incoming data to the relevant order by parameters,
+        /// </summary>
+        /// <param name="value">The raw value.</param>
         protected override void Parse(string value)
         {
             var parts = value?.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -26,10 +34,7 @@ namespace Xigadee
 
             Parameter = parts[0].Trim();
 
-            IsDescending = parts.Length > 1 && string.Equals(parts[1].Trim(), ODataDecending, StringComparison.InvariantCultureIgnoreCase);
-
-            IsDateField = string.Equals(Parameter, "DateCreated", StringComparison.InvariantCultureIgnoreCase)
-                || string.Equals(Parameter, "DateUpdated", StringComparison.InvariantCultureIgnoreCase);
+            IsDescending = parts.Length > 1 && string.Equals(parts[1]?.Trim(), ODataDecending, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

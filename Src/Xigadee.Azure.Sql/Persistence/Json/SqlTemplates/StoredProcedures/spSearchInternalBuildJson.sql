@@ -1,16 +1,17 @@
 ﻿CREATE PROCEDURE [{NamespaceTable}].[{spSearch}InternalBuild_Json]
 	@Body NVARCHAR(MAX),
 	@ETag UNIQUEIDENTIFIER OUTPUT,
-	@CollectionId BIGINT OUTPUT
+	@CollectionId BIGINT OUTPUT,
+	@RecordResult BIGINT OUTPUT
 AS
 BEGIN
-	DECLARE @ETag UNIQUEIDENTIFIER = ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(@Body,'lax $.ETag')), NEWID());
-
-	DECLARE @HistoryIndexId BIGINT;
+	DECLARE @HistoryIndexId BIGINT, @TimeStamp DATETIME
+	SET @ETag = ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(@Body,'lax $.ETag')), NEWID());
 
 	--OK, check whether the ETag is already assigned to a results set
-	SELECT TOP 1 @CollectionId = Id, @HistoryIndexId = [HistoryIndex] 
-	FROM [{NamespaceTable}].[{EntityName}SearchHistory] WHERE ETag = @ETag;
+	SELECT TOP 1 @CollectionId = Id, @HistoryIndexId = [HistoryIndex], @TimeStamp = [TimeStamp]
+	FROM [{NamespaceTable}].[{EntityName}SearchHistory] 
+	WHERE ETag = @ETag;
 
 	--OK, we need to check that the collection is still valid.
 	DECLARE @CurrentHistoryIndexId BIGINT = (SELECT TOP 1 Id FROM [{NamespaceTable}].[{EntityName}History] ORDER BY Id DESC);
@@ -34,15 +35,10 @@ BEGIN
 	(@ETag, '{EntityName}', '{spSearch}Entity_Json', '', @Body, @CurrentHistoryIndexId);
 
 	SET @CollectionId = @@IDENTITY;
-
-	--Build
-	DECLARE @FilterIds TABLE
-	(
-		Id BIGINT PRIMARY KEY NOT NULL,
-		[Rank] INT
-	);
-
-	--OK, build the entity collection.
+	
+	--OK, build the entity collection. We combine the bit positions 
+	--and only include the records where they match the bit position solutions passed
+	--through from the front-end.
 	;WITH Entities(Id, Score)AS
 	(
 		SELECT u.Id,SUM(u.Position)
@@ -50,37 +46,12 @@ BEGIN
 		CROSS APPLY [{NamespaceTable}].[udfFilter{EntityName}Property] (F.value) u
 		GROUP BY u.Id
 	)
-	INSERT INTO @FilterIds
-	SELECT E.Id,0 FROM Entities E
+	INSERT INTO [{NamespaceTable}].[{EntityName}SearchHistoryCache]
+	VALUES(SearchId, EntityId)
+	SELECT @CollectionId, E.Id FROM Entities E
 	INNER JOIN OPENJSON(@Body, N'lax $.Filters.Solutions') V ON V.value = E.Score;
 
-	
-	DECLARE @Order NVARCHAR(MAX) = (SELECT TOP 1 value FROM OPENJSON(@Body, N'lax $.ParamsOrderBy'))
-	DECLARE @IsDescending BIT = 0;
-	--Rank
-	IF (@Order IS NOT NULL)
-	BEGIN
-		DECLARE @IsDateField BIT = ISNULL(CAST(JSON_VALUE(@Order,'lax $.IsDateField') AS BIT), 0);
-		SET @IsDescending = ISNULL(CAST(JSON_VALUE(@Order,'lax $.IsDescending') AS BIT), 0);
-		DECLARE @OrderParameter VARCHAR(50) = LOWER(CAST(JSON_VALUE(@Order,'lax $.Parameter') AS VARCHAR(50)));
-
-		IF (@IsDateField = 1)
-		BEGIN
-			;WITH R1(Id,Score)AS
-			(
-				SELECT [Id]
-				, CASE @OrderParameter 
-					WHEN 'datecreated' THEN RANK() OVER(ORDER BY [DateCreated]) 
-					WHEN 'dateupdated' THEN RANK() OVER(ORDER BY ISNULL([DateUpdated],[DateCreated])) 
-				END
-				FROM [{NamespaceTable}].[{EntityName}]
-			)
-			UPDATE @FilterIds
-				SET [Rank] = R1.[Score]
-			FROM @FilterIds f
-			INNER JOIN R1 ON R1.Id = f.Id
-		END
-	END
+	SET @RecordResult = ROWCOUNT_BIG();
 
 	RETURN 200;
 END

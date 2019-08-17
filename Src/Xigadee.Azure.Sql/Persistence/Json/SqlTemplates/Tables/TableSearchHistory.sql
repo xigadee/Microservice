@@ -17,7 +17,7 @@ CREATE TABLE [{NamespaceTable}].[{EntityName}SearchHistoryCache]
      [Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1)
     ,[SearchId] BIGINT NOT NULL 
     ,[EntityId] BIGINT NOT NULL 
-	,[Score] INT NOT NULL
+	,[Score] BIGINT NOT NULL DEFAULT(-1)
 	,CONSTRAINT [FK_{EntityName}SearchHistoryCache_SearchId] FOREIGN KEY ([SearchId]) REFERENCES [{NamespaceTable}].[{EntityName}SearchHistory]([Id]), 
 )
 GO
