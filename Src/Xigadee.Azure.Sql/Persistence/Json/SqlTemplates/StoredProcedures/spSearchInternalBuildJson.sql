@@ -47,8 +47,8 @@ BEGIN
 		GROUP BY u.Id
 	)
 	INSERT INTO [{NamespaceTable}].[{EntityName}SearchHistoryCache]
-	VALUES(SearchId, EntityId)
-	SELECT @CollectionId, E.Id FROM Entities E
+	SELECT @CollectionId AS [SearchId], E.Id AS [EntityId] 
+	FROM Entities E
 	INNER JOIN OPENJSON(@Body, N'lax $.Filters.Solutions') V ON V.value = E.Score;
 
 	SET @RecordResult = ROWCOUNT_BIG();

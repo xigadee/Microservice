@@ -19,7 +19,7 @@ BEGIN
 
 	--Output
 	SELECT E.ExternalId, E.VersionId, E.Body 
-	FROM [{NamespaceTable}].[udfPaginate{EntityName}Property](@CollectionId, @Body) AS F
+	FROM [{NamespaceTable}].[udf{EntityName}PaginateProperty](@CollectionId, @Body) AS F
 	INNER JOIN [{NamespaceTable}].[{EntityName}] AS E ON F.Id = E.Id
 	ORDER BY F.[Rank]
 	OFFSET @Skip ROWS

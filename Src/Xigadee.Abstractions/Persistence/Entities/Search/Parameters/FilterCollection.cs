@@ -36,6 +36,13 @@ namespace Xigadee
         /// <param name="filter">The incoming filter to parse.</param>
         public FilterCollection(string filter)
         {
+            if (string.IsNullOrWhiteSpace(filter))
+            {
+                Params = new Dictionary<int, FilterParameter>();
+                Solutions = new List<int>();
+                return;
+            }
+
             Params = SearchRequestHelper.BuildParameters<FilterParameter>(filter, ODataConditionals).ToDictionary(r => r.Position, r => r);
 
             var words = filter.Split(' ').Where(w => ODataConditionals.Contains(w)).ToArray();

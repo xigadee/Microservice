@@ -72,9 +72,18 @@ namespace Tests.Xigadee.Azure.Sql
 
             var repo = new RepositorySqlJson2<Guid, Test1>(conn);
 
-            var srq1 = (SearchRequest)$"$top=100&$id=default&$skip=50&$orderby=DateCombined desc&$second is null and filter=accountid eq '{Accounts[0]}'";
+            try
+            {
+                var srq1 = (SearchRequest)$"$top=100&$id=default&$skip=50&$orderby=DateCombined desc&$filter=accountid eq '{Accounts[0]}' and second eq null";
 
-            var s1 = await repo.SearchEntity(srq1);
+                var s1 = await repo.SearchEntity(srq1);
+
+            }
+            catch (Exception ex)
+            {
+
+                Assert.Fail(ex.Message);
+            }
 
         }
 
