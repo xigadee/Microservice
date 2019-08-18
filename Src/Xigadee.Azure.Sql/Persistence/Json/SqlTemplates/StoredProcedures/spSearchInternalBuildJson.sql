@@ -41,7 +41,7 @@ BEGIN
 	--through from the front-end.
 	;WITH Entities(Id, Score)AS
 	(
-		SELECT u.Id,SUM(u.Position)
+		SELECT u.Id, SUM(u.Position)
 		FROM OPENJSON(@Body, N'lax $.Filters.Params') F
 		CROSS APPLY [{NamespaceTable}].[udf{EntityName}FilterProperty] (F.value) u
 		GROUP BY u.Id
