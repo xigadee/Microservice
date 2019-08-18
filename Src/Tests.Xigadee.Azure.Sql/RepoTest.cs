@@ -28,7 +28,7 @@ namespace Tests.Xigadee.Azure.Sql
             var pwd = TestContext.Properties["sqlPwd"].ToString();
             var catalog = TestContext.Properties["sqlCatalog"].ToString();
 
-            var conn = $"Server=tcp:{server}.database.windows.net,1433;Initial Catalog={catalog};Persist Security Info=False;User ID={uname};Password={pwd};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+            var conn = $"Server=tcp:{server}.database.windows.net,1433;Initial Catalog={catalog};Persist Security Info=False;User ID={uname};Password={pwd};MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
             return conn;
         }

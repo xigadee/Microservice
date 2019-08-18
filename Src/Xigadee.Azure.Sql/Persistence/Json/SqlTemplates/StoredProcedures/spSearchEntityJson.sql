@@ -24,6 +24,19 @@ BEGIN
 	ORDER BY F.[Rank]
 	OFFSET @Skip ROWS
 	FETCH NEXT @Top ROWS ONLY
+
+	--SELECT @ETag AS [ETag], @RecordResult AS [RecordCount], 'Entity' AS [Type], @CacheHit AS [CacheHit], @Skip AS [Skip], @Top AS [Top],
+	--( 
+	--	SELECT E.ExternalId AS [ExternalId], E.VersionId AS [VersionId], E.Body AS [Body]
+	--	FROM [{NamespaceTable}].[udf{EntityName}PaginateProperty](@CollectionId, @Body) AS F
+	--	INNER JOIN [dbo].[Test1] AS E ON F.Id = E.Id
+	--	ORDER BY F.[Rank]
+	--	OFFSET @Skip ROWS
+	--	FETCH NEXT @Top ROWS ONLY
+	--	FOR JSON PATH
+	--) AS [Results]
+	--FOR JSON PATH, ROOT('SearchResponse');
+
 	
 	RETURN 200;
 
