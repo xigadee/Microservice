@@ -6,28 +6,29 @@
 AS
 BEGIN
 	DECLARE @HistoryIndexId BIGINT, @TimeStamp DATETIME
-	SET @ETag = ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(@Body,'lax $.ETag')), NEWID());
-
-	--OK, check whether the ETag is already assigned to a results set
-	SELECT TOP 1 @CollectionId = Id, @HistoryIndexId = [HistoryIndex], @TimeStamp = [TimeStamp], @RecordResult = [RecordCount]
-	FROM [{NamespaceTable}].[{EntityName}SearchHistory] 
-	WHERE ETag = @ETag;
+	SET @ETag = TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(@Body,'lax $.ETag'));
 
 	--OK, we need to check that the collection is still valid.
 	DECLARE @CurrentHistoryIndexId BIGINT = (SELECT TOP 1 Id FROM [{NamespaceTable}].[{EntityName}History] ORDER BY Id DESC);
 
-	IF (@CollectionId IS NOT NULL 
-		AND @CurrentHistoryIndexId IS NOT NULL
-		AND @HistoryIndexId IS NOT NULL
-		AND @HistoryIndexId = @CurrentHistoryIndexId)
+	IF (@ETag IS NOT NULL)
 	BEGIN
-		RETURN 202;
+		--OK, check whether the ETag is already assigned to a results set
+		SELECT TOP 1 @CollectionId = Id, @HistoryIndexId = [HistoryIndex], @TimeStamp = [TimeStamp], @RecordResult = [RecordCount]
+		FROM [{NamespaceTable}].[{EntityName}SearchHistory] 
+		WHERE ETag = @ETag;
+
+		IF (@CollectionId IS NOT NULL 
+			AND @CurrentHistoryIndexId IS NOT NULL
+			AND @HistoryIndexId IS NOT NULL
+			AND @HistoryIndexId = @CurrentHistoryIndexId)
+		BEGIN
+			RETURN 202;
+		END
 	END
-	ELSE
-	BEGIN
-		--We need to create a new search collection and change the ETag.
-		SET @ETag = NEWID();
-	END
+
+	--We need to create a new search collection and change the ETag.
+	SET @ETag = NEWID();
 
 	INSERT INTO [{NamespaceTable}].[{EntityName}SearchHistory]
 	([ETag],[EntityType],[SearchType],[Sig],[Body],[HistoryIndex])
@@ -53,6 +54,7 @@ BEGIN
 
 	SET @RecordResult = ROWCOUNT_BIG();
 
+	--Set the record count in the collection.
 	UPDATE [{NamespaceTable}].[{EntityName}SearchHistory]
 		SET [RecordCount] = @RecordResult
 	WHERE [Id] = @CollectionId;
