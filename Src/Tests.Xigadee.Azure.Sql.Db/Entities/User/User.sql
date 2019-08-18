@@ -78,6 +78,35 @@ GO
 CREATE INDEX [IX_UserReference_KeyId] ON [dbo].[UserReference] ([KeyId],[EntityId]) INCLUDE ([Value])
 
 GO
+CREATE TABLE [dbo].[UserSearchHistory]
+(
+     [Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1)
+	,[ETag] UNIQUEIDENTIFIER NOT NULL
+	,[EntityType] VARCHAR(50) NOT NULL
+	,[SearchType] VARCHAR(50) NOT NULL
+	,[TimeStamp] DATETIME NOT NULL DEFAULT(GETUTCDATE())
+	,[Sig] VARCHAR(256) NULL
+	,[Body] NVARCHAR(MAX) NULL
+	,[HistoryIndex] BIGINT NULL
+	,[RecordCount] BIGINT NOT NULL DEFAULT(-1)
+)
+GO 
+CREATE UNIQUE INDEX[IX_UserSearchHistory_ETag] ON [dbo].[UserSearchHistory] ([ETag]) INCLUDE([HistoryIndex])
+GO
+CREATE TABLE [dbo].[UserSearchHistoryCache]
+(
+     [Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1)
+    ,[SearchId] BIGINT NOT NULL 
+    ,[EntityId] BIGINT NOT NULL 
+	,CONSTRAINT [FK_UserSearchHistoryCache_SearchId] FOREIGN KEY ([SearchId]) REFERENCES [dbo].[UserSearchHistory]([Id])
+	,CONSTRAINT [FK_UserSearchHistoryCache_EntityId] FOREIGN KEY ([EntityId]) REFERENCES [dbo].[User]([Id])
+)
+GO
+CREATE INDEX[IX_UserSearchHistoryCache_SearchHistory] ON [dbo].[UserSearchHistoryCache] ([SearchId]) INCLUDE ([EntityId]) 
+GO
+
+
+GO
 
 CREATE PROCEDURE [dbo].[spUserUpsertRP]
 	@EntityId BIGINT,
@@ -613,47 +642,63 @@ BEGIN
 END
 GO
 CREATE PROCEDURE [dbo].[spUserSearchInternalBuild_Json]
-	@ETag UNIQUEIDENTIFIER,
-	@Body NVARCHAR(MAX)
+	@Body NVARCHAR(MAX),
+	@ETag UNIQUEIDENTIFIER OUTPUT,
+	@CollectionId BIGINT OUTPUT,
+	@RecordResult BIGINT OUTPUT
 AS
 BEGIN
-	DECLARE @Skip INT = ISNULL(CAST(JSON_VALUE(@Body,'lax $.SkipValue') AS INT), 0);
-	DECLARE @Top INT = ISNULL(CAST(JSON_VALUE(@Body,'lax $.TopValue') AS INT), 50);
+	DECLARE @HistoryIndexId BIGINT, @TimeStamp DATETIME
+	SET @ETag = ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(@Body,'lax $.ETag')), NEWID());
 
-	SELECT P.Id AS [Id], 1 AS [Score]
-	FROM [dbo].[User] AS P
-	ORDER BY P.Id
-	OFFSET @Skip ROWS
-	FETCH NEXT @Top ROWS ONLY;
+	--OK, check whether the ETag is already assigned to a results set
+	SELECT TOP 1 @CollectionId = Id, @HistoryIndexId = [HistoryIndex], @TimeStamp = [TimeStamp], @RecordResult = [RecordCount]
+	FROM [dbo].[UserSearchHistory] 
+	WHERE ETag = @ETag;
 
-	--IF (@ParamCount = 0)
-	--	SELECT P.Id
-	--	FROM [dbo].[User] AS P
-	--	ORDER BY P.Id
-	--	OFFSET @Skip ROWS
-	--	FETCH NEXT @Top ROWS ONLY
-	--ELSE IF (@ParamCount = 1)
-	--	SELECT P.EntityId As Id
-	--	FROM [dbo].[UserProperty] AS P
-	--	INNER JOIN [dbo].[UserPropertyKey] PK ON P.KeyId = PK.Id
-	--	INNER JOIN @PropertiesFilter PF ON PF.RefType = PK.[Type] AND PF.RefValue = P.Value
-	--	ORDER BY P.EntityId
-	--	OFFSET @Skip ROWS
-	--	FETCH NEXT @Top ROWS ONLY
-	--ELSE
-	--	SELECT R.Id
-	--	FROM
-	--	(
-	--		SELECT P.EntityId As Id, 1 AS Num
-	--		FROM [dbo].[UserProperty] AS P
-	--		INNER JOIN [dbo].[UserPropertyKey] PK ON P.KeyId = PK.Id
-	--		INNER JOIN @PropertiesFilter PF ON PF.RefType = PK.[Type] AND PF.RefValue = P.Value
-	--	)AS R
-	--	GROUP BY R.Id
-	--	HAVING SUM(R.Num) = @ParamCount
-	--	ORDER BY R.Id
-	--	OFFSET @Skip ROWS
-	--	FETCH NEXT @Top ROWS ONLY
+	--OK, we need to check that the collection is still valid.
+	DECLARE @CurrentHistoryIndexId BIGINT = (SELECT TOP 1 Id FROM [dbo].[UserHistory] ORDER BY Id DESC);
+
+	IF (@CollectionId IS NOT NULL 
+		AND @CurrentHistoryIndexId IS NOT NULL
+		AND @HistoryIndexId IS NOT NULL
+		AND @HistoryIndexId = @CurrentHistoryIndexId)
+	BEGIN
+		RETURN 202;
+	END
+	ELSE
+	BEGIN
+		--We need to create a new search collection and change the ETag.
+		SET @ETag = NEWID();
+	END
+
+	INSERT INTO [dbo].[UserSearchHistory]
+	([ETag],[EntityType],[SearchType],[Sig],[Body],[HistoryIndex])
+	VALUES
+	(@ETag, 'User', 'spUserSearchInternalBuild_Json', '', @Body, @CurrentHistoryIndexId);
+
+	SET @CollectionId = @@IDENTITY;
+	
+	--OK, build the entity collection. We combine the bit positions 
+	--and only include the records where they match the bit position solutions passed
+	--through from the front-end.
+	;WITH Entities(Id, Score)AS
+	(
+		SELECT u.Id, SUM(u.Position)
+		FROM OPENJSON(@Body, N'lax $.Filters.Params') F
+		CROSS APPLY [dbo].[udfUserFilterProperty] (F.value) u
+		GROUP BY u.Id
+	)
+	INSERT INTO [dbo].[UserSearchHistoryCache]
+	VALUES(SearchId, EntityId)
+	SELECT @CollectionId, E.Id FROM Entities E
+	INNER JOIN OPENJSON(@Body, N'lax $.Filters.Solutions') V ON V.value = E.Score;
+
+	SET @RecordResult = ROWCOUNT_BIG();
+
+	UPDATE [dbo].[UserSearchHistory]
+		SET [RecordCount] = @RecordResult
+	WHERE [Id] = @CollectionId;
 
 	RETURN 200;
 END
@@ -684,90 +729,39 @@ CREATE PROCEDURE [External].[spUserSearchEntity_Default_Json]
 AS
 BEGIN
 	BEGIN TRY
-		--Build
-		DECLARE @FilterIds TABLE
-		(
-			Id BIGINT PRIMARY KEY NOT NULL,
-			[Rank] INT
-		);
 
-		DECLARE @ETag UNIQUEIDENTIFIER;
-		SET @ETag = ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(@Body,'lax $.ETag')), NEWID());
+	DECLARE @ETag UNIQUEIDENTIFIER, @CollectionId BIGINT, @Result INT, @RecordResult BIGINT
 
-		DECLARE @Skip INT = ISNULL(CAST(JSON_VALUE(@Body,'lax $.SkipValue') AS INT), 0);
-		DECLARE @Top INT = ISNULL(CAST(JSON_VALUE(@Body,'lax $.TopValue') AS INT), 50);
+	EXEC @Result = [dbo].[spUserSearchInternalBuild_Json] 
+		@Body, @ETag OUTPUT, @CollectionId OUTPUT, @RecordResult OUTPUT
 
-		EXEC [dbo].spSearchLog @ETag, 'User', 'spUserSearchEntity_Json', @Body;
+	IF (@RecordResult = 0)
+	BEGIN
+		RETURN 202;
+	END
+
+	DECLARE @Skip INT = ISNULL(CAST(JSON_VALUE(@Body,'lax $.SkipValue') AS INT), 0);
+	DECLARE @Top INT = ISNULL(CAST(JSON_VALUE(@Body,'lax $.TopValue') AS INT), 50);
+
+	--Output
+	SELECT E.ExternalId, E.VersionId, E.Body 
+	FROM [dbo].[udfPaginateUserProperty](@CollectionId, @Body) AS F
+	INNER JOIN [dbo].[User] AS E ON F.Id = E.Id
+	ORDER BY F.[Rank]
+	OFFSET @Skip ROWS
+	FETCH NEXT @Top ROWS ONLY
 	
-		;WITH Entities(Id, Score)AS
-		(
-			SELECT u.Id,SUM(u.Position)
-			FROM OPENJSON(@Body, N'lax $.Filters.Params') F
-			CROSS APPLY [dbo].[udfFilterUserProperty] (F.value) u
-			GROUP BY u.Id
-		)
-		INSERT INTO @FilterIds
-		SELECT E.Id,0 FROM Entities E
-		INNER JOIN OPENJSON(@Body, N'lax $.Filters.Validity') V ON V.value = E.Score;
+	RETURN 200;
 
-		DECLARE @Order NVARCHAR(MAX) = (SELECT TOP 1 value FROM OPENJSON(@Body, N'lax $.ParamsOrderBy'))
-		DECLARE @IsDescending BIT = 0;
-		--Rank
-		IF (@Order IS NOT NULL)
-		BEGIN
-			DECLARE @IsDateField BIT = ISNULL(CAST(JSON_VALUE(@Order,'lax $.IsDateField') AS BIT), 0);
-			SET @IsDescending = ISNULL(CAST(JSON_VALUE(@Order,'lax $.IsDescending') AS BIT), 0);
-			DECLARE @OrderParameter VARCHAR(50) = LOWER(CAST(JSON_VALUE(@Order,'lax $.Parameter') AS VARCHAR(50)));
-
-			IF (@IsDateField = 1)
-			BEGIN
-				;WITH R1(Id,Score)AS
-				(
-				  SELECT [Id]
-				  , CASE @OrderParameter 
-						WHEN 'datecreated' THEN RANK() OVER(ORDER BY [DateCreated]) 
-						WHEN 'dateupdated' THEN RANK() OVER(ORDER BY ISNULL([DateUpdated],[DateCreated])) 
-					END
-				  FROM [dbo].[User]
-				)
-				UPDATE @FilterIds
-					SET [Rank] = R1.[Score]
-				FROM @FilterIds f
-				INNER JOIN R1 ON R1.Id = f.Id
-			END
-		END
-
-		--Output
-		IF (@IsDescending = 0)
-		BEGIN
-			--Output
-			SELECT E.ExternalId, E.VersionId, E.Body 
-			FROM @FilterIds AS F
-			INNER JOIN [dbo].[User] AS E ON F.Id = E.Id
-			ORDER BY F.[Rank]
-			OFFSET @Skip ROWS
-			FETCH NEXT @Top ROWS ONLY
-		END
-		ELSE
-		BEGIN
-			--Output
-			SELECT E.ExternalId, E.VersionId, E.Body 
-			FROM @FilterIds AS F
-			INNER JOIN [dbo].[User] AS E ON F.Id = E.Id
-			ORDER BY F.[Rank] DESC
-			OFFSET @Skip ROWS
-			FETCH NEXT @Top ROWS ONLY
-		END
-	
-		RETURN 200;
 	END TRY
 	BEGIN CATCH
 		SELECT ERROR_NUMBER() AS ErrorNumber, ERROR_MESSAGE() AS ErrorMessage; 
 		RETURN 500;
 	END CATCH
+
 END
 GO
-CREATE FUNCTION [dbo].[udfFilterUserProperty] (@Body AS NVARCHAR(MAX))  
+CREATE FUNCTION [dbo].[udfUserFilterProperty] (@Body AS NVARCHAR(MAX))  
 RETURNS @Results TABLE   
 (  
     Id BIGINT PRIMARY KEY NOT NULL,
@@ -793,6 +787,7 @@ IF (@Operator IS NULL)
 DECLARE @Position INT = TRY_CONVERT(INT, JSON_VALUE(@Body,'lax $.Position'));
 IF (@Position IS NULL)
 	RETURN;
+
 DECLARE @OutputPosition INT = POWER(2, @Position);
 
 DECLARE @Value NVARCHAR(250) = JSON_VALUE(@Body,'lax $.ValueRaw');
@@ -802,6 +797,8 @@ DECLARE @IsEqual BIT = TRY_CONVERT(BIT, JSON_VALUE(@Body,'lax $.IsEqual'));
 DECLARE @IsNotEqual BIT = TRY_CONVERT(BIT, JSON_VALUE(@Body,'lax $.IsNotEqual'));
 
 DECLARE @IsNegation BIT = ISNULL(TRY_CONVERT(BIT, JSON_VALUE(@Body,'lax $.IsNegation')),0);
+
+DECLARE @IsDateFieldParameter BIT = ISNULL(TRY_CONVERT(BIT, JSON_VALUE(@Body,'lax $.IsDateFieldParameter')),0);
 
 IF (@IsNullOperator = 1 AND (@IsNegation = 0 AND @IsEqual = 1) OR (@IsNegation = 1 AND @IsEqual = 0))
 BEGIN

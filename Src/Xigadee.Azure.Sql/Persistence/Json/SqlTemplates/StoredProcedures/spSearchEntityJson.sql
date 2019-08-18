@@ -21,7 +21,7 @@ BEGIN
 	SELECT E.ExternalId, E.VersionId, E.Body 
 	FROM [{NamespaceTable}].[udfPaginate{EntityName}Property](@CollectionId, @Body) AS F
 	INNER JOIN [{NamespaceTable}].[{EntityName}] AS E ON F.Id = E.Id
-	ORDER BY CASE WHEN (@IsDescending = 0) THEN F.[Rank] ELSE [F].[Rank] * -1 END
+	ORDER BY F.[Rank]
 	OFFSET @Skip ROWS
 	FETCH NEXT @Top ROWS ONLY
 	

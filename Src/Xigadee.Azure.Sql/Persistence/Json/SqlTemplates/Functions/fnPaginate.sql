@@ -15,6 +15,7 @@ BEGIN
 	IF (@Order IS NOT NULL)
 	BEGIN
 		DECLARE @IsDateField BIT = ISNULL(CAST(JSON_VALUE(@Order,'lax $.IsDateFieldParameter') AS BIT), 0);
+		DECLARE @IsDescending BIT = ISNULL(CAST(JSON_VALUE(@Order,'lax $.IsDescending') AS BIT), 0);
 		DECLARE @OrderParameter VARCHAR(50) = LOWER(CAST(JSON_VALUE(@Order,'lax $.Parameter') AS VARCHAR(50)));
 
 		INSERT INTO @Results
@@ -22,12 +23,15 @@ BEGIN
 		, CASE @IsDateField
 			WHEN 1 THEN
 				CASE @OrderParameter 
-					WHEN 'datecreated' THEN RANK() OVER(ORDER BY [E.DateCreated]) 
-					WHEN 'dateupdated' THEN RANK() OVER(ORDER BY [E.DateUpdated]) 
-					WHEN 'datecombined' THEN RANK() OVER(ORDER BY ISNULL([E.DateUpdated],[E.DateCreated]))
+					WHEN 'datecreated' THEN 
+						CASE @IsDescending WHEN 1 THEN RANK() OVER(ORDER BY E.[DateCreated] DESC) ELSE RANK() OVER(ORDER BY E.[DateCreated]) END
+					WHEN 'dateupdated' THEN 
+						CASE @IsDescending WHEN 1 THEN RANK() OVER(ORDER BY E.[DateUpdated] DESC) ELSE RANK() OVER(ORDER BY E.[DateUpdated]) END
+					WHEN 'datecombined' THEN 
+						CASE @IsDescending WHEN 1 THEN RANK() OVER(ORDER BY ISNULL(E.[DateUpdated],E.[DateCreated]) DESC) ELSE RANK() OVER(ORDER BY ISNULL(E.[DateUpdated],E.[DateCreated])) END
 					ELSE 0
 				END
-			ELSE RANK() OVER(ORDER BY P.[Value]) 
+			ELSE CASE @IsDescending WHEN 1 THEN RANK() OVER(ORDER BY P.[Value] DESC) ELSE RANK() OVER(ORDER BY P.[Value]) END
 			END
 		FROM [{NamespaceTable}].[{EntityName}SearchHistoryCache] AS C
 		INNER JOIN [{NamespaceTable}].[{EntityName}] AS E ON E.Id = C.EntityId
@@ -35,6 +39,7 @@ BEGIN
 		INNER JOIN [{NamespaceTable}].[{EntityName}PropertyKey] AS PK ON PK.[Type]=@OrderParameter AND P.[KeyId] = PK.[Id]
 		WHERE C.[SearchId] = @CollectionId;
 
-		RETURN;
 	END
+
+	RETURN;
 END
