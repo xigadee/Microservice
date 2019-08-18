@@ -2,7 +2,7 @@
 RETURNS @Results TABLE   
 (  
     Id BIGINT PRIMARY KEY NOT NULL,
-    Position INT NOT NULL
+    [Rank] INT NOT NULL
 )
 --Returns a result set that lists all the employees who report to the   
 --specific employee directly or indirectly.*/  
@@ -19,7 +19,7 @@ BEGIN
 		DECLARE @OrderParameter VARCHAR(50) = LOWER(CAST(JSON_VALUE(@Order,'lax $.Parameter') AS VARCHAR(50)));
 
 		INSERT INTO @Results
-		SELECT C.[Id]
+		SELECT E.[Id]
 		, CASE @IsDateField
 			WHEN 1 THEN
 				CASE @OrderParameter 
@@ -32,11 +32,11 @@ BEGIN
 					ELSE 0
 				END
 			ELSE CASE @IsDescending WHEN 1 THEN RANK() OVER(ORDER BY P.[Value] DESC) ELSE RANK() OVER(ORDER BY P.[Value]) END
-			END
+			END AS [Rank]
 		FROM [{NamespaceTable}].[{EntityName}SearchHistoryCache] AS C
 		INNER JOIN [{NamespaceTable}].[{EntityName}] AS E ON E.Id = C.EntityId
 		LEFT JOIN [{NamespaceTable}].[{EntityName}Property] AS P ON @IsDateField = 0 AND P.EntityId = C.[EntityId]
-		INNER JOIN [{NamespaceTable}].[{EntityName}PropertyKey] AS PK ON PK.[Type]=@OrderParameter AND P.[KeyId] = PK.[Id]
+		LEFT JOIN [{NamespaceTable}].[{EntityName}PropertyKey] AS PK ON PK.[Type]=@OrderParameter AND P.[KeyId] = PK.[Id]
 		WHERE C.[SearchId] = @CollectionId;
 
 	END

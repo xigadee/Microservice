@@ -213,6 +213,10 @@ namespace Xigadee
         /// This is the function filter for the SQL.
         /// </summary>
         public string FnPropertyFilter => ProcessTemplate("Functions.fnFilter.sql");
+        /// <summary>
+        /// This is the function filter for the SQL.
+        /// </summary>
+        public string FnPropertyPaginate => ProcessTemplate("Functions.fnPaginate.sql");
 
         /// <summary>
         /// This method returns all the stored procedures.
@@ -261,7 +265,10 @@ namespace Xigadee
 
             sb.AppendLine(FnPropertyFilter);
             sb.AppendLine("GO");
-           
+
+            sb.AppendLine(FnPropertyPaginate);
+            sb.AppendLine("GO");
+            
             if (createoralter)
                 return sb.ToString().Replace("CREATE PROCEDURE", "CREATE OR ALTER PROCEDURE");
             else
