@@ -8,6 +8,6 @@
     CONSTRAINT [FK_{EntityName}Property_KeyId] FOREIGN KEY ([KeyId]) REFERENCES [{NamespaceTable}].[{EntityName}PropertyKey]([Id])
 )
 GO
-CREATE INDEX [IX_{EntityName}Property_EntityId] ON [{NamespaceTable}].[{EntityName}Property] ([EntityId]) INCLUDE ([Id])
+CREATE INDEX [IX_{EntityName}Property_KeyId] ON [{NamespaceTable}].[{EntityName}Property] ([KeyId]) INCLUDE ([EntityId])
 GO
-CREATE INDEX [IX_{EntityName}Property_KeyId] ON [{NamespaceTable}].[{EntityName}Property] ([KeyId],[EntityId]) INCLUDE ([Value])
+CREATE INDEX [IX_{EntityName}Property_EntityId] ON [{NamespaceTable}].[{EntityName}Property] ([EntityId]) INCLUDE ([Id])

@@ -74,14 +74,13 @@ namespace Tests.Xigadee.Azure.Sql
 
             try
             {
-                var srq1 = (SearchRequest)$"$top=100&$id=default&$skip=5&$orderby=DateCombined desc&$filter=accountid eq '{Accounts[0]}' and second eq null";
+                var srq1 = (SearchRequest)$"$top=50&$id=default&$skip=5&$orderby=DateCombined desc&$filter=accountid eq '{Accounts[0]}' and second eq null";
 
                 var s1 = await repo.SearchEntity(srq1);
 
             }
             catch (Exception ex)
             {
-
                 Assert.Fail(ex.Message);
             }
 
