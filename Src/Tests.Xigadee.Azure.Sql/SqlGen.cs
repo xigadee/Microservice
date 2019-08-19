@@ -14,7 +14,7 @@ namespace Tests.Xigadee.Azure.Sql
             var sgTest1 = new SqlJsonGenerator<Test1>();
             var sgUser = new SqlJsonGenerator<User>();
 
-            var ancillary = sgTest1.Generator.ScriptAncillary();
+            var ancillary = sgTest1.Generator.ScriptAncillary;
         }
 
         [TestMethod]
@@ -30,7 +30,7 @@ namespace Tests.Xigadee.Azure.Sql
             var sql5 = generator.TableReference;
             var sql6 = generator.TableReferenceKey;
 
-            var tab = generator.ScriptTable();
+            var tab = generator.ScriptTables;
 
             var sql7 = generator.AncillarySchema;
             var sql8 = generator.AncillaryKvpTableType;
@@ -50,12 +50,12 @@ namespace Tests.Xigadee.Azure.Sql
             var spsearchb = generator.SpSearchEntity;
             var spsearche = generator.SpSearchInternalBuild;
 
-            var sps = generator.ScriptStoredProcedures(true);
-            var spc = generator.ScriptStoredProcedures(false);
+            var sps = generator.ScriptStoredProceduresManual(true);
+            var spc = generator.ScriptStoredProceduresManual(false);
 
-            var anc = generator.ScriptAncillary();
+            var anc = generator.ScriptAncillary;
 
-            var scr = generator.ScriptEntity();
+            var scr = generator.ScriptEntity;
         }
 
         [TestMethod]

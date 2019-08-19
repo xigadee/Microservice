@@ -14,6 +14,11 @@ namespace Xigadee
     public class RepositorySqlJsonGenerator<E>
     {
         #region Declarations
+        /// <summary>
+        /// This is the root namespace for embedded templates.
+        /// </summary>
+        private const string msRoot = "Xigadee.Persistence.Json.SqlTemplates";
+
         private SqlStoredProcedureResolver<E> _resolver;
         #endregion
         #region Constructor
@@ -37,7 +42,7 @@ namespace Xigadee
         {
             var assembly = Assembly.GetExecutingAssembly();
 
-            using (Stream stream = assembly.GetManifestResourceStream($"Xigadee.Persistence.Json.SqlTemplates.{resourceName}"))
+            using (Stream stream = assembly.GetManifestResourceStream($"{msRoot}.{resourceName}"))
             using (StreamReader reader = new StreamReader(stream))
             {
                 string result = reader.ReadToEnd();
@@ -71,34 +76,54 @@ namespace Xigadee
         }
         #endregion
 
+        #region SBWrap(Action<StringBuilder> write, bool createoralter = false)
+        /// <summary>
+        /// This helper method is used to output the SQL script.
+        /// </summary>
+        /// <param name="write">The action.</param>
+        /// <param name="createoralter">The optional parameter that replaces the CREATE PROCEDURE sql command with an ALTER command. The default is false - no replacement.</param>
+        /// <returns>Returns the SQL script.</returns>
+        public static string SBWrap(Action<StringBuilder> write, bool createoralter = false)
+        {
+            var sb = new StringBuilder();
 
+            write(sb);
+
+            if (createoralter)
+                return sb.ToString().Replace("CREATE PROCEDURE", "CREATE OR ALTER PROCEDURE");
+            else
+                return sb.ToString();
+        }
+        #endregion
+
+        #region Scripts Ancillary
         public string AncillarySchema => ProcessTemplate("Ancillary.Schema.sql");
 
         public string AncillaryKvpTableType => ProcessTemplate("Ancillary.KvpTableType.sql");
 
         public string AncillaryIdTableType => ProcessTemplate("Ancillary.IdTableType.sql");
 
-        #region ScriptAncillary()
         /// <summary>
-        /// This method returns the Ancillary SQL for the application. This is the set of helper definitions that are needed to make the stored procedures work.
+        /// These are the CRUD stored procedures.
         /// </summary>
-        /// <returns></returns>
-        public string ScriptAncillary()
+        /// <param name="sb">The string builder.</param>
+        protected void Append_SQL_Ancillary(StringBuilder sb)
         {
-            var sb = new StringBuilder();
-
             sb.AppendLine(AncillarySchema);
             sb.AppendLine("GO");
             sb.AppendLine(AncillaryKvpTableType);
             sb.AppendLine("GO");
             sb.AppendLine(AncillaryIdTableType);
             sb.AppendLine("GO");
+        }
 
-            return sb.ToString();
-        } 
+        /// <summary>
+        /// This method returns the Ancillary SQL for the application. This is the set of helper definitions that are needed to make the stored procedures work.
+        /// </summary>
+        /// <returns></returns>
+        public string ScriptAncillary => SBWrap(Append_SQL_Ancillary);
         #endregion
-
-        #region Tables
+        #region Scripts Tables
         public string TableEntity => ProcessTemplate("Tables.Table.sql");
 
         public string TableHistory => ProcessTemplate("Tables.TableHistory.sql");
@@ -112,17 +137,13 @@ namespace Xigadee
         public string TableReferenceKey => ProcessTemplate("Tables.TableReferenceKey.sql");
 
         public string TableSearchHistory => ProcessTemplate("Tables.TableSearchHistory.sql");
-        #endregion
 
-        #region ScriptTable()
         /// <summary>
-        /// This method returns the SQL scripts to create the necessary tables.
+        /// These are the SQL tables.
         /// </summary>
-        /// <returns>Returns a SQL script.</returns>
-        public string ScriptTable()
+        /// <param name="sb">The string builder.</param>
+        protected void Append_SQL_Tables(StringBuilder sb)
         {
-            var sb = new StringBuilder();
-
             sb.AppendLine(TableReferenceKey);
             sb.AppendLine("GO");
             sb.AppendLine(TablePropertyKey);
@@ -137,11 +158,15 @@ namespace Xigadee
             sb.AppendLine("GO");
             sb.AppendLine(TableSearchHistory);
             sb.AppendLine("GO");
+        }
 
-            return sb.ToString();
-        } 
+        /// <summary>
+        /// This method returns the SQL scripts to create the necessary tables.
+        /// </summary>
+        /// <returns>Returns a SQL script.</returns>
+        public string ScriptTables => SBWrap(Append_SQL_Tables);
         #endregion
-
+        #region Scripts Stored Procedures - CRUD
         /// <summary>
         /// This is the entity create stored procedure.
         /// </summary>
@@ -184,49 +209,11 @@ namespace Xigadee
         public string SpHistory => ProcessTemplate("StoredProcedures.spHistory.sql");
 
         /// <summary>
-        /// This is the entity search stored procedure.
+        /// These are the CRUD stored procedures.
         /// </summary>
-        public string SpSearchInternalBuild => ProcessTemplate("StoredProcedures.spSearchInternalBuild.sql");
-        /// <summary>
-        /// This is the SP that collates the Id from the incoming JSON search request.
-        /// </summary>
-        public string SpSearchInternalBuildJson => ProcessTemplate("StoredProcedures.spSearchInternalBuildJson.sql");
-
-        /// <summary>
-        /// This is the entity search stored procedure.
-        /// </summary>
-        public string SpSearch => ProcessTemplate("StoredProcedures.spSearch.sql");
-        /// <summary>
-        /// This is the entity search entity stored procedure.
-        /// </summary>
-        public string SpSearchEntity => ProcessTemplate("StoredProcedures.spSearchEntity.sql");
-
-        /// <summary>
-        /// This is the entity search stored procedure.
-        /// </summary>
-        public string SpSearchJson => ProcessTemplate("StoredProcedures.spSearchJson.sql");
-        /// <summary>
-        /// This is the entity search entity stored procedure.
-        /// </summary>
-        public string SpSearchEntityJson => ProcessTemplate("StoredProcedures.spSearchEntityJson.sql");
-        /// <summary>
-        /// This is the function filter for the SQL.
-        /// </summary>
-        public string FnPropertyFilter => ProcessTemplate("Functions.fnFilter.sql");
-        /// <summary>
-        /// This is the function filter for the SQL.
-        /// </summary>
-        public string FnPropertyPaginate => ProcessTemplate("Functions.fnPaginate.sql");
-
-        /// <summary>
-        /// This method returns all the stored procedures.
-        /// </summary>
-        /// <param name="createoralter">Specifies whether the stored procedure should be created or altered.</param>
-        /// <returns>Returns the SQL script.</returns>
-        public string ScriptStoredProcedures(bool createoralter = false)
+        /// <param name="sb">The string builder.</param>
+        protected void Append_SQLSPs_EntityCRUD(StringBuilder sb)
         {
-            var sb = new StringBuilder();
-
             sb.AppendLine(SpUpsertRP);
             sb.AppendLine("GO");
             sb.AppendLine(SpHistory);
@@ -247,14 +234,70 @@ namespace Xigadee
             sb.AppendLine("GO");
             sb.AppendLine(SpVersionByRef);
             sb.AppendLine("GO");
+        }
+        #endregion
+        #region Scripts Stored Procedures - Search
+        /// <summary>
+        /// This is the entity search stored procedure.
+        /// </summary>
+        public string SpSearchInternalBuild => ProcessTemplate("StoredProcedures.spSearchInternalBuild.sql");
+        /// <summary>
+        /// This is the entity search stored procedure.
+        /// </summary>
+        public string SpSearch => ProcessTemplate("StoredProcedures.spSearch.sql");
+        /// <summary>
+        /// This is the entity search entity stored procedure.
+        /// </summary>
+        public string SpSearchEntity => ProcessTemplate("StoredProcedures.spSearchEntity.sql");
 
+        /// <summary>
+        /// These are the SQL Search stored procedures.
+        /// </summary>
+        /// <param name="sb">The string builder.</param>
+        protected void Append_SQLSPs_Search(StringBuilder sb)
+        {
+            //Search
             sb.AppendLine(SpSearchInternalBuild);
             sb.AppendLine("GO");
             sb.AppendLine(SpSearch);
             sb.AppendLine("GO");
             sb.AppendLine(SpSearchEntity);
             sb.AppendLine("GO");
+        }
 
+        /// <summary>
+        /// These are the SQL StoredProcedures for SQL Search.
+        /// </summary>
+        public string ScriptSearch => SBWrap(Append_SQLSPs_Search);
+        #endregion
+        #region Scripts Stored Procedures - Search JSON 
+        /// <summary>
+        /// This is the SP that collates the Id from the incoming JSON search request.
+        /// </summary>
+        public string SpSearchInternalBuildJson => ProcessTemplate("StoredProcedures.spSearchInternalBuildJson.sql");
+        /// <summary>
+        /// This is the entity search stored procedure.
+        /// </summary>
+        public string SpSearchJson => ProcessTemplate("StoredProcedures.spSearchJson.sql");
+        /// <summary>
+        /// This is the entity search entity stored procedure.
+        /// </summary>
+        public string SpSearchEntityJson => ProcessTemplate("StoredProcedures.spSearchEntityJson.sql");
+        /// <summary>
+        /// This is the function filter for the SQL.
+        /// </summary>
+        public string FnPropertyFilter => ProcessTemplate("Functions.fnFilter.sql");
+        /// <summary>
+        /// This is the function filter for the SQL.
+        /// </summary>
+        public string FnPropertyPaginate => ProcessTemplate("Functions.fnPaginate.sql");
+
+        /// <summary>
+        /// These are the SQL Search JSON extended stored procedures.
+        /// </summary>
+        /// <param name="sb">The string builder.</param>
+        protected void Append_SQLSPs_SearchJson(StringBuilder sb)
+        {
             //Json Search
             sb.AppendLine(SpSearchInternalBuildJson);
             sb.AppendLine("GO");
@@ -262,31 +305,60 @@ namespace Xigadee
             sb.AppendLine("GO");
             sb.AppendLine(SpSearchEntityJson);
             sb.AppendLine("GO");
-
             sb.AppendLine(FnPropertyFilter);
             sb.AppendLine("GO");
-
             sb.AppendLine(FnPropertyPaginate);
             sb.AppendLine("GO");
-            
-            if (createoralter)
-                return sb.ToString().Replace("CREATE PROCEDURE", "CREATE OR ALTER PROCEDURE");
-            else
-                return sb.ToString();
         }
 
         /// <summary>
-        /// 
+        /// These are the SQL StoredProcedures for SQL Json Search.
         /// </summary>
-        /// <returns>Returns the S</returns>
-        public string ScriptEntity()
-        {
-            var sb = new StringBuilder();
+        public string ScriptSearchJson => SBWrap(Append_SQLSPs_SearchJson);
+        #endregion
 
-            sb.AppendLine(ScriptTable());
-            sb.AppendLine(ScriptStoredProcedures());
 
-            return sb.ToString();
-        }
+        /// <summary>
+        /// This is the stored procedures script.
+        /// </summary>
+        public string ScriptStoredProcedures => ScriptStoredProceduresManual(false);
+        /// <summary>
+        /// This method returns all the stored procedures.
+        /// </summary>
+        /// <param name="createoralter">Specifies whether the stored procedure should be created or altered.</param>
+        /// <returns>Returns the SQL script.</returns>
+        public string ScriptStoredProceduresManual(bool createoralter = false) =>
+            SBWrap(sb =>
+            {
+                Append_SQLSPs_EntityCRUD(sb);
+
+                //Search
+                Append_SQLSPs_Search(sb);
+
+                //Json Search
+                Append_SQLSPs_SearchJson(sb);
+
+            }, createoralter);
+
+        /// <summary>
+        /// Returns the full DB definition for the entity (excluding ancillary definitions)
+        /// </summary>
+        /// <returns>Returns the SQL script.</returns>
+        public string ScriptEntity =>
+            SBWrap(sb =>
+            {
+                //Tables
+                Append_SQL_Tables(sb);
+
+                //Entities
+                Append_SQLSPs_EntityCRUD(sb);
+
+                //Search
+                Append_SQLSPs_Search(sb);
+
+                //Json Search
+                Append_SQLSPs_SearchJson(sb);
+
+            });
     }
 }

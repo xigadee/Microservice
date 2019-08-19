@@ -26,6 +26,6 @@
         /// <summary>
         /// This is a shortcut to the main SQL generation.
         /// </summary>
-        public string SqlEntity => Generator.ScriptEntity();
+        public string SqlEntity => Generator.ScriptEntity;
     }
 }

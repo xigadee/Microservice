@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [{NamespaceExternal}].[{spSearch}Entity_Default_Json]
+﻿CREATE PROCEDURE [{NamespaceExternal}].[{spSearchEntity}_Default_Json]
 	@Body NVARCHAR(MAX)
 AS
 BEGIN
