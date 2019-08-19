@@ -57,6 +57,8 @@ namespace Tests.Xigadee.Azure.Sql
                         t.Second = DateTime.UtcNow.Millisecond;
 
                     rs = await repo.Create(t);
+
+                    var rsCheck = await repo.Read(t.Id);
                 }
                 catch (Exception ex)
                 {
