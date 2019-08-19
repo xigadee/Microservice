@@ -61,6 +61,16 @@ AS
 			RETURN 409; --Not found
 		END
 
+		--#region.extension
+		DECLARE @ExResponse INT;
+		EXEC @ExResponse = [{NamespaceTable}].[{spUpsertRP}_Extension] @Id, 1, @Body
+		IF (@ExResponse != 200)
+		BEGIN
+			ROLLBACK TRAN;
+			RETURN 400; --Conflict with extension table - this should not happen.
+		END
+		--#endregion
+
 	    --Record the audit history.
 		EXEC [{NamespaceTable}].[{spHistory}] @Id, @ExternalId, @VersionIdNew, @UserIdAudit, @Body, @DateCreated, @DateUpdated, @Sig
 

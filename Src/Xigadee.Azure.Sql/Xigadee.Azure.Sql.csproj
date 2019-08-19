@@ -34,15 +34,18 @@
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spSearchJson.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spSearchLog.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spUpdate.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spUpsertExtension.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spUpsertRP.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spVersion.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spVersionByRef.sql" />
     <None Remove="Persistence\Json\SqlTemplates\Table.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\Tables\TableExtension.sql" />
     <None Remove="Persistence\Json\SqlTemplates\Tables\TableHistory.sql" />
     <None Remove="Persistence\Json\SqlTemplates\Tables\TableProperty.sql" />
     <None Remove="Persistence\Json\SqlTemplates\Tables\TablePropertyKey.sql" />
     <None Remove="Persistence\Json\SqlTemplates\Tables\TableReference.sql" />
     <None Remove="Persistence\Json\SqlTemplates\Tables\TableReferenceKey.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\Views\ViewExtended.sql" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
@@ -54,6 +57,7 @@
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Ancillary\Schema.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Ancillary\IdTableType.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Ancillary\KvpTableType.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spUpsertExtension.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spSearchEntityJson.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spSearchInternalBuildJson.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spSearchJson.sql" />
@@ -70,6 +74,7 @@
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spReadByRef.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spRead.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spCreate.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\Tables\TableExtension.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Tables\TableSearchHistory.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Tables\TableProperty.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Tables\TablePropertyKey.sql" />

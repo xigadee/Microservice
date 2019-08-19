@@ -126,6 +126,8 @@ namespace Xigadee
         #region Scripts Tables
         public string TableEntity => ProcessTemplate("Tables.Table.sql");
 
+        public string TableEntity_Extension => ProcessTemplate("Tables.TableExtension.sql");
+
         public string TableHistory => ProcessTemplate("Tables.TableHistory.sql");
 
         public string TableProperty => ProcessTemplate("Tables.TableProperty.sql");
