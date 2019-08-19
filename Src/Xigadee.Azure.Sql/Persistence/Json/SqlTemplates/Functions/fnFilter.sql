@@ -67,6 +67,8 @@ IF (@IsNegation = 1)
 		WHEN 'le' THEN 'gt' 
 		WHEN 'gt' THEN 'le' 
 		WHEN 'ge' THEN 'lt' 
+		WHEN 'like' THEN 'nlike' 
+		WHEN 'nlike' THEN 'like' 
 	END;
 
 IF (@Operator = 'eq')
@@ -123,6 +125,28 @@ IF (@Operator = 'ge')
 BEGIN
    WITH EntitySet(Id) AS(
    SELECT DISTINCT EntityId FROM [{NamespaceTable}].[{EntityName}Property] WHERE [KeyId] = @PropertyKey AND [Value]>=@Value
+   )
+   INSERT @Results (Id, Position)
+   SELECT Id, @OutputPosition FROM EntitySet;
+   RETURN;
+END
+
+IF (@Operator = 'like')
+BEGIN
+   WITH EntitySet(Id) AS(
+   SELECT DISTINCT EntityId FROM [{NamespaceTable}].[{EntityName}Property] WHERE [KeyId] = @PropertyKey AND [Value] LIKE @Value
+   )
+   INSERT @Results (Id, Position)
+   SELECT Id, @OutputPosition FROM EntitySet;
+   RETURN;
+END
+
+IF (@Operator = 'nlike')
+BEGIN
+   WITH EntitySet(Id) AS(
+   SELECT Id FROM [{NamespaceTable}].[{EntityName}]
+   EXCEPT
+   SELECT EntityId FROM [{NamespaceTable}].[{EntityName}Property] WHERE [KeyId] = @PropertyKey AND [Value] LIKE @Value
    )
    INSERT @Results (Id, Position)
    SELECT Id, @OutputPosition FROM EntitySet;
