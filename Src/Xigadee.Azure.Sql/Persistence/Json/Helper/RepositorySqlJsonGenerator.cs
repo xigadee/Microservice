@@ -20,15 +20,19 @@ namespace Xigadee
         private const string msRoot = "Xigadee.Persistence.Json.SqlTemplates";
 
         private SqlStoredProcedureResolver<E> _resolver;
+
+        private RepositorySqlJsonOptions _options;
         #endregion
         #region Constructor
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="resolver">The resolver.</param>
-        public RepositorySqlJsonGenerator(SqlStoredProcedureResolver<E> resolver)
+        /// <param name="options">This is the set of generation options. If not set, the historical legacy support is set.</param>
+        public RepositorySqlJsonGenerator(SqlStoredProcedureResolver<E> resolver, RepositorySqlJsonOptions options = null)
         {
             _resolver = resolver;
+            _options = options ?? RepositorySqlJsonOptions.Legacy;
         } 
         #endregion
 

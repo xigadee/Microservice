@@ -10,7 +10,8 @@
         /// This is the default constructor.
         /// </summary>
         /// <param name="names">This is the optional naming class. If this is null a class will be created with the default settings.</param>
-        public SqlJsonGenerator(SqlStoredProcedureResolver<E> names = null)
+        /// <param name="options">This is the SQL generation options settings.</param>
+        public SqlJsonGenerator(SqlStoredProcedureResolver<E> names = null, RepositorySqlJsonOptions options = null)
         {
             Names = names ?? new SqlStoredProcedureResolver<E>();
             Generator = new RepositorySqlJsonGenerator<E>(Names);
