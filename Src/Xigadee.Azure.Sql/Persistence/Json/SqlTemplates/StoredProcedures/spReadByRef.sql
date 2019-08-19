@@ -5,7 +5,7 @@ AS
 SET NOCOUNT ON;
 	BEGIN TRY
 	
-		SELECT E.* 
+		SELECT E.[Sig],E.[Body] 
 		FROM [{NamespaceTable}].[{EntityName}] E
 		INNER JOIN [{NamespaceTable}].[{EntityName}Reference] R ON E.Id = R.EntityId
 		INNER JOIN [{NamespaceTable}].[{EntityName}ReferenceKey] RK ON R.KeyId = RK.Id

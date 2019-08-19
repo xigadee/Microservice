@@ -399,9 +399,9 @@ namespace Xigadee
                                 {
                                     processResponse(reader, ctx);
                                 }
-                                catch (Exception)
+                                catch (Exception ex)
                                 {
-                                    if (!SqlErrorsCheck(reader, ctx))
+                                    if (!SqlErrorsCheck(reader, ctx, ex))
                                         throw;
                                 }
                             }
@@ -437,8 +437,9 @@ namespace Xigadee
         /// <typeparam name="ET">The entity type to return.</typeparam>
         /// <param name="dataReader">The data reader.</param>
         /// <param name="response">The response class.</param>
+        /// <param name="ex">The exception thrown.</param>
         /// <returns>Returns true if errors are detected.</returns>
-        protected virtual bool SqlErrorsCheck<ET>(SqlDataReader dataReader, SqlEntityContext<ET> response)
+        protected virtual bool SqlErrorsCheck<ET>(SqlDataReader dataReader, SqlEntityContext<ET> response, Exception ex = null)
         {
             var columnSchema = dataReader.GetColumnSchema();
             if (columnSchema.Any(dbc => dbc.ColumnName.Equals("ErrorNumber")))

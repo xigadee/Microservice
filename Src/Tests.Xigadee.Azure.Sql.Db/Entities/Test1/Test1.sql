@@ -56,9 +56,9 @@ CREATE TABLE [dbo].[Test1Property]
     CONSTRAINT [FK_Test1Property_KeyId] FOREIGN KEY ([KeyId]) REFERENCES [dbo].[Test1PropertyKey]([Id])
 )
 GO
-CREATE INDEX [IX_Test1Property_EntityId] ON [dbo].[Test1Property] ([EntityId]) INCLUDE ([Id])
+CREATE INDEX [IX_Test1Property_KeyId] ON [dbo].[Test1Property] ([KeyId]) INCLUDE ([EntityId])
 GO
-CREATE INDEX [IX_Test1Property_KeyId] ON [dbo].[Test1Property] ([KeyId],[EntityId]) INCLUDE ([Value])
+CREATE INDEX [IX_Test1Property_EntityId] ON [dbo].[Test1Property] ([EntityId]) INCLUDE ([Id])
 
 GO
 CREATE TABLE [dbo].[Test1Reference]
@@ -360,7 +360,7 @@ AS
 SET NOCOUNT ON;
 	BEGIN TRY
 	
-		SELECT * 
+		SELECT [Sig],[Body]
 		FROM [dbo].[Test1]
 		WHERE [ExternalId] = @ExternalId
 
@@ -383,7 +383,7 @@ AS
 SET NOCOUNT ON;
 	BEGIN TRY
 	
-		SELECT E.* 
+		SELECT E.[Sig],E.[Body] 
 		FROM [dbo].[Test1] E
 		INNER JOIN [dbo].[Test1Reference] R ON E.Id = R.EntityId
 		INNER JOIN [dbo].[Test1ReferenceKey] RK ON R.KeyId = RK.Id
@@ -645,32 +645,35 @@ CREATE PROCEDURE [dbo].[spTest1SearchInternalBuild_Json]
 	@Body NVARCHAR(MAX),
 	@ETag UNIQUEIDENTIFIER OUTPUT,
 	@CollectionId BIGINT OUTPUT,
-	@RecordResult BIGINT OUTPUT
+	@RecordResult BIGINT OUTPUT,
+	@CacheHit INT OUTPUT
 AS
 BEGIN
 	DECLARE @HistoryIndexId BIGINT, @TimeStamp DATETIME
-	SET @ETag = ISNULL(TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(@Body,'lax $.ETag')), NEWID());
-
-	--OK, check whether the ETag is already assigned to a results set
-	SELECT TOP 1 @CollectionId = Id, @HistoryIndexId = [HistoryIndex], @TimeStamp = [TimeStamp], @RecordResult = [RecordCount]
-	FROM [dbo].[Test1SearchHistory] 
-	WHERE ETag = @ETag;
+	SET @ETag = TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(@Body,'lax $.ETag'));
+	SET @CacheHit = 0;
 
 	--OK, we need to check that the collection is still valid.
 	DECLARE @CurrentHistoryIndexId BIGINT = (SELECT TOP 1 Id FROM [dbo].[Test1History] ORDER BY Id DESC);
 
-	IF (@CollectionId IS NOT NULL 
-		AND @CurrentHistoryIndexId IS NOT NULL
-		AND @HistoryIndexId IS NOT NULL
-		AND @HistoryIndexId = @CurrentHistoryIndexId)
+	IF (@ETag IS NOT NULL)
 	BEGIN
-		RETURN 202;
+		--OK, check whether the ETag is already assigned to a results set
+		SELECT TOP 1 @CollectionId = Id, @HistoryIndexId = [HistoryIndex], @TimeStamp = [TimeStamp], @RecordResult = [RecordCount]
+		FROM [dbo].[Test1SearchHistory] 
+		WHERE ETag = @ETag;
+
+		IF (@CollectionId IS NOT NULL 
+			AND @CurrentHistoryIndexId IS NOT NULL
+			AND @HistoryIndexId IS NOT NULL
+			AND @HistoryIndexId = @CurrentHistoryIndexId)
+		BEGIN
+			RETURN 202;
+		END
 	END
-	ELSE
-	BEGIN
-		--We need to create a new search collection and change the ETag.
-		SET @ETag = NEWID();
-	END
+
+	--We need to create a new search collection and change the ETag.
+	SET @ETag = NEWID();
 
 	INSERT INTO [dbo].[Test1SearchHistory]
 	([ETag],[EntityType],[SearchType],[Sig],[Body],[HistoryIndex])
@@ -696,6 +699,7 @@ BEGIN
 
 	SET @RecordResult = ROWCOUNT_BIG();
 
+	--Set the record count in the collection.
 	UPDATE [dbo].[Test1SearchHistory]
 		SET [RecordCount] = @RecordResult
 	WHERE [Id] = @CollectionId;
@@ -709,10 +713,10 @@ AS
 BEGIN
 	BEGIN TRY
 
-	DECLARE @ETag UNIQUEIDENTIFIER, @CollectionId BIGINT, @Result INT, @RecordResult BIGINT
+	DECLARE @ETag UNIQUEIDENTIFIER, @CollectionId BIGINT, @Result INT, @RecordResult BIGINT, @CacheHit INT
 
 	EXEC @Result = [dbo].[spTest1SearchInternalBuild_Json] 
-		@Body, @ETag OUTPUT, @CollectionId OUTPUT, @RecordResult OUTPUT
+		@Body, @ETag OUTPUT, @CollectionId OUTPUT, @RecordResult OUTPUT, @CacheHit OUTPUT
 
 	IF (@RecordResult = 0)
 	BEGIN
@@ -752,10 +756,10 @@ AS
 BEGIN
 	BEGIN TRY
 
-	DECLARE @ETag UNIQUEIDENTIFIER, @CollectionId BIGINT, @Result INT, @RecordResult BIGINT
+	DECLARE @ETag UNIQUEIDENTIFIER, @CollectionId BIGINT, @Result INT, @RecordResult BIGINT, @CacheHit INT
 
 	EXEC @Result = [dbo].[spTest1SearchInternalBuild_Json] 
-		@Body, @ETag OUTPUT, @CollectionId OUTPUT, @RecordResult OUTPUT
+		@Body, @ETag OUTPUT, @CollectionId OUTPUT, @RecordResult OUTPUT, @CacheHit OUTPUT
 
 	IF (@RecordResult = 0)
 	BEGIN
@@ -766,13 +770,26 @@ BEGIN
 	DECLARE @Top INT = ISNULL(CAST(JSON_VALUE(@Body,'lax $.TopValue') AS INT), 50);
 
 	--Output
-	SELECT E.ExternalId, E.VersionId, E.Body 
-	FROM [dbo].[udfTest1PaginateProperty](@CollectionId, @Body) AS F
-	INNER JOIN [dbo].[Test1] AS E ON F.Id = E.Id
-	ORDER BY F.[Rank]
-	OFFSET @Skip ROWS
-	FETCH NEXT @Top ROWS ONLY
-	
+	--SELECT E.ExternalId, E.VersionId, E.Body 
+	--FROM [dbo].[udfTest1PaginateProperty](@CollectionId, @Body) AS F
+	--INNER JOIN [dbo].[Test1] AS E ON F.Id = E.Id
+	--ORDER BY F.[Rank]
+	--OFFSET @Skip ROWS
+	--FETCH NEXT @Top ROWS ONLY
+
+	SELECT '' AS [Sig], (
+	SELECT @ETag AS [ETag], @RecordResult AS [RecordCount], 'Entity' AS [Type], @CacheHit AS [CacheHit], @Skip AS [Skip], @Top AS [Top],
+	( 
+		SELECT E.ExternalId AS [ExternalId], E.VersionId AS [VersionId], E.Body AS [Body]
+		FROM [dbo].[udfTest1PaginateProperty](@CollectionId, @Body) AS F
+		INNER JOIN [dbo].[Test1] AS E ON F.Id = E.Id
+		ORDER BY F.[Rank]
+		OFFSET @Skip ROWS
+		FETCH NEXT @Top ROWS ONLY
+		FOR JSON PATH
+	) AS [Results]
+	FOR JSON PATH, ROOT('SearchResponse')) AS [Body];
+
 	RETURN 200;
 
 	END TRY

@@ -274,9 +274,61 @@ namespace Xigadee
         {
             var rs = ctx.EntityOutgoing;
             var json = dataReader["Body"]?.ToString();
-            var entity = JsonConvert.DeserializeObject<E>(json);
-            rs.Data.Add(entity);
-            
+            var entityHolder = JsonConvert.DeserializeObject<SQLSearchResponse>(json);
+
+            entityHolder.Extract<E>().ForEach(e => rs.Data.Add(e));
+
+            rs.Etag = entityHolder.ETag?.ToString();
+            rs.Skip = entityHolder.Skip;
+            rs.Top = entityHolder.Top;
+            rs.RecordCount = entityHolder.RecordCount;
+            rs.CacheHit = entityHolder.CacheHit;
+        }
+
+        private class SQLSearchResponse
+        {
+            public List<SQLSearchResult> SearchResponse { get; set; }
+
+            public IEnumerable<TE> Extract<TE>()
+            {
+                if (SearchResponse == null || SearchResponse.Count == 0)
+                    yield break;
+
+                foreach (var result in Default.Results)
+                    yield return result.Extract<TE>();
+            }
+
+            public SQLSearchResult Default => SearchResponse.Count == 1?SearchResponse[0]:null;
+
+            public Guid? ETag => Default?.ETag;
+            public int? Skip => Default?.Skip;
+            public int? Top => Default?.Top;
+            public int? RecordCount => Default?.RecordCount;
+            public int? CacheHit => Default?.CacheHit;
+
+        }
+
+        private class SQLSearchResult
+        {
+            public Guid? ETag { get; set; }
+
+            public int? RecordCount { get; set; }
+            public int? CacheHit { get; set; }
+            public int? Skip { get; set; }
+            public int? Top { get; set; }
+
+            public List<SQLSearchResponseResult> Results { get; set; }
+
+        }
+
+        private class SQLSearchResponseResult
+        {
+            public Guid ExternalId { get; set; }
+            public Guid VersionId { get; set; }
+
+            public string Body { get; set; }
+
+            public RE Extract<RE>() => JsonConvert.DeserializeObject<RE>(Body);
         }
 
     }

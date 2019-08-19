@@ -2,11 +2,13 @@
 	@Body NVARCHAR(MAX),
 	@ETag UNIQUEIDENTIFIER OUTPUT,
 	@CollectionId BIGINT OUTPUT,
-	@RecordResult BIGINT OUTPUT
+	@RecordResult BIGINT OUTPUT,
+	@CacheHit INT OUTPUT
 AS
 BEGIN
 	DECLARE @HistoryIndexId BIGINT, @TimeStamp DATETIME
 	SET @ETag = TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(@Body,'lax $.ETag'));
+	SET @CacheHit = 0;
 
 	--OK, we need to check that the collection is still valid.
 	DECLARE @CurrentHistoryIndexId BIGINT = (SELECT TOP 1 Id FROM [{NamespaceTable}].[{EntityName}History] ORDER BY Id DESC);

@@ -4,7 +4,7 @@ AS
 SET NOCOUNT ON;
 	BEGIN TRY
 	
-		SELECT * 
+		SELECT [Sig],[Body]
 		FROM [{NamespaceTable}].[{EntityName}]
 		WHERE [ExternalId] = @ExternalId
 

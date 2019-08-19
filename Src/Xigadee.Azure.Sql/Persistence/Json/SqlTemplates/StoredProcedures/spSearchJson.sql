@@ -4,10 +4,10 @@ AS
 BEGIN
 	BEGIN TRY
 
-	DECLARE @ETag UNIQUEIDENTIFIER, @CollectionId BIGINT, @Result INT, @RecordResult BIGINT
+	DECLARE @ETag UNIQUEIDENTIFIER, @CollectionId BIGINT, @Result INT, @RecordResult BIGINT, @CacheHit INT
 
 	EXEC @Result = [{NamespaceTable}].[{spSearch}InternalBuild_Json] 
-		@Body, @ETag OUTPUT, @CollectionId OUTPUT, @RecordResult OUTPUT
+		@Body, @ETag OUTPUT, @CollectionId OUTPUT, @RecordResult OUTPUT, @CacheHit OUTPUT
 
 	IF (@RecordResult = 0)
 	BEGIN

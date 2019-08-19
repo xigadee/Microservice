@@ -48,6 +48,14 @@ namespace Xigadee
         /// </summary>
         public int? Skip { get; set; }
         /// <summary>
+        /// This is the records in the result set. This may not be supported by different persistence engines.
+        /// </summary>
+        public int? RecordCount { get; set; }
+        /// <summary>
+        /// This is the number of times the search cache has been hit.
+        /// </summary>
+        public int? CacheHit { get; set; }
+        /// <summary>
         /// This is the optional property bag that additional properties can be appended to.
         /// </summary>
         public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
