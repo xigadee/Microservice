@@ -28,5 +28,16 @@
         /// This is a shortcut to the main SQL generation.
         /// </summary>
         public string SqlEntity => Generator.ScriptEntity;
+
+        /// <summary>
+        /// This is the SQL script definition without the base extension SQL code.
+        /// </summary>
+        public string ScriptEntityWithoutExtension => Generator.ScriptEntityWithoutExtension;
+        /// <summary>
+        /// This is the supported SQL extension script that you can customize for your data uses.
+        /// </summary>
+        public string ScriptExtension => Generator.ScriptExtension;
+
+
     }
 }
