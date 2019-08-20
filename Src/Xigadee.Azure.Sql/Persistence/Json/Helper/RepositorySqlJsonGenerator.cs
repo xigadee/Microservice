@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -135,8 +134,6 @@ namespace Xigadee
         #region Scripts Tables
         public string TableEntity => ProcessTemplate("Tables.Table.sql");
 
-        public string TableEntity_Extension => ProcessTemplate("Tables.TableExtension.sql");
-
         public string TableHistory => ProcessTemplate("Tables.TableHistory.sql");
 
         public string TableProperty => ProcessTemplate("Tables.TableProperty.sql");
@@ -161,8 +158,6 @@ namespace Xigadee
             sb.AppendLine("GO");
             sb.AppendLine(TableEntity);
             sb.AppendLine("GO");
-            sb.AppendLine(TableEntity_Extension);
-            sb.AppendLine("GO");
             sb.AppendLine(TableHistory);
             sb.AppendLine("GO");
             sb.AppendLine(TableProperty);
@@ -180,16 +175,37 @@ namespace Xigadee
         public string ScriptTables => SBWrap(Append_SQL_Tables);
         #endregion
 
-        #region Scripts Views
+        #region Scripts Extension
+
+        public string TableEntity_Extension => ProcessTemplate("Tables.TableExtension.sql");
+
         public string ViewEntity => ProcessTemplate("Views.ViewExtension.sql");
+
+        /// <summary>
+        /// This is the internal extension table stored procedure
+        /// </summary>
+        public string SpUpsertExtension => ProcessTemplate("StoredProcedures.spUpsertExtension.sql");
+        /// <summary>
+        /// This is the internal extension table stored procedure
+        /// </summary>
+        public string SpManuallyPopulateExtension => ProcessTemplate("Helper.spPopulateExtension.sql");
 
         /// <summary>
         /// These are the SQL tables.
         /// </summary>
         /// <param name="sb">The string builder.</param>
-        protected void Append_SQL_Views(StringBuilder sb)
+        protected void Append_SQL_Extension(StringBuilder sb)
         {
+            sb.AppendLine(TableEntity_Extension);
+            sb.AppendLine("GO");
+
             sb.AppendLine(ViewEntity);
+            sb.AppendLine("GO");
+
+            sb.AppendLine(SpUpsertExtension);
+            sb.AppendLine("GO");
+
+            sb.AppendLine(SpManuallyPopulateExtension);
             sb.AppendLine("GO");
         }
 
@@ -197,7 +213,7 @@ namespace Xigadee
         /// This method returns the SQL scripts to create the necessary tables.
         /// </summary>
         /// <returns>Returns a SQL script.</returns>
-        public string ScriptViews => SBWrap(Append_SQL_Views);
+        public string ScriptExtension => SBWrap(Append_SQL_Extension);
         #endregion
 
         #region Scripts Stored Procedures - CRUD
@@ -243,20 +259,12 @@ namespace Xigadee
         public string SpHistory => ProcessTemplate("StoredProcedures.spHistory.sql");
 
         /// <summary>
-        /// This is the internal extension table stored procedure
-        /// </summary>
-        public string SpUpsertExtension => ProcessTemplate("StoredProcedures.spUpsertExtension.sql");
-
-        /// <summary>
         /// These are the CRUD stored procedures.
         /// </summary>
         /// <param name="sb">The string builder.</param>
         protected void Append_SQLSPs_EntityCRUD(StringBuilder sb)
         {
             sb.AppendLine(SpUpsertRP);
-            sb.AppendLine("GO");
-
-            sb.AppendLine(SpUpsertExtension);
             sb.AppendLine("GO");
 
             sb.AppendLine(SpHistory);
@@ -381,6 +389,7 @@ namespace Xigadee
                 //Json Search
                 Append_SQLSPs_SearchJson(sb);
 
+
             }, createoralter);
 
         /// <summary>
@@ -393,8 +402,29 @@ namespace Xigadee
                 //Tables
                 Append_SQL_Tables(sb);
 
-                //Views
-                Append_SQL_Views(sb);
+                //Entities
+                Append_SQLSPs_EntityCRUD(sb);
+
+                //Search
+                Append_SQLSPs_Search(sb);
+
+                //Json Search
+                Append_SQLSPs_SearchJson(sb);
+
+                //Extension Objects
+                Append_SQL_Extension(sb);
+
+            });
+
+        /// <summary>
+        /// Returns the full DB definition for the entity (excluding ancillary definitions)
+        /// </summary>
+        /// <returns>Returns the SQL script.</returns>
+        public string ScriptEntityWithoutExtension =>
+            SBWrap(sb =>
+            {
+                //Tables
+                Append_SQL_Tables(sb);
 
                 //Entities
                 Append_SQLSPs_EntityCRUD(sb);

@@ -12,7 +12,8 @@ namespace Tests.Xigadee.Azure.Sql
         public void Verify_SqlStoredProcedureResolverUser()
         {
             var sgTest1 = new SqlJsonGenerator<Test1>(options: new RepositorySqlJsonOptions(true));
-            var sqlTest1 = sgTest1.SqlEntity;
+            var sqlTest1 = sgTest1.Generator.ScriptEntityWithoutExtension;
+            var sqlTest1Extension = sgTest1.Generator.ScriptExtension;
 
             var sgUser = new SqlJsonGenerator<User>();
             var sqlUser = sgUser.SqlEntity;

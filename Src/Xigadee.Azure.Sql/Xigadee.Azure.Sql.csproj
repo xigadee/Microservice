@@ -20,6 +20,7 @@
     <None Remove="Persistence\Json\SqlTemplates\Ancillary\Security.sql" />
     <None Remove="Persistence\Json\SqlTemplates\Functions\fnFilter.sql" />
     <None Remove="Persistence\Json\SqlTemplates\Functions\fnPaginate.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\Helper\spPopulateExtension.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spCreate.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spDelete.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spDeleteByRef.sql" />
@@ -54,6 +55,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Functions\fnPaginate.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Functions\fnFilter.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\Helper\spPopulateExtension.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Security\Security.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Ancillary\Schema.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Ancillary\IdTableType.sql" />

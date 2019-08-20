@@ -31,18 +31,6 @@ GO
 CREATE UNIQUE INDEX[IX_Test1_ExternalId] ON [dbo].[Test1] ([ExternalId]) INCLUDE ([VersionId])
 
 GO
---#region.extension
-CREATE TABLE [dbo].[Test1_Extension]
-(
-     [Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1),
-     [EntityId] BIGINT NOT NULL,
-	 CONSTRAINT [FK_Test1_Extension_EntityId] FOREIGN KEY ([EntityId]) REFERENCES [dbo].[Test1]([Id]), 
-)
-GO
-CREATE UNIQUE INDEX[IX_Test1_Extension_EntityId] ON [dbo].[Test1_Extension] ([EntityId])
-GO
---#endregion
-GO
 CREATE TABLE[dbo].[Test1History]
 (
      [Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1)
@@ -119,15 +107,6 @@ GO
 
 
 GO
---#region.extension
-CREATE VIEW [dbo].[ViewTest1]
-AS
-	SELECT E.*
-	FROM [dbo].[Test1] AS E 
-	INNER JOIN [dbo].[Test1_Extension] AS EX ON E.Id = EX.EntityId
-GO
---#endregion
-GO
 CREATE PROCEDURE [dbo].[spTest1UpsertRP]
 	@EntityId BIGINT,
 	@References [External].[KvpTableType] READONLY,
@@ -186,39 +165,6 @@ AS
 			THROW;
 	END CATCH
 
-GO
---#region.extension
-CREATE PROCEDURE [dbo].[spTest1UpsertRP_Extension]
-	 @EntityId BIGINT
-	,@Update BIT
-	,@Body NVARCHAR (MAX)
-AS
-BEGIN
-		IF (@Update = 0)
-		BEGIN
-			-- Insert record into DB and get its identity
-			INSERT INTO [dbo].[Test1_Extension] 
-			(
-				  EntityId
-			)
-			VALUES 
-			(
-				  @EntityId
-			)
-
-			RETURN 200;
-		END
-		ELSE
-		BEGIN
-			--UPDATE [dbo].[Test1_Extension] 
-			--	SET Something='';
-			--WHERE EntityId = @EntityId
-			RETURN 200;
-		END
-	
-END
-GO
---#endregion
 GO
 CREATE PROCEDURE [dbo].[spTest1History]
 	 @EntityId BIGINT

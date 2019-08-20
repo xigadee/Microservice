@@ -66,5 +66,6 @@
     <Build Include="Entities\User\User.sql" />
     <Build Include="Entities\Test1\Test1.sql" />
     <Build Include="Ancillary\Ancillary.sql" />
+    <Build Include="Entities\Test1\Test1Extension.sql" />
   </ItemGroup>
 </Project>

@@ -31,10 +31,6 @@ GO
 CREATE UNIQUE INDEX[IX_User_ExternalId] ON [dbo].[User] ([ExternalId]) INCLUDE ([VersionId])
 
 GO
-
--- *** extension code removed ***
-
-GO
 CREATE TABLE[dbo].[UserHistory]
 (
      [Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1)
@@ -111,10 +107,6 @@ GO
 
 
 GO
-
--- *** extension code removed ***
-
-GO
 CREATE PROCEDURE [dbo].[spUserUpsertRP]
 	@EntityId BIGINT,
 	@References [External].[KvpTableType] READONLY,
@@ -172,10 +164,6 @@ AS
 		ELSE
 			THROW;
 	END CATCH
-
-GO
-
--- *** extension code removed ***
 
 GO
 CREATE PROCEDURE [dbo].[spUserHistory]
@@ -1024,4 +1012,16 @@ BEGIN
 
 	RETURN;
 END
+GO
+
+-- *** extension code removed ***
+
+GO
+
+-- *** extension code removed ***
+
+GO
+
+-- *** extension code removed ***
+
 GO
