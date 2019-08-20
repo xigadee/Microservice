@@ -11,8 +11,11 @@ namespace Tests.Xigadee.Azure.Sql
         [TestMethod]
         public void Verify_SqlStoredProcedureResolverUser()
         {
-            var sgTest1 = new SqlJsonGenerator<Test1>();
+            var sgTest1 = new SqlJsonGenerator<Test1>(options: new RepositorySqlJsonOptions(true));
+            var sqlTest1 = sgTest1.SqlEntity;
+
             var sgUser = new SqlJsonGenerator<User>();
+            var sqlUser = sgUser.SqlEntity;
 
             var ancillary = sgTest1.Generator.ScriptAncillary;
         }

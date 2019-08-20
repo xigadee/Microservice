@@ -14,7 +14,7 @@
         public SqlJsonGenerator(SqlStoredProcedureResolver<E> names = null, RepositorySqlJsonOptions options = null)
         {
             Names = names ?? new SqlStoredProcedureResolver<E>();
-            Generator = new RepositorySqlJsonGenerator<E>(Names);
+            Generator = new RepositorySqlJsonGenerator<E>(Names,options);
         }
         /// <summary>
         /// This is the SQL naming class.

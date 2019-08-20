@@ -1,8 +1,8 @@
 ﻿--#region.extension
 CREATE VIEW [{NamespaceTable}].[View{EntityName}]
 AS
-	SELECT *
+	SELECT E.*
 	FROM [{NamespaceTable}].[{EntityName}] AS E 
-	INNER JOIN [{NamespaceTable}].[{EntityName}_Extended] AS EX ON E.Id = EX.EntityId
+	INNER JOIN [{NamespaceTable}].[{EntityName}_Extension] AS EX ON E.Id = EX.EntityId
 GO
 --#endregion

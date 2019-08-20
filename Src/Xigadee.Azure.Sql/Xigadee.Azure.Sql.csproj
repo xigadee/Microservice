@@ -46,6 +46,7 @@
     <None Remove="Persistence\Json\SqlTemplates\Tables\TableReference.sql" />
     <None Remove="Persistence\Json\SqlTemplates\Tables\TableReferenceKey.sql" />
     <None Remove="Persistence\Json\SqlTemplates\Views\ViewExtended.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\Views\ViewExtension.sql" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
@@ -82,6 +83,7 @@
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Tables\TableReference.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Tables\TableHistory.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Tables\Table.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\Views\ViewExtension.sql" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Data.SqlClient" Version="4.6.0" />

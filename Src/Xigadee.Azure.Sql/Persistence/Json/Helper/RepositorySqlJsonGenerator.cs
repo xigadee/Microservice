@@ -22,6 +22,7 @@ namespace Xigadee
         private SqlStoredProcedureResolver<E> _resolver;
 
         private RepositorySqlJsonOptions _options;
+
         #endregion
         #region Constructor
         /// <summary>
@@ -87,16 +88,20 @@ namespace Xigadee
         /// <param name="write">The action.</param>
         /// <param name="createoralter">The optional parameter that replaces the CREATE PROCEDURE sql command with an ALTER command. The default is false - no replacement.</param>
         /// <returns>Returns the SQL script.</returns>
-        public static string SBWrap(Action<StringBuilder> write, bool createoralter = false)
+        public string SBWrap(Action<StringBuilder> write, bool createoralter = false)
         {
             var sb = new StringBuilder();
 
             write(sb);
 
+            string sql;
+
             if (createoralter)
-                return sb.ToString().Replace("CREATE PROCEDURE", "CREATE OR ALTER PROCEDURE");
+                sql = sb.ToString().Replace("CREATE PROCEDURE", "CREATE OR ALTER PROCEDURE");
             else
-                return sb.ToString();
+                sql = sb.ToString();
+
+            return _options.Apply(sql);
         }
         #endregion
 
@@ -156,6 +161,8 @@ namespace Xigadee
             sb.AppendLine("GO");
             sb.AppendLine(TableEntity);
             sb.AppendLine("GO");
+            sb.AppendLine(TableEntity_Extension);
+            sb.AppendLine("GO");
             sb.AppendLine(TableHistory);
             sb.AppendLine("GO");
             sb.AppendLine(TableProperty);
@@ -172,6 +179,27 @@ namespace Xigadee
         /// <returns>Returns a SQL script.</returns>
         public string ScriptTables => SBWrap(Append_SQL_Tables);
         #endregion
+
+        #region Scripts Views
+        public string ViewEntity => ProcessTemplate("Views.ViewExtension.sql");
+
+        /// <summary>
+        /// These are the SQL tables.
+        /// </summary>
+        /// <param name="sb">The string builder.</param>
+        protected void Append_SQL_Views(StringBuilder sb)
+        {
+            sb.AppendLine(ViewEntity);
+            sb.AppendLine("GO");
+        }
+
+        /// <summary>
+        /// This method returns the SQL scripts to create the necessary tables.
+        /// </summary>
+        /// <returns>Returns a SQL script.</returns>
+        public string ScriptViews => SBWrap(Append_SQL_Views);
+        #endregion
+
         #region Scripts Stored Procedures - CRUD
         /// <summary>
         /// This is the entity create stored procedure.
@@ -215,6 +243,11 @@ namespace Xigadee
         public string SpHistory => ProcessTemplate("StoredProcedures.spHistory.sql");
 
         /// <summary>
+        /// This is the internal extension table stored procedure
+        /// </summary>
+        public string SpUpsertExtension => ProcessTemplate("StoredProcedures.spUpsertExtension.sql");
+
+        /// <summary>
         /// These are the CRUD stored procedures.
         /// </summary>
         /// <param name="sb">The string builder.</param>
@@ -222,6 +255,10 @@ namespace Xigadee
         {
             sb.AppendLine(SpUpsertRP);
             sb.AppendLine("GO");
+
+            sb.AppendLine(SpUpsertExtension);
+            sb.AppendLine("GO");
+
             sb.AppendLine(SpHistory);
             sb.AppendLine("GO");
             sb.AppendLine(SpCreate);
@@ -356,6 +393,9 @@ namespace Xigadee
                 //Tables
                 Append_SQL_Tables(sb);
 
+                //Views
+                Append_SQL_Views(sb);
+
                 //Entities
                 Append_SQLSPs_EntityCRUD(sb);
 
@@ -366,5 +406,6 @@ namespace Xigadee
                 Append_SQLSPs_SearchJson(sb);
 
             });
+
     }
 }

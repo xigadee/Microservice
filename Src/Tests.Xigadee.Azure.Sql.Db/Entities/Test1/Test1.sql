@@ -31,6 +31,18 @@ GO
 CREATE UNIQUE INDEX[IX_Test1_ExternalId] ON [dbo].[Test1] ([ExternalId]) INCLUDE ([VersionId])
 
 GO
+--#region.extension
+CREATE TABLE [dbo].[Test1_Extension]
+(
+     [Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1),
+     [EntityId] BIGINT NOT NULL,
+	 CONSTRAINT [FK_Test1_Extension_EntityId] FOREIGN KEY ([EntityId]) REFERENCES [dbo].[Test1]([Id]), 
+)
+GO
+CREATE UNIQUE INDEX[IX_Test1_Extension_EntityId] ON [dbo].[Test1_Extension] ([EntityId])
+GO
+--#endregion
+GO
 CREATE TABLE[dbo].[Test1History]
 (
      [Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1)
@@ -107,7 +119,15 @@ GO
 
 
 GO
-
+--#region.extension
+CREATE VIEW [dbo].[ViewTest1]
+AS
+	SELECT E.*
+	FROM [dbo].[Test1] AS E 
+	INNER JOIN [dbo].[Test1_Extension] AS EX ON E.Id = EX.EntityId
+GO
+--#endregion
+GO
 CREATE PROCEDURE [dbo].[spTest1UpsertRP]
 	@EntityId BIGINT,
 	@References [External].[KvpTableType] READONLY,
@@ -166,6 +186,39 @@ AS
 			THROW;
 	END CATCH
 
+GO
+--#region.extension
+CREATE PROCEDURE [dbo].[spTest1UpsertRP_Extension]
+	 @EntityId BIGINT
+	,@Update BIT
+	,@Body NVARCHAR (MAX)
+AS
+BEGIN
+		IF (@Update = 0)
+		BEGIN
+			-- Insert record into DB and get its identity
+			INSERT INTO [dbo].[Test1_Extension] 
+			(
+				  EntityId
+			)
+			VALUES 
+			(
+				  @EntityId
+			)
+
+			RETURN 200;
+		END
+		ELSE
+		BEGIN
+			--UPDATE [dbo].[Test1_Extension] 
+			--	SET Something='';
+			--WHERE EntityId = @EntityId
+			RETURN 200;
+		END
+	
+END
+GO
+--#endregion
 GO
 CREATE PROCEDURE [dbo].[spTest1History]
 	 @EntityId BIGINT
@@ -260,6 +313,16 @@ AS
 			RETURN 409; --Conflict with other entities.
 		END
 
+		--#region.extension
+		DECLARE @ExResponse INT;
+		EXEC @ExResponse = [dbo].[spTest1UpsertRP_Extension] @Id, 0, @Body
+		IF (@ExResponse != 200)
+		BEGIN
+			ROLLBACK TRAN;
+			RETURN 400; --Conflict with extension table - this should not happen.
+		END
+		--#endregion
+
 		--Record the audit history.
 		EXEC [dbo].[spTest1History] @Id, @ExternalId, @VersionIdNew, @UserIdAudit, @Body, @DateCreated, @DateUpdated, @Sig
 
@@ -289,6 +352,11 @@ SET NOCOUNT ON;
 			ROLLBACK TRAN
 			RETURN 404;
 		END
+
+		--#region.extension
+		DELETE FROM [dbo].[Test1_Extension]
+		WHERE [EntityId] = @Id
+		--#endregion
 
 		DELETE FROM [dbo].[Test1Property]
 		WHERE [EntityId] = @Id
@@ -332,6 +400,11 @@ SET NOCOUNT ON;
 			ROLLBACK TRAN
 			RETURN 404;
 		END
+
+		--#region.extension
+		DELETE FROM [dbo].[Test1_Extension]
+		WHERE [EntityId] = @Id
+		--#endregion
 
 		DELETE FROM [dbo].[Test1Property]
 		WHERE [EntityId] = @Id
@@ -463,6 +536,16 @@ AS
 			ROLLBACK TRAN;
 			RETURN 409; --Not found
 		END
+
+		--#region.extension
+		DECLARE @ExResponse INT;
+		EXEC @ExResponse = [dbo].[spTest1UpsertRP_Extension] @Id, 1, @Body
+		IF (@ExResponse != 200)
+		BEGIN
+			ROLLBACK TRAN;
+			RETURN 400; --Conflict with extension table - this should not happen.
+		END
+		--#endregion
 
 	    --Record the audit history.
 		EXEC [dbo].[spTest1History] @Id, @ExternalId, @VersionIdNew, @UserIdAudit, @Body, @DateCreated, @DateUpdated, @Sig
@@ -770,25 +853,19 @@ BEGIN
 	DECLARE @Top INT = ISNULL(CAST(JSON_VALUE(@Body,'lax $.TopValue') AS INT), 50);
 
 	--Output
-	--SELECT E.ExternalId, E.VersionId, E.Body 
-	--FROM [dbo].[udfTest1PaginateProperty](@CollectionId, @Body) AS F
-	--INNER JOIN [dbo].[Test1] AS E ON F.Id = E.Id
-	--ORDER BY F.[Rank]
-	--OFFSET @Skip ROWS
-	--FETCH NEXT @Top ROWS ONLY
-
 	SELECT '' AS [Sig], (
-	SELECT @ETag AS [ETag], @RecordResult AS [RecordCount], 'Entity' AS [Type], @CacheHit AS [CacheHit], @Skip AS [Skip], @Top AS [Top],
-	( 
-		SELECT E.ExternalId AS [ExternalId], E.VersionId AS [VersionId], E.Body AS [Body]
-		FROM [dbo].[udfTest1PaginateProperty](@CollectionId, @Body) AS F
-		INNER JOIN [dbo].[Test1] AS E ON F.Id = E.Id
-		ORDER BY F.[Rank]
-		OFFSET @Skip ROWS
-		FETCH NEXT @Top ROWS ONLY
-		FOR JSON PATH
-	) AS [Results]
-	FOR JSON PATH, ROOT('SearchResponse')) AS [Body];
+		SELECT @ETag AS [ETag], @RecordResult AS [RecordCount], 'Entity' AS [Type], @CacheHit AS [CacheHit], @Skip AS [Skip], @Top AS [Top],
+		( 
+			SELECT E.ExternalId AS [ExternalId], E.VersionId AS [VersionId], E.Body AS [Body]
+			FROM [dbo].[udfTest1PaginateProperty](@CollectionId, @Body) AS F
+			INNER JOIN [dbo].[Test1] AS E ON F.Id = E.Id
+			ORDER BY F.[Rank]
+			OFFSET @Skip ROWS
+			FETCH NEXT @Top ROWS ONLY
+			FOR JSON PATH
+		) AS [Results]
+		FOR JSON PATH, ROOT('SearchResponse')
+	) AS [Body];
 
 	RETURN 200;
 
@@ -869,6 +946,8 @@ IF (@IsNegation = 1)
 		WHEN 'le' THEN 'gt' 
 		WHEN 'gt' THEN 'le' 
 		WHEN 'ge' THEN 'lt' 
+		WHEN 'like' THEN 'nlike' 
+		WHEN 'nlike' THEN 'like' 
 	END;
 
 IF (@Operator = 'eq')
@@ -931,6 +1010,28 @@ BEGIN
    RETURN;
 END
 
+IF (@Operator = 'like')
+BEGIN
+   WITH EntitySet(Id) AS(
+   SELECT DISTINCT EntityId FROM [dbo].[Test1Property] WHERE [KeyId] = @PropertyKey AND [Value] LIKE @Value
+   )
+   INSERT @Results (Id, Position)
+   SELECT Id, @OutputPosition FROM EntitySet;
+   RETURN;
+END
+
+IF (@Operator = 'nlike')
+BEGIN
+   WITH EntitySet(Id) AS(
+   SELECT Id FROM [dbo].[Test1]
+   EXCEPT
+   SELECT EntityId FROM [dbo].[Test1Property] WHERE [KeyId] = @PropertyKey AND [Value] LIKE @Value
+   )
+   INSERT @Results (Id, Position)
+   SELECT Id, @OutputPosition FROM EntitySet;
+   RETURN;
+END
+
 RETURN;
 END;  
 GO
@@ -980,4 +1081,3 @@ BEGIN
 	RETURN;
 END
 GO
-

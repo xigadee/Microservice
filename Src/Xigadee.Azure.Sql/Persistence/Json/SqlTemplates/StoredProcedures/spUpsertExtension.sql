@@ -17,7 +17,7 @@ BEGIN
 				  @EntityId
 			)
 
-			RETURN 201;
+			RETURN 200;
 		END
 		ELSE
 		BEGIN

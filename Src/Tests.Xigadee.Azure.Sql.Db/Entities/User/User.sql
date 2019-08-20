@@ -31,6 +31,10 @@ GO
 CREATE UNIQUE INDEX[IX_User_ExternalId] ON [dbo].[User] ([ExternalId]) INCLUDE ([VersionId])
 
 GO
+
+-- *** extension code removed ***
+
+GO
 CREATE TABLE[dbo].[UserHistory]
 (
      [Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1)
@@ -108,6 +112,9 @@ GO
 
 GO
 
+-- *** extension code removed ***
+
+GO
 CREATE PROCEDURE [dbo].[spUserUpsertRP]
 	@EntityId BIGINT,
 	@References [External].[KvpTableType] READONLY,
@@ -165,6 +172,10 @@ AS
 		ELSE
 			THROW;
 	END CATCH
+
+GO
+
+-- *** extension code removed ***
 
 GO
 CREATE PROCEDURE [dbo].[spUserHistory]
@@ -260,6 +271,10 @@ AS
 			RETURN 409; --Conflict with other entities.
 		END
 
+		
+-- *** extension code removed ***
+
+
 		--Record the audit history.
 		EXEC [dbo].[spUserHistory] @Id, @ExternalId, @VersionIdNew, @UserIdAudit, @Body, @DateCreated, @DateUpdated, @Sig
 
@@ -289,6 +304,10 @@ SET NOCOUNT ON;
 			ROLLBACK TRAN
 			RETURN 404;
 		END
+
+		
+-- *** extension code removed ***
+
 
 		DELETE FROM [dbo].[UserProperty]
 		WHERE [EntityId] = @Id
@@ -332,6 +351,10 @@ SET NOCOUNT ON;
 			ROLLBACK TRAN
 			RETURN 404;
 		END
+
+		
+-- *** extension code removed ***
+
 
 		DELETE FROM [dbo].[UserProperty]
 		WHERE [EntityId] = @Id
@@ -463,6 +486,10 @@ AS
 			ROLLBACK TRAN;
 			RETURN 409; --Not found
 		END
+
+		
+-- *** extension code removed ***
+
 
 	    --Record the audit history.
 		EXEC [dbo].[spUserHistory] @Id, @ExternalId, @VersionIdNew, @UserIdAudit, @Body, @DateCreated, @DateUpdated, @Sig
@@ -770,25 +797,19 @@ BEGIN
 	DECLARE @Top INT = ISNULL(CAST(JSON_VALUE(@Body,'lax $.TopValue') AS INT), 50);
 
 	--Output
-	--SELECT E.ExternalId, E.VersionId, E.Body 
-	--FROM [dbo].[udfUserPaginateProperty](@CollectionId, @Body) AS F
-	--INNER JOIN [dbo].[User] AS E ON F.Id = E.Id
-	--ORDER BY F.[Rank]
-	--OFFSET @Skip ROWS
-	--FETCH NEXT @Top ROWS ONLY
-
 	SELECT '' AS [Sig], (
-	SELECT @ETag AS [ETag], @RecordResult AS [RecordCount], 'Entity' AS [Type], @CacheHit AS [CacheHit], @Skip AS [Skip], @Top AS [Top],
-	( 
-		SELECT E.ExternalId AS [ExternalId], E.VersionId AS [VersionId], E.Body AS [Body]
-		FROM [dbo].[udfUserPaginateProperty](@CollectionId, @Body) AS F
-		INNER JOIN [dbo].[Test1] AS E ON F.Id = E.Id
-		ORDER BY F.[Rank]
-		OFFSET @Skip ROWS
-		FETCH NEXT @Top ROWS ONLY
-		FOR JSON PATH
-	) AS [Results]
-	FOR JSON PATH, ROOT('SearchResponse')) AS [Body];
+		SELECT @ETag AS [ETag], @RecordResult AS [RecordCount], 'Entity' AS [Type], @CacheHit AS [CacheHit], @Skip AS [Skip], @Top AS [Top],
+		( 
+			SELECT E.ExternalId AS [ExternalId], E.VersionId AS [VersionId], E.Body AS [Body]
+			FROM [dbo].[udfUserPaginateProperty](@CollectionId, @Body) AS F
+			INNER JOIN [dbo].[Test1] AS E ON F.Id = E.Id
+			ORDER BY F.[Rank]
+			OFFSET @Skip ROWS
+			FETCH NEXT @Top ROWS ONLY
+			FOR JSON PATH
+		) AS [Results]
+		FOR JSON PATH, ROOT('SearchResponse')
+	) AS [Body];
 
 	RETURN 200;
 
@@ -869,6 +890,8 @@ IF (@IsNegation = 1)
 		WHEN 'le' THEN 'gt' 
 		WHEN 'gt' THEN 'le' 
 		WHEN 'ge' THEN 'lt' 
+		WHEN 'like' THEN 'nlike' 
+		WHEN 'nlike' THEN 'like' 
 	END;
 
 IF (@Operator = 'eq')
@@ -931,6 +954,28 @@ BEGIN
    RETURN;
 END
 
+IF (@Operator = 'like')
+BEGIN
+   WITH EntitySet(Id) AS(
+   SELECT DISTINCT EntityId FROM [dbo].[UserProperty] WHERE [KeyId] = @PropertyKey AND [Value] LIKE @Value
+   )
+   INSERT @Results (Id, Position)
+   SELECT Id, @OutputPosition FROM EntitySet;
+   RETURN;
+END
+
+IF (@Operator = 'nlike')
+BEGIN
+   WITH EntitySet(Id) AS(
+   SELECT Id FROM [dbo].[User]
+   EXCEPT
+   SELECT EntityId FROM [dbo].[UserProperty] WHERE [KeyId] = @PropertyKey AND [Value] LIKE @Value
+   )
+   INSERT @Results (Id, Position)
+   SELECT Id, @OutputPosition FROM EntitySet;
+   RETURN;
+END
+
 RETURN;
 END;  
 GO
@@ -980,4 +1025,3 @@ BEGIN
 	RETURN;
 END
 GO
-

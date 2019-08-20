@@ -14,8 +14,10 @@ SET NOCOUNT ON;
 			RETURN 404;
 		END
 
+		--#region.extension
 		DELETE FROM [{NamespaceTable}].[{EntityName}_Extension]
 		WHERE [EntityId] = @Id
+		--#endregion
 
 		DELETE FROM [{NamespaceTable}].[{EntityName}Property]
 		WHERE [EntityId] = @Id
