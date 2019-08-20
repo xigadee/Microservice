@@ -4,10 +4,10 @@ AS
 BEGIN
 	BEGIN TRY
 
-	DECLARE @ETag UNIQUEIDENTIFIER, @CollectionId BIGINT, @Result INT, @RecordResult BIGINT, @CacheHit INT
+	DECLARE @ETag UNIQUEIDENTIFIER, @CollectionId BIGINT, @Result INT, @RecordResult BIGINT, @CacheHit INT, @FullScan BIT
 
 	EXEC @Result = [{NamespaceTable}].[{spSearch}InternalBuild_Json] 
-		@Body, @ETag OUTPUT, @CollectionId OUTPUT, @RecordResult OUTPUT, @CacheHit OUTPUT
+		@Body, @ETag OUTPUT, @CollectionId OUTPUT, @RecordResult OUTPUT, @CacheHit OUTPUT, @FullScan OUTPUT
 
 	IF (@RecordResult = 0)
 	BEGIN
@@ -19,14 +19,15 @@ BEGIN
 
 	--Output
 	SELECT '' AS [Sig], (
-		SELECT @ETag AS [ETag], @RecordResult AS [RecordCount], 'Entity' AS [Type], @CacheHit AS [CacheHit], @Skip AS [Skip], @Top AS [Top],
-		( 
+		SELECT @ETag AS [ETag], @RecordResult AS [RecordCount], 'Entity' AS [Type], @CacheHit AS [CacheHit]
+		, @Skip AS [Skip], @Top AS [Top]
+		,( 
 			SELECT E.ExternalId AS [ExternalId], E.VersionId AS [VersionId], E.Body AS [Body]
-			FROM [{NamespaceTable}].[udf{EntityName}PaginateProperty](@CollectionId, @Body) AS F
+			FROM [{NamespaceTable}].[udf{EntityName}PaginateProperty](@FullScan, @CollectionId, @Body) AS F
 			INNER JOIN [dbo].[Test1] AS E ON F.Id = E.Id
 			ORDER BY F.[Rank]
-			OFFSET @Skip ROWS
-			FETCH NEXT @Top ROWS ONLY
+			--OFFSET @Skip ROWS
+			--FETCH NEXT @Top ROWS ONLY
 			FOR JSON PATH
 		) AS [Results]
 		FOR JSON PATH, ROOT('SearchResponse')

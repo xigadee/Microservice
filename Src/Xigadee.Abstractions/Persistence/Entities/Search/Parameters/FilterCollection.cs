@@ -91,6 +91,11 @@ namespace Xigadee
         public List<int> Solutions { get; }
 
         /// <summary>
+        /// This is the list of supported filters. If this is 0, the Stored Procedure will return all entities.
+        /// </summary>
+        public int Count => Params?.Count ?? 0;
+
+        /// <summary>
         /// The search parameters.
         /// </summary>
         public Dictionary<int, FilterParameter> Params { get; }

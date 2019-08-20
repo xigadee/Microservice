@@ -16,6 +16,7 @@
             Names = names ?? new SqlStoredProcedureResolver<E>();
             Generator = new RepositorySqlJsonGenerator<E>(Names,options);
         }
+
         /// <summary>
         /// This is the SQL naming class.
         /// </summary>

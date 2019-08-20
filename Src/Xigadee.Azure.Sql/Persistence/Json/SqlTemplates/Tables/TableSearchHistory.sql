@@ -9,6 +9,7 @@
 	,[Body] NVARCHAR(MAX) NULL
 	,[HistoryIndex] BIGINT NULL
 	,[RecordCount] BIGINT NOT NULL DEFAULT(-1)
+	,[FullScan] BIT NULL
 )
 GO 
 CREATE UNIQUE INDEX[IX_{EntityName}SearchHistory_ETag] ON [{NamespaceTable}].[{EntityName}SearchHistory] ([ETag]) INCLUDE([HistoryIndex])

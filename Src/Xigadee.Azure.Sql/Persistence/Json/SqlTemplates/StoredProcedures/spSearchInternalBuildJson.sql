@@ -3,17 +3,21 @@
 	@ETag UNIQUEIDENTIFIER OUTPUT,
 	@CollectionId BIGINT OUTPUT,
 	@RecordResult BIGINT OUTPUT,
-	@CacheHit INT OUTPUT
+	@CacheHit INT OUTPUT,
+	@FullScan BIT OUTPUT
 AS
 BEGIN
 	DECLARE @HistoryIndexId BIGINT, @TimeStamp DATETIME
 	SET @ETag = TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(@Body,'lax $.ETag'));
+
+	DECLARE @ParamsCount INT = ISNULL(TRY_CONVERT(INT, JSON_VALUE(@Body,'lax $.Filters.Count')),0);
+
 	SET @CacheHit = 0;
 
 	--OK, we need to check that the collection is still valid.
 	DECLARE @CurrentHistoryIndexId BIGINT = (SELECT TOP 1 Id FROM [{NamespaceTable}].[{EntityName}History] ORDER BY Id DESC);
 
-	IF (@ETag IS NOT NULL)
+	IF (@ParamsCount > 0 AND @ETag IS NOT NULL)
 	BEGIN
 		--OK, check whether the ETag is already assigned to a results set
 		SELECT TOP 1 @CollectionId = Id, @HistoryIndexId = [HistoryIndex], @TimeStamp = [TimeStamp], @RecordResult = [RecordCount]
@@ -38,27 +42,37 @@ BEGIN
 	(@ETag, '{EntityName}', '{spSearch}InternalBuild_Json', '', @Body, @CurrentHistoryIndexId);
 
 	SET @CollectionId = @@IDENTITY;
-	
-	--OK, build the entity collection. We combine the bit positions 
-	--and only include the records where they match the bit position solutions passed
-	--through from the front-end.
-	;WITH Entities(Id, Score)AS
-	(
-		SELECT u.Id, SUM(u.Position)
-		FROM OPENJSON(@Body, N'lax $.Filters.Params') F
-		CROSS APPLY [{NamespaceTable}].[udf{EntityName}FilterProperty] (F.value) u
-		GROUP BY u.Id
-	)
-	INSERT INTO [{NamespaceTable}].[{EntityName}SearchHistoryCache]
-	SELECT @CollectionId AS [SearchId], E.Id AS [EntityId] 
-	FROM Entities E
-	INNER JOIN OPENJSON(@Body, N'lax $.Filters.Solutions') V ON V.value = E.Score;
 
-	SET @RecordResult = ROWCOUNT_BIG();
+	IF (@ParamsCount = 0)
+	BEGIN
+		SET @RecordResult = (SELECT COUNT(*) FROM  [{NamespaceTable}].[{EntityName}])
+		SET @FullScan = 1;
+	END
+	ELSE
+	BEGIN	
+		SET @FullScan = 0;
+
+		--OK, build the entity collection. We combine the bit positions 
+		--and only include the records where they match the bit position solutions passed
+		--through from the front-end.
+		;WITH Entities(Id, Score)AS
+		(
+			SELECT u.Id, SUM(u.Position)
+			FROM OPENJSON(@Body, N'lax $.Filters.Params') F
+			CROSS APPLY [{NamespaceTable}].[udf{EntityName}FilterProperty] (F.value) u
+			GROUP BY u.Id
+		)
+		INSERT INTO [{NamespaceTable}].[{EntityName}SearchHistoryCache]
+		SELECT @CollectionId AS [SearchId], E.Id AS [EntityId] 
+		FROM Entities E
+		INNER JOIN OPENJSON(@Body, N'lax $.Filters.Solutions') V ON V.value = E.Score;
+
+		SET @RecordResult = ROWCOUNT_BIG();
+	END
 
 	--Set the record count in the collection.
 	UPDATE [{NamespaceTable}].[{EntityName}SearchHistory]
-		SET [RecordCount] = @RecordResult
+		SET [RecordCount] = @RecordResult, [FullScan] = @FullScan
 	WHERE [Id] = @CollectionId;
 
 	RETURN 200;

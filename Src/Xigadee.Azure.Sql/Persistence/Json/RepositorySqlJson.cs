@@ -281,7 +281,7 @@ namespace Xigadee
             rs.Etag = entityHolder.ETag?.ToString();
             rs.Skip = entityHolder.Skip;
             rs.Top = entityHolder.Top;
-            rs.RecordCount = entityHolder.RecordCount;
+            rs.TotalRecordCount = entityHolder.TotalRecordCount;
             rs.CacheHit = entityHolder.CacheHit;
         }
 
@@ -291,7 +291,8 @@ namespace Xigadee
 
             public IEnumerable<TE> Extract<TE>()
             {
-                if (SearchResponse == null || SearchResponse.Count == 0)
+                if (SearchResponse == null || SearchResponse.Count == 0
+                    || Default.Count == 0)
                     yield break;
 
                 foreach (var result in Default.Results)
@@ -303,7 +304,7 @@ namespace Xigadee
             public Guid? ETag => Default?.ETag;
             public int? Skip => Default?.Skip;
             public int? Top => Default?.Top;
-            public int? RecordCount => Default?.RecordCount;
+            public int? TotalRecordCount => Default?.RecordCount;
             public int? CacheHit => Default?.CacheHit;
 
         }
@@ -319,6 +320,10 @@ namespace Xigadee
 
             public List<SQLSearchResponseResult> Results { get; set; }
 
+            /// <summary>
+            /// This is a shortcut to the number of returned records.
+            /// </summary>
+            public int Count => Results?.Count ?? 0;
         }
 
         private class SQLSearchResponseResult

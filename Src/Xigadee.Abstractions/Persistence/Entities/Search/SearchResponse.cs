@@ -50,7 +50,7 @@ namespace Xigadee
         /// <summary>
         /// This is the records in the result set. This may not be supported by different persistence engines.
         /// </summary>
-        public int? RecordCount { get; set; }
+        public int? TotalRecordCount { get; set; }
         /// <summary>
         /// This is the number of times the search cache has been hit.
         /// </summary>

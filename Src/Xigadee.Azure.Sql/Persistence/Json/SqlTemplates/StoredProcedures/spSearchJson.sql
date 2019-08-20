@@ -4,10 +4,10 @@ AS
 BEGIN
 	BEGIN TRY
 
-	DECLARE @ETag UNIQUEIDENTIFIER, @CollectionId BIGINT, @Result INT, @RecordResult BIGINT, @CacheHit INT
+	DECLARE @ETag UNIQUEIDENTIFIER, @CollectionId BIGINT, @Result INT, @RecordResult BIGINT, @CacheHit INT, @FullScan BIT
 
 	EXEC @Result = [{NamespaceTable}].[{spSearch}InternalBuild_Json] 
-		@Body, @ETag OUTPUT, @CollectionId OUTPUT, @RecordResult OUTPUT, @CacheHit OUTPUT
+		@Body, @ETag OUTPUT, @CollectionId OUTPUT, @RecordResult OUTPUT, @CacheHit OUTPUT, @FullScan OUTPUT
 
 	IF (@RecordResult = 0)
 	BEGIN
@@ -26,11 +26,11 @@ BEGIN
 			WHERE F.Id = P.EntityId
 			FOR JSON PATH, ROOT('Property')
 		) AS Body
-	FROM [{NamespaceTable}].[udf{EntityName}PaginateProperty](@CollectionId, @Body) AS F
+	FROM [{NamespaceTable}].[udf{EntityName}PaginateProperty](@FullScan, @CollectionId, @Body) AS F
 	INNER JOIN [{NamespaceTable}].[{EntityName}] AS E ON F.Id = E.Id
 	ORDER BY F.[Rank]
-	OFFSET @Skip ROWS
-	FETCH NEXT @Top ROWS ONLY
+	--OFFSET @Skip ROWS
+	--FETCH NEXT @Top ROWS ONLY
 	
 	RETURN 200;
 
