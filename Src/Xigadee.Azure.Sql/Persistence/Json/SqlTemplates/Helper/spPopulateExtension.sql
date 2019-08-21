@@ -17,7 +17,7 @@ BEGIN
 	)
 	INSERT @Results
 	SELECT Id, 1 FROM ToUpdate;
-	PRINT @@RowCount;
+	PRINT 'To update: ' + CAST(@@RowCount AS VARCHAR(50));
 
 
 	;WITH ToInsert(Id) AS
@@ -28,25 +28,46 @@ BEGIN
 	)
 	INSERT @Results
 	SELECT Id, 0 FROM ToInsert;
-	PRINT @@RowCount;
+	PRINT 'To insert: ' + CAST(@@RowCount AS VARCHAR(50));
 
 
 	DECLARE @ItemId BIGINT, @ToUpdate BIT, @Body NVARCHAR(MAX)
 
 	WHILE (1=1) 
 	BEGIN
+
 		SELECT TOP 1 @ItemId = R.Id, @ToUpdate = R.ToUpdate, @Body = E.Body 
 		FROM @Results AS R
-		INNER JOIN [{NamespaceTable}].[{EntityName}] AS E ON E.Id = R.Id
-
-		PRINT @ItemId;
+		INNER JOIN [{NamespaceTable}].[{EntityName}] AS E ON E.Id = R.Id;
 
 		if (@ItemId IS NULL)
 			BREAK;
 
-		EXEC [{NamespaceTable}].[{spUpsertRP}_Extension] @ItemId, @ToUpdate, @Body;
+		BEGIN TRY
 
-		DELETE FROM @Results WHERE ID = @ItemId;
+			PRINT 'Executing: '+ CAST(@ItemId AS VARCHAR(50));
+
+			EXEC [{NamespaceTable}].[{spUpsertRP}_Extension] @ItemId, @ToUpdate, @Body;
+
+		END TRY
+		BEGIN CATCH
+			PRINT 'Error executing: ' + CAST(@ItemId AS VARCHAR(50)) 
+				+ ' => ' + CAST(ERROR_NUMBER()AS VARCHAR(20)) 
+				+ ' ' + ERROR_MESSAGE();
+		END CATCH
+		BEGIN TRY
+
+			--We want to make sure that we remove from the results temporary table, otherwise we could 
+			--get stuck in a loop.
+			DELETE FROM @Results WHERE ID = @ItemId;
+
+		END TRY
+		BEGIN CATCH
+			PRINT 'Error removing from Temp table: ' + CAST(@ItemId AS VARCHAR(50)) 
+				+ ' => ' + CAST(ERROR_NUMBER()AS VARCHAR(20)) 
+				+ ' ' + ERROR_MESSAGE();
+			BREAK;
+		END CATCH
 	END;
 	
 END
