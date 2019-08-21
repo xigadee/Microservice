@@ -35,6 +35,7 @@ BEGIN
 
 	WHILE (1=1) 
 	BEGIN
+		SET @ItemId = NULL;
 
 		SELECT TOP 1 @ItemId = R.Id, @ToUpdate = R.ToUpdate, @Body = E.Body 
 		FROM @Results AS R
@@ -60,7 +61,11 @@ BEGIN
 			--We want to make sure that we remove from the results temporary table, otherwise we could 
 			--get stuck in a loop.
 			DELETE FROM @Results WHERE ID = @ItemId;
-
+			IF (@@ROWCOUNT = 0)
+			BEGIN
+				PRINT 'Could not remove: ' + CAST(@ItemId AS VARCHAR(50));
+				BREAK;
+			END
 		END TRY
 		BEGIN CATCH
 			PRINT 'Error removing from Temp table: ' + CAST(@ItemId AS VARCHAR(50)) 

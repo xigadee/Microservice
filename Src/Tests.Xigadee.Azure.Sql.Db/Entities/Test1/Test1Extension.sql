@@ -3,6 +3,8 @@ CREATE TABLE [dbo].[Test1_Extension]
 (
      [Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1),
      [EntityId] BIGINT NOT NULL,
+	 [AccountId] UNIQUEIDENTIFIER NULL,
+	 [Second] INT NULL,
 	 CONSTRAINT [FK_Test1_Extension_EntityId] FOREIGN KEY ([EntityId]) REFERENCES [dbo].[Test1]([Id]), 
 )
 GO
@@ -13,7 +15,7 @@ GO
 --#region.extension
 CREATE VIEW [dbo].[ViewTest1]
 AS
-	SELECT E.*
+	SELECT E.*, EX.AccountId, EX.[Second]
 	FROM [dbo].[Test1] AS E 
 	INNER JOIN [dbo].[Test1_Extension] AS EX ON E.Id = EX.EntityId
 GO
@@ -26,28 +28,39 @@ CREATE PROCEDURE [dbo].[spTest1UpsertRP_Extension]
 	,@Body NVARCHAR (MAX)
 AS
 BEGIN
-		IF (@Update = 0)
-		BEGIN
-			-- Insert record into DB and get its identity
-			INSERT INTO [dbo].[Test1_Extension] 
-			(
-				  EntityId
-			)
-			VALUES 
-			(
-				  @EntityId
-			)
 
-			RETURN 200;
-		END
-		ELSE
-		BEGIN
-			--UPDATE [dbo].[Test1_Extension] 
-			--	SET Something='';
-			--WHERE EntityId = @EntityId
-			RETURN 200;
-		END
+	DECLARE @AccountId UNIQUEIDENTIFIER = CAST(JSON_VALUE(@Body,'lax $.AccountId') AS UNIQUEIDENTIFIER);
+	DECLARE @Second INT = CAST(JSON_VALUE(@Body,'lax $.Second') AS INT);
+
+	IF (@Update = 0)
+	BEGIN
+		-- Insert record into DB and get its identity
+		INSERT INTO [dbo].[Test1_Extension] 
+		(
+				EntityId,
+				AccountId,
+				[Second]
+		)
+		VALUES 
+		(
+				@EntityId,
+				@AccountId,
+				@Second
+		)
+
+		RETURN 200;
+	END
+	ELSE
+	BEGIN
+		UPDATE [dbo].[Test1_Extension] 
+			SET [AccountId]=@AccountId, 
+				[Second]=@Second
+		WHERE EntityId = @EntityId;
+
+		RETURN 200;
+	END
 	
+	RETURN 400;
 END
 GO
 --#endregion
@@ -89,6 +102,7 @@ BEGIN
 
 	WHILE (1=1) 
 	BEGIN
+		SET @ItemId = NULL;
 
 		SELECT TOP 1 @ItemId = R.Id, @ToUpdate = R.ToUpdate, @Body = E.Body 
 		FROM @Results AS R
@@ -114,7 +128,11 @@ BEGIN
 			--We want to make sure that we remove from the results temporary table, otherwise we could 
 			--get stuck in a loop.
 			DELETE FROM @Results WHERE ID = @ItemId;
-
+			IF (@@ROWCOUNT = 0)
+			BEGIN
+				PRINT 'Could not remove: ' + CAST(@ItemId AS VARCHAR(50));
+				BREAK;
+			END
 		END TRY
 		BEGIN CATCH
 			PRINT 'Error removing from Temp table: ' + CAST(@ItemId AS VARCHAR(50)) 
