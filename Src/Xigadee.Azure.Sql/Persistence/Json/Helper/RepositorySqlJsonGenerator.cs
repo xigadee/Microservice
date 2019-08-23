@@ -191,17 +191,11 @@ namespace Xigadee
         public string SpManuallyPopulateExtension => ProcessTemplate("Helper.spPopulateExtension.sql");
 
         /// <summary>
-        /// These are the SQL tables.
+        /// These are the Extension SQL logic.
         /// </summary>
         /// <param name="sb">The string builder.</param>
-        protected void Append_SQL_Extension(StringBuilder sb)
+        protected void Append_SQL_ExtensionLogic(StringBuilder sb)
         {
-            sb.AppendLine(TableEntity_Extension);
-            sb.AppendLine("GO");
-
-            sb.AppendLine(ViewEntity);
-            sb.AppendLine("GO");
-
             sb.AppendLine(SpUpsertExtension);
             sb.AppendLine("GO");
 
@@ -210,10 +204,27 @@ namespace Xigadee
         }
 
         /// <summary>
+        /// These are the Extension SQL tables and Views.
+        /// </summary>
+        /// <param name="sb">The string builder.</param>
+        protected void Append_SQL_ExtensionTable(StringBuilder sb)
+        {
+            sb.AppendLine(TableEntity_Extension);
+            sb.AppendLine("GO");
+
+            sb.AppendLine(ViewEntity);
+            sb.AppendLine("GO");
+        }
+
+        /// <summary>
         /// This method returns the SQL scripts to create the necessary tables.
         /// </summary>
         /// <returns>Returns a SQL script.</returns>
-        public string ScriptExtension => SBWrap(Append_SQL_Extension);
+        public string ScriptExtensionLogic => SBWrap(Append_SQL_ExtensionLogic);
+        /// <summary>
+        /// This is the base extension table and view code.
+        /// </summary>
+        public string ScriptExtensionTable => SBWrap(Append_SQL_ExtensionTable);
         #endregion
 
         #region Scripts Stored Procedures - CRUD
@@ -411,8 +422,11 @@ namespace Xigadee
                 //Json Search
                 Append_SQLSPs_SearchJson(sb);
 
+                //Extension Objects - Tables and Views
+                Append_SQL_ExtensionTable(sb);
+
                 //Extension Objects
-                Append_SQL_Extension(sb);
+                Append_SQL_ExtensionLogic(sb);
 
             });
 

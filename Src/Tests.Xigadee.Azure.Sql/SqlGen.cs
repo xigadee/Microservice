@@ -11,12 +11,17 @@ namespace Tests.Xigadee.Azure.Sql
         [TestMethod]
         public void Verify_SqlStoredProcedureResolverUser()
         {
-            var sgTest1 = new SqlJsonGenerator<Test1>(options: new RepositorySqlJsonOptions(true));
+            var sgTest1 = new SqlJsonGenerator<Test1>(
+                options: new RepositorySqlJsonOptions(true));
             var sqlTest1 = sgTest1.ScriptEntityWithoutExtension;
             var sqlTest1Extension = sgTest1.ScriptExtension;
 
             var sgUser = new SqlJsonGenerator<User>();
             var sqlUser = sgUser.SqlEntity;
+
+            var sgAccount = new SqlJsonGenerator<Account>(
+                options: new RepositorySqlJsonOptions(true));
+            var sqlAccount = sgAccount.SqlEntity;
 
             var ancillary = sgTest1.Generator.ScriptAncillary;
         }
@@ -103,34 +108,4 @@ namespace Tests.Xigadee.Azure.Sql
         }
     }
 
-    /// <summary>
-    /// This is the core account entity.
-    /// </summary>
-    public class Account : UserReferenceBase
-    {
-        /// <summary>
-        /// This is the account type.
-        /// </summary>
-        [EntityPropertyHint("type")]
-        public AccountType Type { get; set; }
-        /// <summary>
-        /// The optional userId. If the type is Personal, this is mandatory.
-        /// </summary>
-        [EntityPropertyHint("userid")]
-        public override Guid? UserId { get => base.UserId; set => base.UserId = value; }
-        /// <summary>
-        /// This is the optional organization Id. If the type is Group, this is mandatory.
-        /// </summary>
-        [EntityPropertyHint("groupid")]
-        public Guid? GroupId { get; set; }
-    }
-
-
-    [Flags]
-    public enum AccountType : int
-    {
-        Type0 = 0,
-        Type1 = 1,
-        Type2 = 2
-    }
 }

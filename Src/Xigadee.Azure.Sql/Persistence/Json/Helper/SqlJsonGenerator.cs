@@ -37,8 +37,6 @@
         /// <summary>
         /// This is the supported SQL extension script that you can customize for your data uses.
         /// </summary>
-        public string ScriptExtension => Generator.ScriptExtension;
-
-
+        public string ScriptExtension => Generator.ScriptExtensionLogic;
     }
 }

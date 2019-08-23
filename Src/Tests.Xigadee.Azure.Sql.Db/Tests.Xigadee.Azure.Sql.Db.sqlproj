@@ -61,11 +61,16 @@
     <Folder Include="Entities" />
     <Folder Include="Entities\Test1" />
     <Folder Include="Entities\User" />
+    <Folder Include="Entities\Account" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Entities\User\User.sql" />
     <Build Include="Entities\Test1\Test1.sql" />
     <Build Include="Ancillary\Ancillary.sql" />
-    <Build Include="Entities\Test1\Test1Extension.sql" />
+    <Build Include="Entities\Test1\Extensions.sql" />
+    <Build Include="Entities\Account\Account.sql" />
+    <Build Include="Entities\Account\Extensions.sql" />
+    <Build Include="Entities\Account\ExtensionsTable.sql" />
+    <Build Include="Entities\Test1\ExtensionsTable.sql" />
   </ItemGroup>
 </Project>
