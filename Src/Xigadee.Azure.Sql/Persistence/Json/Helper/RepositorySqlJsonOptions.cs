@@ -10,15 +10,22 @@ namespace Xigadee
         /// <summary>
         /// This is the constructor for the SQL options.
         /// </summary>
-        /// <param name="supportExtensions"></param>
-        public RepositorySqlJsonOptions(bool supportExtensions = false)
+        /// <param name="supportExtensions">Specifies whether SQL table extensions are supported.</param>
+        /// <param name="prependDllVersion">Specifies whether the DLL version should be prepended to the SQL scripts.</param>
+        public RepositorySqlJsonOptions(bool supportExtensions = false, bool prependDllVersion = true)
         {
             SupportsExtension = supportExtensions ? new Option(true, "extension") : new Option(false, "extension");
+            PrependDllVersion = prependDllVersion;
         }
         /// <summary>
         /// Specifies whether the 
         /// </summary>
-        public Option SupportsExtension { get; private set; }
+        public Option SupportsExtension { get;  }
+
+        /// <summary>
+        /// This base option specifies whether the script version should be prepended.
+        /// </summary>
+        public bool PrependDllVersion { get; }
 
         /// <summary>
         /// This is a list of supported options.
