@@ -247,11 +247,11 @@ namespace Xigadee
         /// <summary>
         /// This is the entity delete stored procedure.
         /// </summary>
-        public string SpDelete => ProcessTemplate("StoredProcedures.spDelete.sql");
+        public string SpDelete => _options.DeleteAs405? ProcessTemplate("StoredProcedures.spDelete405.sql"): ProcessTemplate("StoredProcedures.spDelete.sql");
         /// <summary>
         /// This is the entity delete by reference stored procedure.
         /// </summary>
-        public string SpDeleteByRef => ProcessTemplate("StoredProcedures.spDeleteByRef.sql");
+        public string SpDeleteByRef => _options.DeleteAs405 ? ProcessTemplate("StoredProcedures.spDeleteByRef405.sql"): ProcessTemplate("StoredProcedures.spDeleteByRef.sql");
         /// <summary>
         /// This is the entity read stored procedure.
         /// </summary>

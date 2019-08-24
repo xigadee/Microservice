@@ -17,6 +17,7 @@ namespace Xigadee
             SupportsExtension = supportExtensions ? new Option(true, "extension") : new Option(false, "extension");
             PrependDllVersion = prependDllVersion;
         }
+
         /// <summary>
         /// Specifies whether the 
         /// </summary>
@@ -26,6 +27,12 @@ namespace Xigadee
         /// This base option specifies whether the script version should be prepended.
         /// </summary>
         public bool PrependDllVersion { get; }
+
+        /// <summary>
+        /// Specifies that delete is not supported and should return a 405 error.
+        /// The default value is false.
+        /// </summary>
+        public bool DeleteAs405 { get; set; }
 
         /// <summary>
         /// This is a list of supported options.

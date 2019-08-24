@@ -21,10 +21,12 @@
         /// This is the SQL naming class.
         /// </summary>
         public SqlStoredProcedureResolver<E> Names { get; }
+
         /// <summary>
         /// This is the Sql generator class
         /// </summary>
         public RepositorySqlJsonGenerator<E> Generator { get; }
+
         /// <summary>
         /// This is a shortcut to the main SQL generation.
         /// </summary>
@@ -34,9 +36,15 @@
         /// This is the SQL script definition without the base extension SQL code.
         /// </summary>
         public string ScriptEntityWithoutExtension => Generator.ScriptEntityWithoutExtension;
+
         /// <summary>
         /// This is the supported SQL extension script that you can customize for your data uses.
         /// </summary>
-        public string ScriptExtension => Generator.ScriptExtensionLogic;
+        public string ScriptExtensionLogic => Generator.ScriptExtensionLogic;
+
+        /// <summary>
+        /// This is the shortcut to the Extension Table SQL.
+        /// </summary>
+        public string ScriptExtensionTable => Generator.ScriptExtensionTable;
     }
 }

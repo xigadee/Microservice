@@ -23,7 +23,9 @@
     <None Remove="Persistence\Json\SqlTemplates\Helper\spPopulateExtension.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spCreate.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spDelete.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spDelete405.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spDeleteByRef.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spDeleteByRef405.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spHistory.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spRead.sql" />
     <None Remove="Persistence\Json\SqlTemplates\StoredProcedures\spReadByRef.sql" />
@@ -60,6 +62,8 @@
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Ancillary\Schema.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Ancillary\IdTableType.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Ancillary\KvpTableType.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spDelete405.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spDeleteByRef405.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spUpsertExtension.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spSearchEntityJson.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\StoredProcedures\spSearchInternalBuildJson.sql" />
