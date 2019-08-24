@@ -506,7 +506,7 @@ namespace Xigadee
         {
             var entity = ctx.EntityIncoming;
 
-            ctx.EntityOutgoing = entity.JsonClone();
+            ctx.EntityOutgoing = JsonHelper.Clone(entity);
 
             //OK, do we have to update the version id?
             if (isUpdate && (VersionPolicy?.SupportsOptimisticLocking ?? false))

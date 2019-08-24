@@ -13,8 +13,15 @@ namespace Tests.Xigadee.Azure.Sql
         {
             var sgTest1 = new SqlJsonGenerator<Test1>(
                 options: new RepositorySqlJsonOptions(true));
+
+            var result = sgTest1.ExtractToFolder(mode: SqlExtractMode.MultipleFiles);
+            var result2 = sgTest1.ExtractToFolder(mode: SqlExtractMode.SingleFileAndExtensions);
+
             var sqlTest1 = sgTest1.ScriptEntityWithoutExtension;
-            var sqlTest1Extension = sgTest1.ScriptExtension;
+
+
+            var sqlTest1Extension = sgTest1.ScriptExtensionLogic;
+            var sqlTest1ExtensionTable = sgTest1.ScriptExtensionTable;
 
             var sgUser = new SqlJsonGenerator<User>();
             var sqlUser = sgUser.SqlEntity;

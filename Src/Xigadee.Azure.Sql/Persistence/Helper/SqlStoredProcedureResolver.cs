@@ -44,11 +44,17 @@ namespace Xigadee
             , string prefix = "sp"
             , string interfix = null
             , string postfix = null
-            , (RepositoryMethod method, string spName)[] overrides = null)
+            , (RepositoryMethod method, string spName)[] overrides = null
+            , string helperSchemaName = null
+            , string migrationSchemaName = null
+
+            )
         {
             EntityName = entityName ?? "";
             ExternalSchemaName = schemaName ?? "External";
             TableSchemaName = internalSchemaName ?? "dbo";
+            HelperSchemaName = helperSchemaName ?? "Helper";
+            MigrationSchemaName = migrationSchemaName ?? "Migration";
             PreFix = prefix ?? "";
             InterFix = interfix ?? "";
             PostFix = postfix ?? "";
@@ -79,13 +85,21 @@ namespace Xigadee
         /// </summary>
         public string EntityName { get; }
         /// <summary>
-        /// Gets the name of the schema.
+        /// Gets the name of the schema, usually External.
         /// </summary>
         public string ExternalSchemaName { get; }
         /// <summary>
-        /// Gets the name of the schema.
+        /// Gets the name of the table schema, usually dbo.
         /// </summary>
         public string TableSchemaName { get; }
+        /// <summary>
+        /// Gets the name of the helper schema, usually Helper.
+        /// </summary>
+        public string HelperSchemaName { get; }
+        /// <summary>
+        /// Gets the name of the migration schema, usually Migration.
+        /// </summary>
+        public string MigrationSchemaName { get; }
         /// <summary>
         /// Gets the pre fix.
         /// </summary>

@@ -120,13 +120,11 @@ namespace Xigadee
             throw new PayloadDeserializationException();
         }
 
-        public static C JsonClone<C>(this C incoming, JsonSerializerSettings settings = null) 
-        {
-            var json = JsonConvert.SerializeObject(incoming);
-            var outObj = JsonConvert.DeserializeObject(json, incoming.GetType());
-            return (C)outObj;
-        }
-
+        /// <summary>
+        /// This methood clones the serive handler context.
+        /// </summary>
+        /// <param name="incoming">The incoming context.</param>
+        /// <returns>The cloned context.</returns>
         public static ServiceHandlerContext Clone(this ServiceHandlerContext incoming)
         {
             if (incoming == null)
@@ -135,17 +133,17 @@ namespace Xigadee
             var toReturn = new ServiceHandlerContext();
 
             if (incoming.HasObject)
-                toReturn.SetObject(incoming.Object.JsonClone());
+                toReturn.SetObject(JsonHelper.Clone(incoming.Object));
             else if (incoming.Blob != null)
                 toReturn.SetBlob(incoming.Blob);
 
             if (incoming.Metadata != null)
-                toReturn.Metadata = incoming.Metadata.JsonClone();
+                toReturn.Metadata = JsonHelper.Clone(incoming.Metadata);
 
-            toReturn.ContentEncoding = incoming.ContentEncoding?.JsonClone();
-            toReturn.Authentication = incoming.Authentication?.JsonClone();
-            toReturn.ContentType = incoming.ContentType?.JsonClone();
-            toReturn.Encryption = incoming.Encryption?.JsonClone();
+            toReturn.ContentEncoding = JsonHelper.Clone(incoming.ContentEncoding);
+            toReturn.Authentication = JsonHelper.Clone(incoming.Authentication);
+            toReturn.ContentType = JsonHelper.Clone(incoming.ContentType);
+            toReturn.Encryption = JsonHelper.Clone(incoming.Encryption);
 
             return toReturn;
         }
