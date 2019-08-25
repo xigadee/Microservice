@@ -1,4 +1,5 @@
-﻿CREATE TABLE [{NamespaceTable}].[{EntityName}]
+﻿--#region.tables
+CREATE TABLE [{NamespaceTable}].[{EntityName}]
 (
      [Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1)
 	,[ExternalId] UNIQUEIDENTIFIER NOT NULL
@@ -11,3 +12,4 @@
 )
 GO
 CREATE UNIQUE INDEX[IX_{EntityName}_ExternalId] ON [{NamespaceTable}].[{EntityName}] ([ExternalId]) INCLUDE ([VersionId])
+--#endregion

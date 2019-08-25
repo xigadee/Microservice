@@ -1,4 +1,5 @@
-﻿CREATE TABLE [{NamespaceTable}].[{EntityName}SearchHistory]
+﻿--#region.tables
+CREATE TABLE [{NamespaceTable}].[{EntityName}SearchHistory]
 (
      [Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1)
 	,[ETag] UNIQUEIDENTIFIER NOT NULL
@@ -25,4 +26,4 @@ CREATE TABLE [{NamespaceTable}].[{EntityName}SearchHistoryCache]
 GO
 CREATE INDEX[IX_{EntityName}SearchHistoryCache_SearchHistory] ON [{NamespaceTable}].[{EntityName}SearchHistoryCache] ([SearchId]) INCLUDE ([EntityId]) 
 GO
-
+--#endregion

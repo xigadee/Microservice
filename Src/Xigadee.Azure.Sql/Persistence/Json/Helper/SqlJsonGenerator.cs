@@ -78,7 +78,7 @@ namespace Xigadee
             var dInfo = new DirectoryInfo(eOpts.FolderName);
             var dInfoEntity = new DirectoryInfo(Path.Combine(eOpts.FolderName, typeof(E).Name));
 
-            dInfo.CreateFolderOrException(eOpts.FolderCreate);
+            dInfo.CreateFolderOrRaiseException(eOpts.FolderCreate);
 
             if (eOpts.RemoveOldFiles)
                 dInfo.FilesRemove(eOpts.FileAncillary);
@@ -91,7 +91,7 @@ namespace Xigadee
 
             if (eOpts.Mode != SqlExtractMode.DoNotExtract)
             {
-                dInfoEntity.CreateFolderOrException(eOpts.FolderCreate);
+                dInfoEntity.CreateFolderOrRaiseException(eOpts.FolderCreate);
 
                 if (eOpts.RemoveOldFiles)
                     dInfoEntity.FilesRemove(eOpts.EntityFileNames.ToArray());
@@ -106,7 +106,9 @@ namespace Xigadee
                         ExtensionsWrite(dInfoEntity, eOpts);
                         break;
                     case SqlExtractMode.MultipleFiles:
-                        dInfoEntity.WriteFile(eOpts.FileTables, Generator.ScriptTables);
+
+                        if (Generator.Options.SupportsTables.Supported)
+                            dInfoEntity.WriteFile(eOpts.FileTables, Generator.ScriptTables);
 
                         dInfoEntity.WriteFile(eOpts.FileCreate, Generator.EntityCreate);
                         dInfoEntity.WriteFile(eOpts.FileRead, Generator.EntityRead);
@@ -120,8 +122,9 @@ namespace Xigadee
                         //Search
                         dInfoEntity.WriteFile(eOpts.FileSearch, Generator.ScriptSearch);
                         dInfoEntity.WriteFile(eOpts.FileSearchJson, Generator.ScriptSearchJson);
-
+                        //Extensions
                         ExtensionsWrite(dInfoEntity, eOpts);
+
                         break;
                 }
             }
@@ -239,9 +242,9 @@ namespace Xigadee
         /// <summary>
         /// This helper method writes for the file.
         /// </summary>
-        /// <param name="dInfoEntity"></param>
-        /// <param name="fileName"></param>
-        /// <param name="data"></param>
+        /// <param name="dInfoEntity">The directory info.</param>
+        /// <param name="fileName">The file name.</param>
+        /// <param name="data">The text file content.</param>
         public static void WriteFile(this DirectoryInfo dInfoEntity, string fileName, string data)
         {
             var filePath = Path.Combine(dInfoEntity.FullName, fileName);
@@ -254,7 +257,12 @@ namespace Xigadee
 
         }
 
-        public static void CreateFolderOrException(this DirectoryInfo dInfo, bool create)
+        /// <summary>
+        /// This extension method creates the folder or raises an exception if the folder does not exist.
+        /// </summary>
+        /// <param name="dInfo">The directory info.</param>
+        /// <param name="create">Specifies whether the folder should be created if it does not exist.</param>
+        public static void CreateFolderOrRaiseException(this DirectoryInfo dInfo, bool create)
         {
             if (!dInfo.Exists)
                 if (create)
@@ -263,7 +271,11 @@ namespace Xigadee
                     throw new IOException($"Folder does not exist {dInfo.FullName}");
         }
 
-
+        /// <summary>
+        /// This method removes the files with the names specified.
+        /// </summary>
+        /// <param name="dInfo">The directory information</param>
+        /// <param name="files">The file name collection.</param>
         public static void FilesRemove(this DirectoryInfo dInfo, params string[] files)
         {
             if (!dInfo.Exists)

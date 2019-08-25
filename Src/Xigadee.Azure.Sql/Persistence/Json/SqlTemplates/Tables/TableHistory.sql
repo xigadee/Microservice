@@ -1,4 +1,5 @@
-﻿CREATE TABLE[{NamespaceTable}].[{EntityName}History]
+﻿--#region.tables
+CREATE TABLE[{NamespaceTable}].[{EntityName}History]
 (
      [Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1)
     ,[EntityId] BIGINT NOT NULL 
@@ -11,3 +12,4 @@
 	,[Sig] VARCHAR(256) NULL
 	,[Body] NVARCHAR(MAX) NULL
 )
+--#endregion

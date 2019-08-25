@@ -1,4 +1,5 @@
-﻿CREATE VIEW [{NamespaceTable}].[View{EntityName}]
+﻿--#region.tables
+CREATE VIEW [{NamespaceTable}].[View{EntityName}]
 AS
 	SELECT E.[Id] 
 	,E.[ExternalId] 
@@ -10,3 +11,4 @@ AS
 	,E.[Body] 
 	FROM [{NamespaceTable}].[{EntityName}] AS E 
 GO
+--#endregion

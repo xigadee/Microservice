@@ -15,13 +15,19 @@ namespace Xigadee
         public RepositorySqlJsonOptions(bool supportExtensions = false, bool prependDllVersion = true)
         {
             SupportsExtension = supportExtensions ? new Option(true, "extension") : new Option(false, "extension");
+            SupportsTables = new Option(true, "tables");
             PrependDllVersion = prependDllVersion;
         }
 
         /// <summary>
         /// Specifies whether the 
         /// </summary>
-        public Option SupportsExtension { get;  }
+        public Option SupportsExtension { get; }
+
+        /// <summary>
+        /// Specifies that the SQL should support the table generation region.
+        /// </summary>
+        public Option SupportsTables { get; }
 
         /// <summary>
         /// This base option specifies whether the script version should be prepended.
@@ -41,6 +47,7 @@ namespace Xigadee
         public IEnumerable<Option> Options()
         {
             yield return SupportsExtension;
+            yield return SupportsTables;
         }
 
         /// <summary>

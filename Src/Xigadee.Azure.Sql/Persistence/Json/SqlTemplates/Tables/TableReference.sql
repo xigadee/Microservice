@@ -1,4 +1,5 @@
-﻿CREATE TABLE [{NamespaceTable}].[{EntityName}Reference]
+﻿--#region.tables
+CREATE TABLE [{NamespaceTable}].[{EntityName}Reference]
 (
 	[Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1), 
 	[EntityId] BIGINT NOT NULL,
@@ -13,3 +14,5 @@ GO
 CREATE INDEX [IX_{EntityName}Reference_EntityId] ON [{NamespaceTable}].[{EntityName}Reference] ([EntityId]) INCLUDE ([Id])
 GO
 CREATE INDEX [IX_{EntityName}Reference_KeyId] ON [{NamespaceTable}].[{EntityName}Reference] ([KeyId],[EntityId]) INCLUDE ([Value])
+GO
+--#endregion

@@ -1,4 +1,5 @@
-﻿CREATE TABLE [{NamespaceTable}].[{EntityName}Property]
+﻿--#region.tables
+CREATE TABLE [{NamespaceTable}].[{EntityName}Property]
 (
 	[Id] BIGINT NOT NULL PRIMARY KEY IDENTITY(1,1), 
 	[EntityId] BIGINT NOT NULL,
@@ -11,3 +12,5 @@ GO
 CREATE INDEX [IX_{EntityName}Property_KeyId] ON [{NamespaceTable}].[{EntityName}Property] ([KeyId]) INCLUDE ([EntityId])
 GO
 CREATE INDEX [IX_{EntityName}Property_EntityId] ON [{NamespaceTable}].[{EntityName}Property] ([EntityId]) INCLUDE ([Id])
+GO
+--#endregion

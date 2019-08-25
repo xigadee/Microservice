@@ -1,5 +1,5 @@
 ﻿--#region.extension
-CREATE PROCEDURE [{NamespaceTable}].[{EntityName}_Extension_ManuallyPopulate]
+CREATE PROCEDURE [{NamespaceMigration}].[{EntityName}_Extension_ManuallyPopulate]
 AS
 BEGIN
 

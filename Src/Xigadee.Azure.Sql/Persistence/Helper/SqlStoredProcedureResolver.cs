@@ -84,22 +84,73 @@ namespace Xigadee
         /// Gets the name of the entity.
         /// </summary>
         public string EntityName { get; }
+
+        #region Schemas
+        /// <summary>
+        /// This method formats the schema to the correct SQL name.
+        /// </summary>
+        /// <param name="schema"></param>
+        /// <returns></returns>
+        protected virtual string SchemaFormat(string schema) => string.IsNullOrEmpty(schema) ? "" : $"[{schema}].";
+
         /// <summary>
         /// Gets the name of the schema, usually External.
         /// </summary>
-        public string ExternalSchemaName { get; }
+        public string ExternalSchemaName { get; set; }
+        /// <summary>
+        /// Gets the external schema.
+        /// </summary>
+        public virtual string ExternalSchema => SchemaFormat(ExternalSchemaName);
+
         /// <summary>
         /// Gets the name of the table schema, usually dbo.
         /// </summary>
-        public string TableSchemaName { get; }
+        public string TableSchemaName { get; set; }
+        /// <summary>
+        /// Gets the table schema.
+        /// </summary>
+        public virtual string TableSchema => SchemaFormat(TableSchemaName);
+
         /// <summary>
         /// Gets the name of the helper schema, usually Helper.
         /// </summary>
-        public string HelperSchemaName { get; }
+        public string HelperSchemaName { get; set; }
+        /// <summary>
+        /// Gets the helper schema.
+        /// </summary>
+        public virtual string HelperSchema => SchemaFormat(HelperSchemaName);
+
         /// <summary>
         /// Gets the name of the migration schema, usually Migration.
         /// </summary>
-        public string MigrationSchemaName { get; }
+        public string MigrationSchemaName { get; set; }
+        /// <summary>
+        /// Gets the migration schema.
+        /// </summary>
+        public virtual string MigrationSchema => SchemaFormat(MigrationSchemaName);
+
+        public string DboSchema => "dbo";
+        /// <summary>
+        /// This is the list of supported schemas
+        /// </summary>
+        public virtual IEnumerable<string> SchemasList
+        {
+            get
+            {
+                yield return ExternalSchemaName;
+                yield return TableSchemaName;
+                yield return HelperSchemaName;
+                yield return MigrationSchemaName;
+            }
+        }
+
+        /// <summary>
+        /// The distinct list of used schemas, with the DBO schema removed.
+        /// </summary>
+        public IEnumerable<string> Schemas => SchemasList.Where(s => !s.Equals(DboSchema, StringComparison.InvariantCultureIgnoreCase)).Distinct();
+
+        #endregion
+
         /// <summary>
         /// Gets the pre fix.
         /// </summary>
@@ -112,10 +163,9 @@ namespace Xigadee
         /// Gets the inter fix character.
         /// </summary>
         public string InterFix { get; }
-        /// <summary>
-        /// Gets the external schema.
-        /// </summary>
-        public virtual string ExternalSchema => string.IsNullOrEmpty(ExternalSchemaName) ? "" : $"[{ExternalSchemaName}].";
+
+
+
         /// <summary>
         /// Gets the stored procedure create.
         /// </summary>

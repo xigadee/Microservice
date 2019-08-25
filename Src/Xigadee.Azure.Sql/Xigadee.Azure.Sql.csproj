@@ -48,6 +48,7 @@
     <None Remove="Persistence\Json\SqlTemplates\Tables\TablePropertyKey.sql" />
     <None Remove="Persistence\Json\SqlTemplates\Tables\TableReference.sql" />
     <None Remove="Persistence\Json\SqlTemplates\Tables\TableReferenceKey.sql" />
+    <None Remove="Persistence\Json\SqlTemplates\Views\ViewDefault.sql" />
     <None Remove="Persistence\Json\SqlTemplates\Views\ViewExtended.sql" />
     <None Remove="Persistence\Json\SqlTemplates\Views\ViewExtension.sql" />
   </ItemGroup>
@@ -89,6 +90,7 @@
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Tables\TableReference.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Tables\TableHistory.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Tables\Table.sql" />
+    <EmbeddedResource Include="Persistence\Json\SqlTemplates\Views\ViewDefault.sql" />
     <EmbeddedResource Include="Persistence\Json\SqlTemplates\Views\ViewExtension.sql" />
   </ItemGroup>
   <ItemGroup>
