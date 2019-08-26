@@ -6,31 +6,56 @@ using System.Linq;
 namespace Xigadee
 {
     /// <summary>
-    /// This class is used to generate the SQL for a specific entity.
+    /// This the the generic sql generator for the specified entity type.
     /// </summary>
-    /// <typeparam name="E">The entity type parameter.</typeparam>
-    public class SqlJsonGenerator<E>
+    /// <typeparam name="E">The entity type.</typeparam>
+    public class SqlJsonGenerator<E>: SqlJsonGenerator
     {
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="names">This is the optional naming class. If this is null a class will be created with the default settings.</param>
         /// <param name="options">This is the SQL generation options settings.</param>
-        public SqlJsonGenerator(SqlStoredProcedureResolver<E> names = null, RepositorySqlJsonOptions options = null)
+        /// <param name="fileExtractOptions">These are file extraction options.</param>
+        public SqlJsonGenerator(SqlStoredProcedureResolver<E> names = null, RepositorySqlJsonOptions options = null, SqlFileExtractOptions fileExtractOptions = null)
+            :base(names ?? new SqlStoredProcedureResolver<E>(), options, fileExtractOptions)
         {
-            Names = names ?? new SqlStoredProcedureResolver<E>();
-            Generator = new RepositorySqlJsonGenerator<E>(Names,options);
+        }
+    }
+    /// <summary>
+    /// This class is used to generate the SQL for a specific entity.
+    /// </summary>
+    public class SqlJsonGenerator
+    {
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="names">This is the optional naming class. If this is null a class will be created with the default settings.</param>
+        /// <param name="options">This is the SQL generation options settings.</param>
+        /// <param name="fileExtractOptions">These are file extraction options.</param>
+        public SqlJsonGenerator(SqlStoredProcedureResolver names, RepositorySqlJsonOptions options = null, SqlFileExtractOptions fileExtractOptions = null)
+        {
+            Names = names ?? throw new ArgumentNullException("names");
+
+            Generator = new RepositorySqlJsonGenerator(names, options);
+
+            FileExtractOptions = fileExtractOptions;
         }
 
         /// <summary>
         /// This is the SQL naming class.
         /// </summary>
-        public SqlStoredProcedureResolver<E> Names { get; }
+        public SqlStoredProcedureResolver Names { get; }
 
         /// <summary>
         /// This is the Sql generator class
         /// </summary>
-        public RepositorySqlJsonGenerator<E> Generator { get; }
+        public RepositorySqlJsonGenerator Generator { get; }
+
+        /// <summary>
+        /// This class contains the Sql file extraction options.
+        /// </summary>
+        public SqlFileExtractOptions FileExtractOptions { get; }
 
         /// <summary>
         /// This is a shortcut to the main SQL generation.
@@ -53,14 +78,20 @@ namespace Xigadee
         public string ScriptExtensionTable => Generator.ScriptExtensionTable;
 
         /// <summary>
+        /// This method extracts to the folder.
+        /// </summary>
+        /// <returns></returns>
+        public SqlFileExtractOptions ExtractToFolder() => ExtractToFolder(FileExtractOptions ?? throw new ArgumentNullException("FileExtractOptions is null"));
+
+        /// <summary>
         /// This method writes out the SQL definitions to set of SQL files.
         /// </summary>
         /// <param name="folderName">The folder name.</param>
         /// <param name="createFolder"></param>
         /// <param name="mode">The file extract mode. The default is a single file and a set of extension files.</param>
         /// <param name="ancillary">Include the ancillary definitions.</param>
-        public SqlExtractOptions ExtractToFolder(string folderName = null, bool createFolder = true, SqlExtractMode mode = SqlExtractMode.SingleFileAndExtensions, bool ancillary = false) => 
-            ExtractToFolder(new SqlExtractOptions()
+        public SqlFileExtractOptions ExtractToFolder(string folderName = null, bool createFolder = true, SqlExtractMode mode = SqlExtractMode.SingleFileAndExtensions, bool ancillary = false) => 
+            ExtractToFolder(new SqlFileExtractOptions()
             {
                   FolderName = string.IsNullOrWhiteSpace(folderName)?$"{Environment.CurrentDirectory}\\SqlEntities":folderName
                 , FolderCreate = createFolder
@@ -68,15 +99,14 @@ namespace Xigadee
                 , ExtractAncillary = ancillary
             });
 
-        
         /// <summary>
         /// This method writes out the SQL definitions to set of SQL files.
         /// </summary>
         /// <param name="eOpts">The file extract options.</param>
-        public SqlExtractOptions ExtractToFolder(SqlExtractOptions eOpts)
+        public SqlFileExtractOptions ExtractToFolder(SqlFileExtractOptions eOpts)
         {
             var dInfo = new DirectoryInfo(eOpts.FolderName);
-            var dInfoEntity = new DirectoryInfo(Path.Combine(eOpts.FolderName, typeof(E).Name));
+            var dInfoEntity = new DirectoryInfo(Path.Combine(eOpts.FolderName, Names.EntityName));
 
             dInfo.CreateFolderOrRaiseException(eOpts.FolderCreate);
 
@@ -132,7 +162,7 @@ namespace Xigadee
             return eOpts;
         }
 
-        private void ExtensionsWrite(DirectoryInfo dInfoEntity, SqlExtractOptions eOpts)
+        private void ExtensionsWrite(DirectoryInfo dInfoEntity, SqlFileExtractOptions eOpts)
         {
             if (Generator.Options.SupportsExtension.Supported)
             {
@@ -145,7 +175,7 @@ namespace Xigadee
     /// <summary>
     /// This is the extract options.
     /// </summary>
-    public class SqlExtractOptions
+    public class SqlFileExtractOptions
     {
         /// <summary>
         /// The root folder name.

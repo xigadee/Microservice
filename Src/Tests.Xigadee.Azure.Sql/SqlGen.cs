@@ -1,16 +1,31 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xigadee;
 
 namespace Tests.Xigadee.Azure.Sql
 {
+    [PrepopulateEntities(typeof(Test1), typeof(User), typeof(Account))]
+    public class TestSqlGenerationCollection : SqlGeneratorCollection
+    {
+
+        public SqlJsonGenerator Test1 => Get<Test1>();
+
+        public SqlJsonGenerator User => Get<User>();
+
+        public SqlJsonGenerator Account => Get<Account>();
+
+    }
+
     [TestClass]
     public class SqlGen
     {
         [TestMethod]
         public void Verify_SqlStoredProcedureResolverUser()
         {
+            var coll = new TestSqlGenerationCollection();
+
             var sgTest1 = new SqlJsonGenerator<Test1>(
                 options: new RepositorySqlJsonOptions(true));
 

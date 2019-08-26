@@ -162,10 +162,7 @@ namespace Xigadee
         /// <summary>
         /// This is the message handler priority used when starting up.
         /// </summary>
-        public int StartupPriority
-        {
-            get; set;
-        }
+        public int StartupPriority { get; set; }
         #endregion
 
         #region Collector

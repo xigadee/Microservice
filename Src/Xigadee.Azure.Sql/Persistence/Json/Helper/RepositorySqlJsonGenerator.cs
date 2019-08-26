@@ -17,7 +17,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="resolver">The resolver.</param>
         /// <param name="options">This is the set of generation options. If not set, the historical legacy support is set.</param>
-        public RepositorySqlJsonGenerator(SqlStoredProcedureResolver<E> resolver = null, RepositorySqlJsonOptions options = null) : base(resolver ?? new SqlStoredProcedureResolver<E>(), options) { }
+        public RepositorySqlJsonGenerator(SqlStoredProcedureResolver resolver = null, RepositorySqlJsonOptions options = null) : base(resolver ?? new SqlStoredProcedureResolver<E>(), options) { }
     }
 
     /// <summary>
@@ -25,6 +25,12 @@ namespace Xigadee
     /// </summary>
     public class RepositorySqlJsonGenerator
     {
+        #region Declarations
+        /// <summary>
+        /// This is the root namespace for embedded templates.
+        /// </summary>
+        protected const string _msRoot = "Xigadee.Persistence.Json.SqlTemplates";
+        #endregion
         #region Constructor
         /// <summary>
         /// This is the default constructor.
@@ -36,13 +42,6 @@ namespace Xigadee
             Resolver = resolver ?? throw new ArgumentNullException("resolver");
             Options = options ?? RepositorySqlJsonOptions.Legacy;
         }
-        #endregion
-
-        #region Declarations
-        /// <summary>
-        /// This is the root namespace for embedded templates.
-        /// </summary>
-        protected const string _msRoot = "Xigadee.Persistence.Json.SqlTemplates";
         #endregion
 
         #region Options
