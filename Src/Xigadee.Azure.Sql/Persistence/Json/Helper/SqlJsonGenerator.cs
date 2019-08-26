@@ -94,7 +94,7 @@ namespace Xigadee
                 dInfoEntity.CreateFolderOrRaiseException(eOpts.FolderCreate);
 
                 if (eOpts.RemoveOldFiles)
-                    dInfoEntity.FilesRemove(eOpts.EntityFileNames.ToArray());
+                    dInfoEntity.FilesRemove(eOpts.ScriptFileNames(Generator.Options).ToArray());
 
                 switch (eOpts.Mode)
                 {
@@ -185,26 +185,31 @@ namespace Xigadee
         public string FileExtensions { get; set; } = "Extensions.sql";
         public string FileExtensionsTable { get; set; } = "ExtensionsTable.sql";
 
-        public virtual IEnumerable<string> EntityFileNames
+        /// <summary>
+        /// This is the list of supported files names.
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<string> ScriptFileNames(RepositorySqlJsonOptions options)
         {
-            get
-            {
-                yield return FileCreate;
-                yield return FileRead;
-                yield return FileUpdate;
-                yield return FileDelete;
-                yield return FileVersion;
+            yield return FileCreate;
+            yield return FileRead;
+            yield return FileUpdate;
+            yield return FileDelete;
+            yield return FileVersion;
 
-                yield return FileUpsert;
-                yield return FileHistory;
+            yield return FileUpsert;
+            yield return FileHistory;
 
+            if (options.SupportsTables.Supported)
                 yield return FileTables;
 
-                yield return FileSearch;
-                yield return FileSearchJson;
+            yield return FileSearch;
+            yield return FileSearchJson;
 
-                yield return FileDefinition;
+            yield return FileDefinition;
 
+            if (options.SupportsExtension.Supported)
+            {
                 yield return FileExtensions;
                 yield return FileExtensionsTable;
             }
