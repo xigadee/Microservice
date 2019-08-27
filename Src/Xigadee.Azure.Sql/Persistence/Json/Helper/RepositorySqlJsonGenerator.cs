@@ -287,6 +287,12 @@ namespace Xigadee
         public string ScriptExtensionTable => SBWrap(Append_SQL_ExtensionTable);
 
         /// <summary>
+        /// This is the migration stored procedure.
+        /// </summary>
+        public string ScriptExtensionMigration => SBWraps(SpManuallyPopulateExtension);
+
+
+        /// <summary>
         /// This is the combined logic.
         /// </summary>
         public string ScriptExtensions => SBWraps(ScriptExtensionTable, ScriptExtensionLogic);
