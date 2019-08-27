@@ -24,7 +24,7 @@ BEGIN
 		,( 
 			SELECT E.ExternalId AS [ExternalId], E.VersionId AS [VersionId], E.Body AS [Body]
 			FROM [{NamespaceTable}].[udf{EntityName}PaginateProperty](@FullScan, @CollectionId, @Body) AS F
-			INNER JOIN [dbo].[Test1] AS E ON F.Id = E.Id
+			INNER JOIN [{NamespaceTable}].[{EntityName}] AS E ON F.Id = E.Id
 			ORDER BY F.[Rank]
 			--OFFSET @Skip ROWS
 			--FETCH NEXT @Top ROWS ONLY
