@@ -190,6 +190,7 @@ namespace Xigadee
         /// <returns></returns>
         public string ScriptAncillary => SBWrap(Append_SQL_Ancillary);
         #endregion
+
         #region Scripts Tables
         public string TableEntity => ProcessTemplate("Tables.Table.sql");
 
@@ -231,7 +232,7 @@ namespace Xigadee
         /// This method returns the SQL scripts to create the necessary tables.
         /// </summary>
         /// <returns>Returns a SQL script.</returns>
-        public string ScriptTables => SBWrap(Append_SQL_Tables);
+        public string ScriptDefinitionTables => SBWrap(Append_SQL_Tables);
         #endregion
 
         #region Scripts Extension
@@ -284,6 +285,11 @@ namespace Xigadee
         /// This is the base extension table and view code.
         /// </summary>
         public string ScriptExtensionTable => SBWrap(Append_SQL_ExtensionTable);
+
+        /// <summary>
+        /// This is the combined logic.
+        /// </summary>
+        public string ScriptExtensions => SBWraps(ScriptExtensionTable, ScriptExtensionLogic);
         #endregion
 
         #region Scripts Stored Procedures - CRUD
@@ -496,12 +502,12 @@ namespace Xigadee
             }, createoralter);
         #endregion
 
-        #region ScriptEntity
+        #region ScriptAll
         /// <summary>
         /// Returns the full DB definition for the entity (excluding ancillary definitions)
         /// </summary>
         /// <returns>Returns the SQL script.</returns>
-        public string ScriptEntity =>
+        public string ScriptAll =>
             SBWrap(sb =>
             {
                 //Tables
@@ -524,13 +530,12 @@ namespace Xigadee
 
             });
         #endregion
-
-        #region ScriptEntityWithoutExtension
+        #region ScriptDefinition
         /// <summary>
         /// Returns the full DB definition for the entity (excluding ancillary definitions)
         /// </summary>
         /// <returns>Returns the SQL script.</returns>
-        public string ScriptEntityWithoutExtension =>
+        public string ScriptDefinition =>
             SBWrap(sb =>
             {
                 //Tables
@@ -545,7 +550,25 @@ namespace Xigadee
                 //Json Search
                 Append_SQLSPs_SearchJson(sb);
 
-            }); 
+            });
+        #endregion
+        #region ScriptDefinitionLogic
+        /// <summary>
+        /// Returns the full DB definition for the entity (excluding ancillary definitions)
+        /// </summary>
+        /// <returns>Returns the SQL script.</returns>
+        public string ScriptDefinitionLogic =>
+            SBWrap(sb =>
+            {
+                //Entities
+                Append_SQLSPs_EntityCRUD(sb);
+
+                //Search
+                Append_SQLSPs_Search(sb);
+
+                //Json Search
+                Append_SQLSPs_SearchJson(sb);
+            });
         #endregion
     }
 }

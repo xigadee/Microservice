@@ -30,20 +30,19 @@ namespace Tests.Xigadee.Azure.Sql
                 options: new RepositorySqlJsonOptions(true));
 
             var result = sgTest1.ExtractToFolder(mode: SqlFileExtractMode.MultipleFiles);
-            var result2 = sgTest1.ExtractToFolder(mode: SqlFileExtractMode.SingleFileAndExtensions);
+            var result2 = sgTest1.ExtractToFolder(mode: SqlFileExtractMode.DefinitionAndExtensionsFiles);
 
-            var sqlTest1 = sgTest1.ScriptEntityWithoutExtension;
+            var sqlTest1 = sgTest1.Generator.ScriptDefinition;
 
-
-            var sqlTest1Extension = sgTest1.ScriptExtensionLogic;
-            var sqlTest1ExtensionTable = sgTest1.ScriptExtensionTable;
+            var sqlTest1Extension = sgTest1.Generator.ScriptExtensionLogic;
+            var sqlTest1ExtensionTable = sgTest1.Generator.ScriptExtensionTable;
 
             var sgUser = new SqlJsonGenerator<User>();
-            var sqlUser = sgUser.SqlEntity;
+            var sqlUser = sgUser.Generator.ScriptAll; 
 
             var sgAccount = new SqlJsonGenerator<Account>(
                 options: new RepositorySqlJsonOptions(true));
-            var sqlAccount = sgAccount.SqlEntity;
+            var sqlAccount = sgAccount.Generator.ScriptAll;
 
             var ancillary = sgTest1.Generator.ScriptAncillary;
         }
@@ -61,7 +60,7 @@ namespace Tests.Xigadee.Azure.Sql
             var sql5 = generator.TableReference;
             var sql6 = generator.TableReferenceKey;
 
-            var tab = generator.ScriptTables;
+            var tab = generator.ScriptDefinitionTables;
 
             var sql7 = generator.AncillarySchema;
             var sql8 = generator.AncillaryKvpTableType;
@@ -86,7 +85,7 @@ namespace Tests.Xigadee.Azure.Sql
 
             var anc = generator.ScriptAncillary;
 
-            var scr = generator.ScriptEntity;
+            var scr = generator.ScriptAll;
         }
 
         [TestMethod]

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -18,10 +17,9 @@ namespace Xigadee
         /// <param name="options">This is the SQL generation options settings.</param>
         /// <param name="fileExtractOptions">These are file extraction options.</param>
         public SqlJsonGenerator(SqlStoredProcedureResolver<E> names = null, RepositorySqlJsonOptions options = null, SqlFileExtractOptions fileExtractOptions = null)
-            :base(names ?? new SqlStoredProcedureResolver<E>(), options, fileExtractOptions)
-        {
-        }
+            :base(names ?? new SqlStoredProcedureResolver<E>(), options, fileExtractOptions){}
     }
+
     /// <summary>
     /// This class is used to generate the SQL for a specific entity.
     /// </summary>
@@ -58,26 +56,6 @@ namespace Xigadee
         public SqlFileExtractOptions FileExtractOptions { get; }
 
         /// <summary>
-        /// This is a shortcut to the main SQL generation.
-        /// </summary>
-        public string SqlEntity => Generator.ScriptEntity;
-
-        /// <summary>
-        /// This is the SQL script definition without the base extension SQL code.
-        /// </summary>
-        public string ScriptEntityWithoutExtension => Generator.ScriptEntityWithoutExtension;
-
-        /// <summary>
-        /// This is the supported SQL extension script that you can customize for your data uses.
-        /// </summary>
-        public string ScriptExtensionLogic => Generator.ScriptExtensionLogic;
-
-        /// <summary>
-        /// This is the shortcut to the Extension Table SQL.
-        /// </summary>
-        public string ScriptExtensionTable => Generator.ScriptExtensionTable;
-
-        /// <summary>
         /// This method extracts to the folder.
         /// </summary>
         /// <returns></returns>
@@ -90,7 +68,7 @@ namespace Xigadee
         /// <param name="createFolder"></param>
         /// <param name="mode">The file extract mode. The default is a single file and a set of extension files.</param>
         /// <param name="ancillary">Include the ancillary definitions.</param>
-        public SqlFileExtractOptions ExtractToFolder(string folderName = null, bool createFolder = true, SqlFileExtractMode mode = SqlFileExtractMode.SingleFileAndExtensions, bool ancillary = false) => 
+        public SqlFileExtractOptions ExtractToFolder(string folderName = null, bool createFolder = true, SqlFileExtractMode mode = SqlFileExtractMode.DefinitionAndExtensionsFiles, bool ancillary = false) => 
             ExtractToFolder(new SqlFileExtractOptions()
             {
                   FolderName = string.IsNullOrWhiteSpace(folderName)?$"{Environment.CurrentDirectory}\\SqlEntities":folderName
@@ -128,17 +106,22 @@ namespace Xigadee
 
                 switch (eOpts.Mode)
                 {
-                    case SqlFileExtractMode.SingleFile:
-                        dInfoEntity.WriteFile(eOpts.FileDefinition, Generator.ScriptEntity);
+                    case SqlFileExtractMode.DefinitionFileOnly:
+                        dInfoEntity.WriteFile(eOpts.FileDefinition, Generator.ScriptAll);
                         break;
-                    case SqlFileExtractMode.SingleFileAndExtensions:
-                        dInfoEntity.WriteFile(eOpts.FileDefinition, ScriptEntityWithoutExtension);
+                    case SqlFileExtractMode.DefinitionAndExtensionsFiles:
+                        dInfoEntity.WriteFile(eOpts.FileDefinition, Generator.ScriptDefinition);
+                        ExtensionsWrite(dInfoEntity, eOpts);
+                        break;
+                    case SqlFileExtractMode.DefinitionTableAndExtensionsFiles:
+                        dInfoEntity.WriteFile(eOpts.FileDefinition, Generator.ScriptDefinitionLogic);
+                        dInfoEntity.WriteFile(eOpts.FileTables, Generator.ScriptDefinitionTables);
                         ExtensionsWrite(dInfoEntity, eOpts);
                         break;
                     case SqlFileExtractMode.MultipleFiles:
 
                         if (Generator.Options.SupportsTables.Supported)
-                            dInfoEntity.WriteFile(eOpts.FileTables, Generator.ScriptTables);
+                            dInfoEntity.WriteFile(eOpts.FileTables, Generator.ScriptDefinitionTables);
 
                         dInfoEntity.WriteFile(eOpts.FileCreate, Generator.EntityCreate);
                         dInfoEntity.WriteFile(eOpts.FileRead, Generator.EntityRead);
@@ -166,8 +149,8 @@ namespace Xigadee
         {
             if (Generator.Options.SupportsExtension.Supported)
             {
-                dInfoEntity.WriteFile(eOpts.FileExtensions, ScriptExtensionLogic);
-                dInfoEntity.WriteFile(eOpts.FileExtensionsTable, ScriptExtensionTable);
+                dInfoEntity.WriteFile(eOpts.FileExtensions, Generator.ScriptExtensionLogic);
+                dInfoEntity.WriteFile(eOpts.FileExtensionsTable, Generator.ScriptExtensionTable);
             }
         }
     }

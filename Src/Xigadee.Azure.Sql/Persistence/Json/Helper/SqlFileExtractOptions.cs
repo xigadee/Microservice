@@ -25,7 +25,7 @@ namespace Xigadee
         /// <summary>
         /// Specifies whether the entities should be extracted.
         /// </summary>
-        public SqlFileExtractMode Mode { get; set; } = SqlFileExtractMode.SingleFile;
+        public SqlFileExtractMode Mode { get; set; } = SqlFileExtractMode.DefinitionFileOnly;
 
         public bool RemoveOldFiles { get; set; } = true;
 
@@ -91,11 +91,13 @@ namespace Xigadee
         /// <summary>
         /// Extract as a single file.
         /// </summary>
-        SingleFile,
+        DefinitionFileOnly,
         /// <summary>
         /// Extract as a single file, but seperate Extensions if specified.
         /// </summary>
-        SingleFileAndExtensions,
+        DefinitionAndExtensionsFiles,
+
+        DefinitionTableAndExtensionsFiles,
         /// <summary>
         /// Extract as multiple files.
         /// </summary>
