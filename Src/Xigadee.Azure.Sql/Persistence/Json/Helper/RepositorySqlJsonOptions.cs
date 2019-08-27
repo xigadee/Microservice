@@ -22,17 +22,17 @@ namespace Xigadee
         /// <summary>
         /// Specifies whether the 
         /// </summary>
-        public Option SupportsExtension { get; }
+        public Option SupportsExtension { get; set; }
 
         /// <summary>
         /// Specifies that the SQL should support the table generation region.
         /// </summary>
-        public Option SupportsTables { get; }
+        public Option SupportsTables { get; set; }
 
         /// <summary>
         /// This base option specifies whether the script version should be prepended.
         /// </summary>
-        public bool PrependDllVersion { get; }
+        public bool PrependDllVersion { get; set; }
 
         /// <summary>
         /// Specifies that delete is not supported and should return a 405 error.

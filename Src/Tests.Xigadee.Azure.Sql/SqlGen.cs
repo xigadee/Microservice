@@ -29,8 +29,8 @@ namespace Tests.Xigadee.Azure.Sql
             var sgTest1 = new SqlJsonGenerator<Test1>(
                 options: new RepositorySqlJsonOptions(true));
 
-            var result = sgTest1.ExtractToFolder(mode: SqlExtractMode.MultipleFiles);
-            var result2 = sgTest1.ExtractToFolder(mode: SqlExtractMode.SingleFileAndExtensions);
+            var result = sgTest1.ExtractToFolder(mode: SqlFileExtractMode.MultipleFiles);
+            var result2 = sgTest1.ExtractToFolder(mode: SqlFileExtractMode.SingleFileAndExtensions);
 
             var sqlTest1 = sgTest1.ScriptEntityWithoutExtension;
 

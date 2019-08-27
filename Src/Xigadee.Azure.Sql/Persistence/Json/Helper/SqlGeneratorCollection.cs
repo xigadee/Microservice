@@ -6,39 +6,10 @@ using System.Linq;
 namespace Xigadee
 {
     /// <summary>
-    /// The attribute is used to prepopulate the entity generator.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class PrepopulateEntitiesAttribute : Attribute
-    {
-        /// <summary>
-        /// This constructor should be used to define the entity types.
-        /// </summary>
-        /// <param name="types"></param>
-        public PrepopulateEntitiesAttribute(params Type[] types)
-        {
-            EntityTypes = types ?? new Type[] { };
-        }
-
-        /// <summary>
-        /// This is the list of supported entity types.
-        /// </summary>
-        public Type[] EntityTypes { get; }
-    }
-
-    /// <summary>
     /// This class can be used to consolidate a set of SQL generation scripts and their customized options together.
     /// </summary>
     public abstract class SqlGeneratorCollection
     {
-        /// <summary>
-        /// This is the default constructor.
-        /// </summary>
-        public SqlGeneratorCollection()
-        {
-        }
-
-
         /// <summary>
         /// This method will populate the sql generator automatically, if not already done. It is called by the enumerator before it returns the collection.
         /// </summary>
@@ -104,7 +75,8 @@ namespace Xigadee
         /// </summary>
         /// <typeparam name="E">The generator type.</typeparam>
         /// <returns>Returns the SqlJsonGenerator</returns>
-        public virtual SqlJsonGenerator Get<E>() => PopulateSqlJsonGenerator(typeof(E));
+        public virtual SqlJsonGenerator Get<E>(SqlStoredProcedureResolver names = null, RepositorySqlJsonOptions options = null, SqlFileExtractOptions fileExtractOptions = null) => 
+            PopulateSqlJsonGenerator(typeof(E), names, options, fileExtractOptions);
 
         /// <summary>
         /// This is the collection of Sql generators.
