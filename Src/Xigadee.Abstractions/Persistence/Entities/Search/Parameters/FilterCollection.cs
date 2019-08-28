@@ -202,7 +202,17 @@ namespace Xigadee
         /// </summary>
         public bool HasChildren => Children.Count > 0;
 
-        public bool IsExtraDuplicate => Children.Count == 1 && Children[0].Start == Start && Children[0].End == End;
+        /// <summary>
+        /// Specifies whether this is a duplicate and can be removed. This happens when we have a section
+        /// with extra brackets.
+        /// </summary>
+        public bool IsExtraDuplicate => Children.Count == 1 && IsBracketStart && IsBracketEnd;
+
+        private bool IsBracketStart => BracketStart.Trim() == "(";
+        private string BracketStart => Filter.Substring(Start, Children[0].Start - Start);
+
+        private bool IsBracketEnd => BracketEnd.Trim() == ")";
+        private string BracketEnd => Filter.Substring(Children[0].End.Value, End.Value - Children[0].End.Value +1);
         /// <summary>
         /// This is the start position
         /// </summary>
@@ -219,7 +229,7 @@ namespace Xigadee
         /// <summary>
         /// This is the parsed filter section with the bracketed section trimmed out.
         /// </summary>
-        public string Value => !HasParent?Filter:(string.IsNullOrWhiteSpace(Filter) || !End.HasValue) ? null : Filter.Substring(Start + 1, End.Value - Start - 1);
+        public string Value => !HasParent?Filter:(string.IsNullOrWhiteSpace(Filter) || !End.HasValue) ? null : Filter.Substring(Start + 1, End.Value - Start - 1).Trim();
         /// <summary>
         /// This is the bracket indent level.
         /// </summary>
