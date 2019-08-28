@@ -48,13 +48,13 @@ namespace Xigadee
         /// <summary>
         /// This is the repo generation options.
         /// </summary>
-        public RepositorySqlJsonOptions Options { get; protected set; }
+        public RepositorySqlJsonOptions Options { get; set; }
         #endregion
         #region Resolver
         /// <summary>
         /// This is the default resolver.
         /// </summary>
-        public ISqlStoredProcedureResolver Resolver { get; protected set; }
+        public ISqlStoredProcedureResolver Resolver { get; set; }
         #endregion
         #region GeneratorVersion
         /// <summary>

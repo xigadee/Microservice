@@ -96,7 +96,9 @@ namespace Xigadee
         /// Extract as a single file, but seperate Extensions if specified.
         /// </summary>
         DefinitionAndExtensionsFiles,
-
+        /// <summary>
+        /// This option seperates the table definition in to a seperate file.
+        /// </summary>
         DefinitionTableAndExtensionsFiles,
         /// <summary>
         /// Extract as multiple files.
