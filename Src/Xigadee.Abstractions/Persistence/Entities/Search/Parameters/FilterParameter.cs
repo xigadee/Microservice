@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Xigadee
 {
     /// <summary>
     /// https://www.ibm.com/support/knowledgecenter/en/SSYJJF_1.0.0/ApplicationSecurityonCloud/api_odata2.html
     /// </summary>
+    
+    [DebuggerDisplay("{Position}:{Parameter}-{Operator}-{ValueRaw} [Negation:{IsNegation}]")]
     public class FilterParameter : ParameterBase
     {
         #region OData constants

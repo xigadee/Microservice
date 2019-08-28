@@ -27,6 +27,35 @@ namespace Test.Xigadee
             var sr = (SearchRequest)"$filter=Address eq 'Redmond' or not Price gt 200 or Other eq 'hello'";
 
 
+
+        }
+
+        [TestMethod]
+        public void SplitTest()
+        {
+            var h0 = BracketDefinition.Parse("Address eq 'Redmond' or not Price gt 200 and Other eq 'he)llo'"
+                , out var brackets0);
+            var h1 = BracketDefinition.Parse("Address eq 'Redmond' or (not Price gt 200 and Other eq 'he)llo')"
+                , out var brackets1);
+            var h2 = BracketDefinition.Parse("(Address eq 'Redmond') or (not Price gt '(56)' and (Other eq 'h(e)llo' xor Dock eq 'Coolio'))"
+                , out var brackets2);
+            var h3 = BracketDefinition.Parse("( (Address eq 'Redmond') or ((not Price gt '(56)' and (Other eq 'h(e)llo' xor Dock eq 'Coolio')) ) )"
+                , out var brackets3);
+            var h4 = BracketDefinition.Parse("((Address eq 'Redmond') or (not Price gt '(56)' and ((Other eq 'h(e)llo' and Freddo eq 22 )xor Dock eq 'Coolio')))"
+                , out var brackets4);
+
+            var filter0 = new FilterCollection("Address eq 'Redmond'");
+            var filter1 = new FilterCollection("Address eq 'Redmond' xor not Price gt 200");
+            var filter2 = new FilterCollection("Address eq 'Redmond' or not Price gt 200 or Other eq 'hello'");
+            var filterb1 = new FilterCollection("Address eq 'Redmond' or (not Price gt 200 and Other eq 'hello')");
+
+        }
+
+        public void FilterManual()
+        {
+            var sr = new SearchRequest();
+
+            //sr.Filters.Add("userid", "eq", "paul");
         }
     }
 }
