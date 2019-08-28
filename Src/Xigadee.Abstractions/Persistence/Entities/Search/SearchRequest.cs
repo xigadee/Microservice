@@ -95,9 +95,6 @@ namespace Xigadee
                 case default(string):
                     isSet = false;
                     break;
-                default:
-                    FilterParameters[key] = value;
-                    break;
             }
 
             IsSet |= isSet;
@@ -108,11 +105,6 @@ namespace Xigadee
         /// Gets a value indicating whether this instance is set.
         /// </summary>
         public bool IsSet { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the parameter collection.
-        /// </summary>
-        public Dictionary<string, string> FilterParameters { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
         /// This is the filter collection, along with the verification options.
@@ -241,10 +233,6 @@ namespace Xigadee
             addAmp |= AppendParam(sb, "$skip", Skip, addAmp);
             addAmp |= AppendParam(sb, "$top", Top, addAmp);
             addAmp |= AppendParam(sb, "$select", Select, addAmp);
-
-            FilterParameters
-                .OrderBy(p => p.Key?.ToLowerInvariant()??"")
-                .ForEach(p => addAmp |= AppendParam(sb, p.Key, p.Value, addAmp));
 
             return sb.ToString();
         } 

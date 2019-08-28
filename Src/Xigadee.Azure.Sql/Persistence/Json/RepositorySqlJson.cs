@@ -195,12 +195,15 @@ namespace Xigadee
 
         private IEnumerable<Tuple<string, string>> CreateFilterParamsDataTable(SearchRequest sr)
         {
-            return sr.FilterParameters.Select(r => new Tuple<string,string>(r.Key, r.Value)) ;
+            yield break;
+
+            //return sr.FilterParameters.Select(r => new Tuple<string,string>(r.Key, r.Value)) ;
         }
 
         private IEnumerable<Tuple<string, string>> CreateOrderParamsDataTable(SearchRequest sr)
         {
-            return sr.FilterParameters.Select(r => new Tuple<string, string>(r.Key, r.Value));
+            yield break;
+            //return sr.FilterParameters.Select(r => new Tuple<string, string>(r.Key, r.Value));
         }
 
         private void AddResponseFields(SearchRequest rq, SearchResponse rs)

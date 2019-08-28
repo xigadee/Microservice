@@ -44,7 +44,7 @@ namespace Xigadee
             var res = collection.Values.Select(c => new EntityContainerWrapper<K,E>(c));
 
             //Filter
-            if (!string.IsNullOrEmpty(sr.Filter) || sr.FilterParameters.Count>0)
+            if (!string.IsNullOrEmpty(sr.Filter))
                 res = res.Where((e) => Filter(sr, e));
 
             //OrderBy
@@ -83,9 +83,12 @@ namespace Xigadee
         /// <returns>Returns true if the filter was passed.</returns>
         protected virtual bool Filter(SearchRequest sr, EntityContainerWrapper<K, E> wr)
         {
-            bool success = true;
+            bool success = false;
+            //bool success = true;
 
-            sr.FilterParameters.ForEach(p => success &= wr.PropertyMatch(p.Key, p.Value));
+            ////TODo: fix memory search
+            //sr.Filters.Params.ForEach(p => success &= wr.PropertyMatch(p.Key, p.Value.));
+            //sr.FilterParameters.ForEach(p => success &= wr.PropertyMatch(p.Key, p.Value));
 
             return success;
         }
