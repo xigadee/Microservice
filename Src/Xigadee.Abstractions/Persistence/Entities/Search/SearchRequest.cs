@@ -89,6 +89,8 @@ namespace Xigadee
         {
             if (ParamsFilter == null)
                 ParamsFilter = new FilterCollection(filterAdd);
+            else if (ParamsFilter.Count == 0)
+                AssignFilter(filterAdd);
             else
                 AssignFilter(Filter + $" {conditional} {filterAdd}");
         }
