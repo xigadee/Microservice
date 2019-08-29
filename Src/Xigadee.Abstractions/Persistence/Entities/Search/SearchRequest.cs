@@ -12,14 +12,36 @@ namespace Xigadee
     [DebuggerDisplay("{ToString()}")]
     public class SearchRequest : IEquatable<SearchRequest>, IPropertyBag
     {
-
+        #region OData constants
+        /// <summary>
+        /// $id
+        /// </summary>
         public const string ODataId = "$id";
+        /// <summary>
+        /// $etag
+        /// </summary>
         public const string ODataETag = "$etag";
+        /// <summary>
+        /// $filter
+        /// </summary>
         public const string ODataFilter = "$filter";
+        /// <summary>
+        /// $orderby
+        /// </summary>
         public const string ODataOrderBy = "$orderby";
+        /// <summary>
+        /// $skip
+        /// </summary>
         public const string ODataSkip = "$skip";
+        /// <summary>
+        /// $top
+        /// </summary>
         public const string ODataTop = "$top";
-        public const string ODataSelect = "$select";
+        /// <summary>
+        /// $select
+        /// </summary>
+        public const string ODataSelect = "$select"; 
+        #endregion
 
         #region Constructors
         /// <summary>
@@ -51,11 +73,32 @@ namespace Xigadee
 
         public void AssignTop(int? value) => Assign(ODataTop, value?.ToString()??null);
         public void AssignSkip(int? value) => Assign(ODataSkip, value?.ToString() ?? null);
-        public void AssignFilter(string value) => Assign(ODataFilter, value);
-        public void AssignSelect(string value) => Assign(ODataSelect, value);
-        public void AssignOrderBy(string value) => Assign(ODataOrderBy, value);
         public void AssignId(string value) => Assign(ODataId, value);
         public void AssignETag(string value) => Assign(ODataETag, value);
+
+
+        public void AssignFilter(string value) => Assign(ODataFilter, value);
+
+        public void AppendFilter(string param, string op, string value, string conditional)
+        {
+            var filterAdd = $"{param} {op} {value}";
+            AppendFilter(filterAdd, conditional);
+        }
+
+        public void AppendFilter(string filterAdd, string conditional)
+        {
+            if (ParamsFilter == null)
+                ParamsFilter = new FilterCollection(filterAdd);
+            else
+                AssignFilter(Filter + $" {conditional} {filterAdd}");
+        }
+
+        public void AssignSelect(string value) => Assign(ODataSelect, value);
+
+        public void AssignOrderBy(string value) => Assign(ODataOrderBy, value);
+
+
+
         #region Assign...
         /// <summary>
         /// Assigns the kvp to the collection.
@@ -84,7 +127,7 @@ namespace Xigadee
                     break;
                 case ODataFilter:
                     Filter = value?.Trim();
-                    Filters = new FilterCollection(Filter);
+                    ParamsFilter = new FilterCollection(Filter);
                     break;
                 case ODataOrderBy:
                     OrderBy = value?.Trim();
@@ -118,7 +161,7 @@ namespace Xigadee
         /// <summary>
         /// This is the filter collection, along with the verification options.
         /// </summary>
-        public FilterCollection Filters { get; private set; } 
+        public FilterCollection ParamsFilter { get; private set; } 
 
         /// <summary>
         /// This is the set of order by parameters.

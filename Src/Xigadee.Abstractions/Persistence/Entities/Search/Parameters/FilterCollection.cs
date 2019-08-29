@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace Xigadee
@@ -37,9 +38,9 @@ namespace Xigadee
         /// This is the default constructor.
         /// </summary>
         /// <param name="filter">The incoming filter to parse.</param>
-        public FilterCollection(string filter)
+        public FilterCollection(string filter = null)
         {
-            Filter = filter;
+            Filter = filter ?? "";
 
             if (string.IsNullOrWhiteSpace(filter))
             {
@@ -134,21 +135,61 @@ namespace Xigadee
             return solutions;
         }
 
-        ///// <summary>
-        ///// This method calculates the possible solution bitmap.
-        ///// </summary>
-        ///// <param name="filter">The filter string.</param>
-        ///// <returns>Returns the list of solutions based on the raw boolean operators.</returns>
-        //public static List<int> CalculateSolutionsWithBrackets(string filter)
-        //{
-        //    var words = filter.Split(' ').Where(w => ODataConditionals.Contains(w)).ToArray();
-        //    int count = words.Length + 1;
+        /// <summary>
+        /// This method calculates the possible solution bitmap.
+        /// </summary>
+        /// <param name="filter">The filter string.</param>
+        /// <returns>Returns the list of solutions based on the raw boolean operators.</returns>
+        public static List<int> CalculateSolutionsWithBrackets(string filter)
+        {
+            var words = filter.Split(' ').Where(w => ODataConditionals.Contains(w)).ToArray();
+            int count = words.Length + 1;
 
-        //    var solutions = new List<int>();
+            var solutions = new List<int>();
 
 
-        //    return solutions;
-        //}
+            //Expression.And(
+            //Expression.Or(
+            //Expression.ExclusiveOr
+
+
+            //OK, let's quickly do this really easily. There are better ways but I don't have the time.
+            int max = 1 << count;
+
+            for (int i = 0; i < max; i++)
+            {
+                var options = new bool[count];
+                for (int check = 0; check < count; check++)
+                {
+                    var power = 1 << check;
+                    options[check] = (i & power) > 0;
+                }
+
+                bool solution = options[0];
+
+                for (int verify = 0; verify < words.Length; verify++)
+                {
+                    switch (words[verify].Trim().ToLowerInvariant())
+                    {
+                        case ODataConditionalAnd:
+                            solution &= options[verify + 1];
+                            break;
+                        case ODataConditionalOr:
+                            solution |= options[verify + 1];
+                            break;
+                        case ODataConditionalXOr:
+                            solution ^= options[verify + 1];
+                            break;
+                    }
+                }
+
+                if (solution)
+                    solutions.Add(i);
+            }
+
+            return solutions;
+
+        }
 
 
 
