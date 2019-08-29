@@ -12,6 +12,15 @@ namespace Xigadee
     [DebuggerDisplay("{ToString()}")]
     public class SearchRequest : IEquatable<SearchRequest>, IPropertyBag
     {
+
+        public const string ODataId = "$id";
+        public const string ODataETag = "$etag";
+        public const string ODataFilter = "$filter";
+        public const string ODataOrderBy = "$orderby";
+        public const string ODataSkip = "$skip";
+        public const string ODataTop = "$top";
+        public const string ODataSelect = "$select";
+
         #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="SearchRequest"/> class.
@@ -30,14 +39,6 @@ namespace Xigadee
                 , (s) => s
                 , new[] { '&' }, new[] { '=' })
                 .ForEach(kv => Assign(kv));
-
-            Filters = new FilterCollection(Filter);
-
-            ParamsOrderBy =
-            SearchRequestHelper.BuildParameters<OrderByParameter>(OrderBy, new[] { "," }).ToDictionary(r => r.Position, r => r);
-
-            ParamsSelect =
-            SearchRequestHelper.BuildParameters<SelectParameter>(Select, new[] { "," }).ToDictionary(r => r.Position, r => r);
         }
         /// <summary>
         /// Initializes a new instance of the <see cref="SearchRequest"/> class.
@@ -48,48 +49,56 @@ namespace Xigadee
         }
         #endregion
 
-        #region Assign(KeyValuePair<string,string> toSet)
+        public void AssignTop(int? value) => Assign(ODataTop, value?.ToString()??null);
+        public void AssignSkip(int? value) => Assign(ODataSkip, value?.ToString() ?? null);
+        public void AssignFilter(string value) => Assign(ODataFilter, value);
+        public void AssignSelect(string value) => Assign(ODataSelect, value);
+        public void AssignOrderBy(string value) => Assign(ODataOrderBy, value);
+        public void AssignId(string value) => Assign(ODataId, value);
+        public void AssignETag(string value) => Assign(ODataETag, value);
+        #region Assign...
         /// <summary>
         /// Assigns the kvp to the collection.
         /// </summary>
         /// <param name="toSet">The KeyValuePair to set.</param>
-        protected void Assign(KeyValuePair<string, string> toSet)
+        public void Assign(KeyValuePair<string, string> toSet)
         {
             Assign(toSet.Key, toSet.Value);
         }
-        #endregion
-        #region Assign(string key, string value)
         /// <summary>
         /// Assigns the specified key and value to the search collection.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
-        protected void Assign(string key, string value)
+        public void Assign(string key, string value)
         {
             bool isSet = true;
 
             switch (key?.Trim().ToLowerInvariant())
             {
-                case "$id":
+                case ODataId:
                     Id = value?.Trim();
                     break;
-                case "$etag":
+                case ODataETag:
                     ETag = value?.Trim();
                     break;
-                case "$filter":
+                case ODataFilter:
                     Filter = value?.Trim();
+                    Filters = new FilterCollection(Filter);
                     break;
-                case "$orderby":
+                case ODataOrderBy:
                     OrderBy = value?.Trim();
+                    ParamsOrderBy = SearchRequestHelper.BuildParameters<OrderByParameter>(OrderBy, new[] { "," }).ToDictionary(r => r.Position, r => r);
                     break;
-                case "$top":
+                case ODataTop:
                     Top = value?.Trim();
                     break;
-                case "$skip":
+                case ODataSkip:
                     Skip = value?.Trim();
                     break;
-                case "$select":
+                case ODataSelect:
                     Select = value?.Trim();
+                    ParamsSelect = SearchRequestHelper.BuildParameters<SelectParameter>(Select, new[] { "," }).ToDictionary(r => r.Position, r => r);
                     break;
                 case "":
                 case default(string):
@@ -109,17 +118,17 @@ namespace Xigadee
         /// <summary>
         /// This is the filter collection, along with the verification options.
         /// </summary>
-        public FilterCollection Filters { get; } 
+        public FilterCollection Filters { get; private set; } 
 
         /// <summary>
         /// This is the set of order by parameters.
         /// </summary>
-        public Dictionary<int, OrderByParameter> ParamsOrderBy { get; }
+        public Dictionary<int, OrderByParameter> ParamsOrderBy { get; private set; }
 
         /// <summary>
         /// This is a set of select parameters. If this is an entity request then this is skipped.
         /// </summary>
-        public Dictionary<int, SelectParameter> ParamsSelect { get; }
+        public Dictionary<int, SelectParameter> ParamsSelect { get; private set; }
 
         /// <summary>
         /// This is the search algorithm that is used to search against the parameters specified.
@@ -226,16 +235,16 @@ namespace Xigadee
 
             bool addAmp = false;
 
-            addAmp |= AppendParam(sb, "$id", Id, false);
-            addAmp |= AppendParam(sb, "$etag", ETag, addAmp);
-            addAmp |= AppendParam(sb, "$filter", Filter, addAmp);
-            addAmp |= AppendParam(sb, "$orderby", OrderBy, addAmp);
-            addAmp |= AppendParam(sb, "$skip", Skip, addAmp);
-            addAmp |= AppendParam(sb, "$top", Top, addAmp);
-            addAmp |= AppendParam(sb, "$select", Select, addAmp);
+            addAmp |= AppendParam(sb, ODataId, Id, false);
+            addAmp |= AppendParam(sb, ODataETag, ETag, addAmp);
+            addAmp |= AppendParam(sb, ODataFilter, Filter, addAmp);
+            addAmp |= AppendParam(sb, ODataOrderBy, OrderBy, addAmp);
+            addAmp |= AppendParam(sb, ODataSkip, Skip, addAmp);
+            addAmp |= AppendParam(sb, ODataTop, Top, addAmp);
+            addAmp |= AppendParam(sb, ODataSelect, Select, addAmp);
 
             return sb.ToString();
-        } 
+        }
         #endregion
 
         private bool AppendParam(StringBuilder sb, string part, string value, bool addAmp)

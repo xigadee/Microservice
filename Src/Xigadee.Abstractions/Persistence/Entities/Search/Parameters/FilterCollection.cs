@@ -157,7 +157,7 @@ namespace Xigadee
     /// <summary>
     /// This is the linked list for bracket definition.
     /// </summary>
-    [DebuggerDisplay("{Start}->{End}|{IndentLevel}|{HasParent} {Value}")]
+    [DebuggerDisplay("{Start}->{End}|I={IndentLevel}|P={HasParent} '{FilterFragment}'")]
     public class BracketDefinition
     {
         /// <summary>
@@ -206,13 +206,12 @@ namespace Xigadee
         /// Specifies whether this is a duplicate and can be removed. This happens when we have a section
         /// with extra brackets.
         /// </summary>
-        public bool IsExtraDuplicate => Children.Count == 1 && IsBracketStart && IsBracketEnd;
+        public bool CanRemove => Children.Count == 1 && IsBracketStart && IsBracketEnd
+            && FilterFragment.Substring(1, FilterFragment.Length-2) == Children[0].FilterFragment;
 
-        private bool IsBracketStart => BracketStart.Trim() == "(";
-        private string BracketStart => Filter.Substring(Start, Children[0].Start - Start);
+        private bool IsBracketStart => FilterFragment.StartsWith("(");
 
-        private bool IsBracketEnd => BracketEnd.Trim() == ")";
-        private string BracketEnd => Filter.Substring(Children[0].End.Value, End.Value - Children[0].End.Value +1);
+        private bool IsBracketEnd => FilterFragment.EndsWith(")");
         /// <summary>
         /// This is the start position
         /// </summary>
@@ -221,15 +220,20 @@ namespace Xigadee
         /// This is the endposition
         /// </summary>
         public int? End { get; private set; }
+
         /// <summary>
         /// This is the shared raw filter.
         /// </summary>
         public string Filter { get; private set; }
 
+        public string FilterValue => Filter.Substring(Start, End.Value - Start).Trim();
+
         /// <summary>
         /// This is the parsed filter section with the bracketed section trimmed out.
         /// </summary>
-        public string Value => !HasParent?Filter:(string.IsNullOrWhiteSpace(Filter) || !End.HasValue) ? null : Filter.Substring(Start + 1, End.Value - Start - 1).Trim();
+        public string FilterFragment => Filter.Substring(Start+1, End.Value - Start-1).Trim();
+
+        public bool IsLeafVertex => FilterIsLeaf(FilterFragment);
         /// <summary>
         /// This is the bracket indent level.
         /// </summary>
@@ -243,6 +247,7 @@ namespace Xigadee
         /// <returns>Returns the parsed string.</returns>
         public static string Parse(string filter, out List<BracketDefinition> bracketsOut)
         {
+            
             //Remove any whitespace
             filter = filter.Trim();
 
@@ -260,12 +265,35 @@ namespace Xigadee
                 start.Finish(pos, posStack.Count);
             };
 
+            //Set the first bracket as root.
             push(0);
 
             var sb = new StringBuilder();
+
+            ProcessFilter(filter, push, pull, (c) => sb.Append(c));
+
+            //Remove the first bracket.
+            pull(filter.Length - 1);
+
+            bracketsOut = brackets;
+
+            //Return the filtered string with the brackets removed.
+            return sb.ToString();
+        }
+
+        private static bool FilterIsLeaf(string filter)
+        {
+            bool isLeaf = true;
+
+            ProcessFilter(filter, (i) => isLeaf = false, (i) => { }, null, () => isLeaf);
+
+            return isLeaf;
+        }
+        private static void ProcessFilter(string filter, Action<int> start, Action<int> end, Action<char> increment = null, Func<bool> cont = null)
+        {
             bool withinStringLiteral = false;
 
-            for (int pos = 0; pos < filter.Length; pos++)
+            for (int pos = 0; pos < filter.Length && (cont?.Invoke()??true); pos++)
             {
                 var ch = filter[pos];
                 switch (ch)
@@ -273,32 +301,25 @@ namespace Xigadee
                     case '\'':
                         //We may get brackets within a text section. We should not strip them out.
                         withinStringLiteral = !withinStringLiteral;
-                        sb.Append(ch);
+                        increment?.Invoke(ch);
                         break;
                     case '(':
                         if (withinStringLiteral)
-                            sb.Append(ch);
+                            increment?.Invoke(ch);
                         else
-                            push(pos);
+                            start(pos);
                         break;
                     case ')':
                         if (withinStringLiteral)
-                            sb.Append(ch);
+                            increment?.Invoke(ch);
                         else
-                            pull(pos);
+                            end(pos);
                         break;
                     default:
-                        sb.Append(ch);
+                        increment?.Invoke(ch);
                         break;
                 }
             }
-
-            pull(filter.Length - 1);
-
-            bracketsOut = brackets;
-
-            return sb.ToString();
         }
-
     }
 }

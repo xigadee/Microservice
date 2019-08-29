@@ -24,9 +24,15 @@ namespace Test.Xigadee
         [TestMethod]
         public void Filter1()
         {
-            var sr = (SearchRequest)"$filter=Address eq 'Redmond' or not Price gt 200 or Other eq 'hello'";
+            var sr1 = (SearchRequest)"$filter=Address eq 'Redmond' or not Price gt 200 or Other eq 'hello'&$orderby=Address DESC, Price ASC&$select=Address, Price";
+            var sr2 = (SearchRequest)"$filter=Address eq 'Redmond' or not Price gt 200 or Other eq 'hello'";
+            var sr3 = (SearchRequest)"$filter=Address eq 'Redmond' or not Price gt 200 or Other eq 'hello'";
+            var s4r = (SearchRequest)"$filter=Address eq 'Redmond' or not Price gt 200 or Other eq 'hello'";
 
 
+            var strSr1 = sr1.ToString();
+            sr1.AssignFilter(sr1.Filter + "and userId eq 'paul'");
+            var strSr2 = sr1.ToString();
 
         }
 
