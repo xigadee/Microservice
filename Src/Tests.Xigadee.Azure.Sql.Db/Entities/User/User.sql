@@ -669,7 +669,7 @@ BEGIN
 	DECLARE @HistoryIndexId BIGINT, @TimeStamp DATETIME
 	SET @ETag = TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(@Body,'lax $.ETag'));
 
-	DECLARE @ParamsCount INT = ISNULL(TRY_CONVERT(INT, JSON_VALUE(@Body,'lax $.Filters.Count')),0);
+	DECLARE @ParamsCount INT = ISNULL(TRY_CONVERT(INT, JSON_VALUE(@Body,'lax $.ParamsFilter.Count')),0);
 
 	SET @CacheHit = 0;
 

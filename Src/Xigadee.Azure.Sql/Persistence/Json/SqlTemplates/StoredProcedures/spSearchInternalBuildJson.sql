@@ -10,7 +10,7 @@ BEGIN
 	DECLARE @HistoryIndexId BIGINT, @TimeStamp DATETIME
 	SET @ETag = TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(@Body,'lax $.ETag'));
 
-	DECLARE @ParamsCount INT = ISNULL(TRY_CONVERT(INT, JSON_VALUE(@Body,'lax $.Filters.Count')),0);
+	DECLARE @ParamsCount INT = ISNULL(TRY_CONVERT(INT, JSON_VALUE(@Body,'lax $.ParamsFilter.Count')),0);
 
 	SET @CacheHit = 0;
 
@@ -58,14 +58,14 @@ BEGIN
 		;WITH Entities(Id, Score)AS
 		(
 			SELECT u.Id, SUM(u.Position)
-			FROM OPENJSON(@Body, N'lax $.Filters.Params') F
+			FROM OPENJSON(@Body, N'lax $.ParamsFilter.Params') F
 			CROSS APPLY [{NamespaceTable}].[udf{EntityName}FilterProperty] (F.value) u
 			GROUP BY u.Id
 		)
 		INSERT INTO [{NamespaceTable}].[{EntityName}SearchHistoryCache]
 		SELECT @CollectionId AS [SearchId], E.Id AS [EntityId] 
 		FROM Entities E
-		INNER JOIN OPENJSON(@Body, N'lax $.Filters.Solutions') V ON V.value = E.Score;
+		INNER JOIN OPENJSON(@Body, N'lax $.ParamsFilter.Solutions') V ON V.value = E.Score;
 
 		SET @RecordResult = ROWCOUNT_BIG();
 	END
