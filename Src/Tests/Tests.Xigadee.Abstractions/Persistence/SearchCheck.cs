@@ -37,6 +37,21 @@ namespace Test.Xigadee
 
         }
 
+
+        [TestMethod]
+        public void AppendTests()
+        {
+            var sr = new SearchRequest();
+
+                sr.AppendFilter("typeaction", "eq", "actionType", "and");
+
+                sr.AppendFilter("typetemplate", "eq", "templateType", "and");
+
+                sr.AppendFilter("state", "eq", "state", "and");
+
+
+        }
+
         [TestMethod]
         public void SplitTest()
         {

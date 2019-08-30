@@ -92,7 +92,9 @@ namespace Xigadee
             else if (ParamsFilter.Count == 0)
                 AssignFilter(filterAdd);
             else
-                AssignFilter(Filter + $" {conditional} {filterAdd}");
+                AssignFilter(ParamsFilter.Filter + $" {conditional} {filterAdd}");
+
+            Filter = ParamsFilter.Filter;
         }
 
         public void AssignSelect(string value) => Assign(ODataSelect, value);
