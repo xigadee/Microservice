@@ -25,9 +25,18 @@ namespace Test.Xigadee
         [TestMethod]
         public void FilterParserTest()
         {
-            var nodes = Examples().Select(l => new ODataTokenCollection(l)).ToList();
-            var hmm1 = nodes[3].ToString();
-            var hmm2 = nodes[3].ToString(true);
+            try
+            {
+                var nodes = Examples().Select(l => new ODataTokenCollection(l)).ToList();
+                var hmm1 = nodes[3].ToString();
+                var hmm2 = nodes[3].ToString(true);
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
 
         }
 

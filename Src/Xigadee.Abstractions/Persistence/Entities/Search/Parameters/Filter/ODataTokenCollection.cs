@@ -144,8 +144,6 @@ namespace Xigadee
         /// This is a list of valid solutions for the logical collection.
         /// </summary>
         public List<int> Solutions => ExpressionTree?.Solutions;
-
-
     }
 
     #region ODataTokenString

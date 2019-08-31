@@ -8,7 +8,7 @@ namespace Xigadee
     /// https://www.ibm.com/support/knowledgecenter/en/SSYJJF_1.0.0/ApplicationSecurityonCloud/api_odata2.html
     /// </summary>
     
-    [DebuggerDisplay("{Position}:{Parameter}-{Operator}-{ValueRaw} [Negation:{IsNegation}]")]
+    [DebuggerDisplay("{Display}")]
     public class FilterParameter : ParameterBase
     {
         /// <summary>
@@ -91,6 +91,8 @@ namespace Xigadee
             yield return Operator.ToLowerInvariant();
             yield return IsNullOperator? ODataTokenString.ODataNull : ValueRaw;
         }
+
+        public string Display => $"{Position}:{Parameter}-{Operator}-{ValueRaw} [Negation:{IsNegation}]";
     }
 
 }
