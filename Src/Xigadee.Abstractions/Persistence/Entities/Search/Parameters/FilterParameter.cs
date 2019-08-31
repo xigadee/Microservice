@@ -5,6 +5,37 @@ using System.Diagnostics;
 namespace Xigadee
 {
     /// <summary>
+    /// These are the OData filter oparations.
+    /// </summary>
+    public enum ODataFilterOperations
+    {
+        /// <summary>
+        /// Equal
+        /// </summary>
+        Equal,
+        /// <summary>
+        /// Not equal
+        /// </summary>
+        NotEqual,
+        /// <summary>
+        /// Less than
+        /// </summary>
+        LessThan,
+        /// <summary>
+        /// Less than or equal
+        /// </summary>
+        LessThanOrEqual,
+        /// <summary>
+        /// Greater than
+        /// </summary>
+        GreaterThan,
+        /// <summary>
+        /// Greater than or equal
+        /// </summary>
+        GreaterThanOrEqual
+    }
+
+    /// <summary>
     /// https://www.ibm.com/support/knowledgecenter/en/SSYJJF_1.0.0/ApplicationSecurityonCloud/api_odata2.html
     /// </summary>
     
@@ -12,6 +43,31 @@ namespace Xigadee
     public class FilterParameter : ParameterBase
     {
         #region OData constants
+        /// <summary>
+        /// This method converts the shortcut enumeration to the actual string representation.
+        /// </summary>
+        /// <param name="op">The operation.</param>
+        /// <returns>Returns the string equivalent.</returns>
+        public static string Convert(ODataFilterOperations op)
+        {
+            switch (op)
+            {
+                case ODataFilterOperations.Equal:
+                    return ODataEqual;
+                case ODataFilterOperations.NotEqual:
+                    return ODataNotEqual;
+                case ODataFilterOperations.LessThan:
+                    return ODataLessThan;
+                case ODataFilterOperations.LessThanOrEqual:
+                    return ODataLessThanOrEqual;
+                case ODataFilterOperations.GreaterThan:
+                    return ODataGreaterThan;
+                case ODataFilterOperations.GreaterThanOrEqual:
+                    return ODataGreaterThanOrEqual;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
         /// <summary>
         /// Null
         /// </summary>
@@ -120,7 +176,7 @@ namespace Xigadee
         {
             yield return Parameter.ToLowerInvariant();
             yield return Operator.ToLowerInvariant();
-            yield return IsNullOperator? "null" : ValueRaw;
+            yield return IsNullOperator? ODataNull : ValueRaw;
         }
     }
 

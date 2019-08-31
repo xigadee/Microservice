@@ -71,20 +71,69 @@ namespace Xigadee
         }
         #endregion
 
+        /// <summary>
+        /// This shortcut assigns the top parameter directly.
+        /// </summary>
+        /// <param name="value"></param>
         public void AssignTop(int? value) => Assign(ODataTop, value?.ToString()??null);
+        /// <summary>
+        /// This shortcut assigns the skip parameter directly.
+        /// </summary>
+        /// <param name="value"></param>
         public void AssignSkip(int? value) => Assign(ODataSkip, value?.ToString() ?? null);
+        /// <summary>
+        /// This shortcut assigns the id parameter directly.
+        /// </summary>
+        /// <param name="value"></param>
         public void AssignId(string value) => Assign(ODataId, value);
+        /// <summary>
+        /// This shortcut assigns the ETag parameter directly.
+        /// </summary>
+        /// <param name="value"></param>
         public void AssignETag(string value) => Assign(ODataETag, value);
 
-
+        /// <summary>
+        /// This method assigns the Filter section directly.
+        /// </summary>
+        /// <param name="value"></param>
         public void AssignFilter(string value) => Assign(ODataFilter, value);
 
+        /// <summary>
+        /// This method appends a new filter command to the existing collection.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="op">The operation, i.e. equals, grater than etc.</param>
+        /// <param name="value">The value to run the operation against.</param>
+        /// <param name="conditional">The condition to prepend the operation to the earlier conditions.</param>
         public void AppendFilter(string param, string op, string value, string conditional)
         {
             var filterAdd = $"{param} {op} {value}";
             AppendFilter(filterAdd, conditional);
         }
 
+        /// <summary>
+        /// This method appends a new filter command to the existing collection.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="op">The operation, i.e. equals, grater than etc.</param>
+        /// <param name="value">The value to run the operation against.</param>
+        /// <param name="conditional">The condition to prepend the operation to the earlier conditions.</param>
+        public void AppendFilter(string param, ODataFilterOperations op, string value, ODataLogicalOperators conditional)
+            => AppendFilter(param, FilterParameter.Convert(op), value, FilterCollection.Convert(conditional));
+
+        /// <summary>
+        /// This method appends a new filter command to the existing collection.
+        /// </summary>
+        /// <param name="filterAdd"></param>
+        /// <param name="conditional"></param>
+        public void AppendFilter(string filterAdd, ODataLogicalOperators conditional)
+            => AppendFilter(filterAdd, FilterCollection.Convert(conditional));
+
+        /// <summary>
+        /// This method appends a new filter command to the existing collection.
+        /// </summary>
+        /// <param name="filterAdd">The filter</param>
+        /// <param name="conditional">The conditional that will be pre-pendeded to the new filter.</param>
         public void AppendFilter(string filterAdd, string conditional)
         {
             if (ParamsFilter == null)
@@ -97,11 +146,16 @@ namespace Xigadee
             Filter = ParamsFilter.Filter;
         }
 
+        /// <summary>
+        /// This method assigns the select section directly.
+        /// </summary>
+        /// <param name="value"></param>
         public void AssignSelect(string value) => Assign(ODataSelect, value);
-
+        /// <summary>
+        /// This section sets the order by section directly.
+        /// </summary>
+        /// <param name="value"></param>
         public void AssignOrderBy(string value) => Assign(ODataOrderBy, value);
-
-
 
         #region Assign...
         /// <summary>
@@ -130,8 +184,8 @@ namespace Xigadee
                     ETag = value?.Trim();
                     break;
                 case ODataFilter:
-                    Filter = value?.Trim();
-                    ParamsFilter = new FilterCollection(Filter);
+                    ParamsFilter = new FilterCollection(value?.Trim());
+                    Filter = ParamsFilter.Filter;
                     break;
                 case ODataOrderBy:
                     OrderBy = value?.Trim();

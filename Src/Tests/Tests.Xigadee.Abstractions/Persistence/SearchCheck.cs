@@ -43,11 +43,11 @@ namespace Test.Xigadee
         {
             var sr = new SearchRequest();
 
-                sr.AppendFilter("typeaction", "eq", "actionType", "and");
+            sr.AppendFilter("typeaction", "eq", "actionType", "and");
 
-                sr.AppendFilter("typetemplate", "eq", "templateType", "and");
+            sr.AppendFilter("typetemplate", "eq", "templateType", "and");
 
-                sr.AppendFilter("state", "eq", "state", "and");
+            sr.AppendFilter("state", "eq", "state", "and");
 
 
         }

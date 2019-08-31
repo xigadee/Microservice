@@ -8,12 +8,49 @@ using System.Text;
 namespace Xigadee
 {
     /// <summary>
+    /// These are the OData supported logical operators
+    /// </summary>
+    public enum ODataLogicalOperators
+    {
+        /// <summary>
+        /// And
+        /// </summary>
+        OpAnd,
+        /// <summary>
+        /// Or
+        /// </summary>
+        OpOr,
+        /// <summary>
+        /// Xor
+        /// </summary>
+        OpXor
+    }
+    /// <summary>
     /// This class holds the filter collection.
     /// </summary>
     [DebuggerDisplay("Searches={Params.Count}/Solutions={Solutions.Count}|{Filter}")]
     public class FilterCollection
     {
-        #region Static declarations
+        #region Static declarations: Conditionals
+        /// <summary>
+        /// This method converts the shortcut enumeration to the actual string representation.
+        /// </summary>
+        /// <param name="op">The operation.</param>
+        /// <returns>Returns the string equivalent.</returns>
+        public static string Convert(ODataLogicalOperators op)
+        {
+            switch (op)
+            {
+                case ODataLogicalOperators.OpAnd:
+                    return ODataConditionalAnd;
+                case ODataLogicalOperators.OpOr:
+                    return ODataConditionalOr;
+                case ODataLogicalOperators.OpXor:
+                    return ODataConditionalXOr;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
         /// <summary>
         /// And
         /// </summary>
