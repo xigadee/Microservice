@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
+using System.Linq;
 
 namespace Xigadee
 {
@@ -21,8 +21,14 @@ namespace Xigadee
             OriginalTokens.ForEach(c => Write(c));
         }
 
+        /// <summary>
+        /// This is the root node for the expression tree.
+        /// </summary>
         public ExpressionNode Root { get; private set; }
 
+        /// <summary>
+        /// This is the current node.
+        /// </summary>
         public ExpressionNode Current { get; private set; }
 
         /// <summary>
@@ -73,7 +79,10 @@ namespace Xigadee
                     nextNode = new FilterLogicalHolder(Priority);
                 }
                 else if (Current is FilterLogicalHolder)
+                {
+                    SetFilterLogicalHolder(Current);
                     nextNode = new FilterParameterHolder(Priority);
+                }
                 else
                     throw new ArgumentOutOfRangeException();
 
@@ -89,13 +98,25 @@ namespace Xigadee
 
             var param = holder.FilterParameter;
             param.Position = Params.Count + 1;
-            Params.Add(param.Position, param);
+            HolderParams.Add(param.Position, holder);
         }
+
+        private void SetFilterLogicalHolder(ExpressionNode node)
+        {
+            var holder = node as FilterLogicalHolder;
+
+            HolderLogical.Add(HolderLogical.Count, holder);
+        }
+
+
+        private Dictionary<int, FilterParameterHolder> HolderParams { get; } = new Dictionary<int, FilterParameterHolder>();
+
+        private Dictionary<int, FilterLogicalHolder> HolderLogical { get; } = new Dictionary<int, FilterLogicalHolder>();
 
         /// <summary>
         /// The search parameters.
         /// </summary>
-        public Dictionary<int, FilterParameter> Params { get; } = new Dictionary<int, FilterParameter>();
+        public Dictionary<int, FilterParameter> Params => HolderParams.ToDictionary((h) => h.Key, (h) => h.Value.FilterParameter);
 
         /// <summary>
         /// This is a list of valid solutions for the logical collection.
