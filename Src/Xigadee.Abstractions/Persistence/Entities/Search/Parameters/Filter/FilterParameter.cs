@@ -41,6 +41,12 @@ namespace Xigadee
         /// Null
         /// </summary>
         public const string ODataNull = "null";
+
+        /// <summary>
+        /// Not
+        /// </summary>
+        public const string ODataNot = "not";
+
         /// <summary>
         /// Equal
         /// </summary>
@@ -65,6 +71,12 @@ namespace Xigadee
         /// Greater than or equal
         /// </summary>
         public const string ODataGreaterThanOrEqual = "ge";
+
+        /// <summary>
+        /// And, Or, XOr
+        /// </summary>
+        public static IReadOnlyList<string> ODataExpression => new[] { ODataEqual, ODataNotEqual, ODataLessThan, ODataLessThanOrEqual, ODataGreaterThan, ODataGreaterThanOrEqual };
+
         #endregion
 
         /// <summary>

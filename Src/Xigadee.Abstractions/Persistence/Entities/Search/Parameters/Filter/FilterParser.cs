@@ -7,14 +7,31 @@ namespace Xigadee
 {
     public static class FilterParser
     {
-        public static FilterParserNodeRoot Parse(string filter)
-        {
-            var root = new FilterParserNodeRoot(filter);
+        //public static FilterParserNodeRoot Parse(string filter)
+        //{
+
+        //    var tokens = 
+            
+
+        //    var root = new FilterParserNodeRoot(filter);
 
             
             
-            return root;
-        }
+        //    return root;
+        //}
+
+
+        //private static ODataTokenCollection Tokenise(string filter)
+        //{
+        //    ODataTokenCollection rootToken;
+
+        //    for (int pos = 0; pos < filter.Length ; pos++)
+        //    {
+        //        rootToken.Write(
+
+
+        //    }
+        //}
     }
 
     public abstract class FilterParserNode

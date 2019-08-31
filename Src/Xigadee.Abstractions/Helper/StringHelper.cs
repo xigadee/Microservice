@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Xigadee
 {
@@ -134,5 +135,22 @@ namespace Xigadee
                 return input.Substring(1, input.Length - 2);
             };
         #endregion // ConvStripSpeechMarks
+
+        /// <summary>
+        /// This helper method scans through a StringBuilder object to check whether it contains the particular character.
+        /// </summary>
+        /// <param name="sb">The string builder object.</param>
+        /// <param name="c">The character to check.</param>
+        /// <returns>Returns true if the string builder contains the character.</returns>
+        public static bool ContainsChar(this StringBuilder sb, char c)
+        {
+            for (int i = 0; i < sb.Length; i++)
+            {
+                if (sb[i] == c)
+                    return true;
+            }
+
+            return false;
+        }
     }
 }
