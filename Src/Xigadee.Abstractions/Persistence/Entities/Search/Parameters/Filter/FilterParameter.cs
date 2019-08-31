@@ -11,74 +11,6 @@ namespace Xigadee
     [DebuggerDisplay("{Position}:{Parameter}-{Operator}-{ValueRaw} [Negation:{IsNegation}]")]
     public class FilterParameter : ParameterBase
     {
-        #region OData constants
-        /// <summary>
-        /// This method converts the shortcut enumeration to the actual string representation.
-        /// </summary>
-        /// <param name="op">The operation.</param>
-        /// <returns>Returns the string equivalent.</returns>
-        public static string Convert(ODataFilterOperations op)
-        {
-            switch (op)
-            {
-                case ODataFilterOperations.Equal:
-                    return ODataEqual;
-                case ODataFilterOperations.NotEqual:
-                    return ODataNotEqual;
-                case ODataFilterOperations.LessThan:
-                    return ODataLessThan;
-                case ODataFilterOperations.LessThanOrEqual:
-                    return ODataLessThanOrEqual;
-                case ODataFilterOperations.GreaterThan:
-                    return ODataGreaterThan;
-                case ODataFilterOperations.GreaterThanOrEqual:
-                    return ODataGreaterThanOrEqual;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-        /// <summary>
-        /// Null
-        /// </summary>
-        public const string ODataNull = "null";
-
-        /// <summary>
-        /// Not
-        /// </summary>
-        public const string ODataNot = "not";
-
-        /// <summary>
-        /// Equal
-        /// </summary>
-        public const string ODataEqual = "eq";
-        /// <summary>
-        /// Not equal
-        /// </summary>
-        public const string ODataNotEqual = "ne";
-        /// <summary>
-        /// Less than
-        /// </summary>
-        public const string ODataLessThan = "lt";
-        /// <summary>
-        /// Less than or equal
-        /// </summary>
-        public const string ODataLessThanOrEqual = "le";
-        /// <summary>
-        /// Greater than
-        /// </summary>
-        public const string ODataGreaterThan = "gt";
-        /// <summary>
-        /// Greater than or equal
-        /// </summary>
-        public const string ODataGreaterThanOrEqual = "ge";
-
-        /// <summary>
-        /// And, Or, XOr
-        /// </summary>
-        public static IReadOnlyList<string> ODataExpression => new[] { ODataEqual, ODataNotEqual, ODataLessThan, ODataLessThanOrEqual, ODataGreaterThan, ODataGreaterThanOrEqual };
-
-        #endregion
-
         /// <summary>
         /// The logical operator specified in the query.
         /// </summary>
@@ -101,16 +33,16 @@ namespace Xigadee
         /// <summary>
         /// Specifies whether this is a null check.
         /// </summary>
-        public bool IsNullOperator => CompareOperator(ODataNull, Value);
+        public bool IsNullOperator => CompareOperator(ODataTokenString.ODataNull, Value);
 
         /// <summary>
         /// This is an equal filter search.
         /// </summary>
-        public bool IsEqual => CompareOperator(ODataEqual);
+        public bool IsEqual => CompareOperator(ODataTokenString.ODataEqual);
         /// <summary>
         /// This is a not equal filter request.
         /// </summary>
-        public bool IsNotEqual => CompareOperator(ODataNotEqual);
+        public bool IsNotEqual => CompareOperator(ODataTokenString.ODataNotEqual);
 
         private bool CompareOperator(string op) => CompareOperator(op, Operator);
 
@@ -157,7 +89,7 @@ namespace Xigadee
         {
             yield return Parameter.ToLowerInvariant();
             yield return Operator.ToLowerInvariant();
-            yield return IsNullOperator? ODataNull : ValueRaw;
+            yield return IsNullOperator? ODataTokenString.ODataNull : ValueRaw;
         }
     }
 

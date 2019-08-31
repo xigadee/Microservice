@@ -128,7 +128,7 @@ namespace Xigadee
         /// <param name="value">The value to run the operation against.</param>
         /// <param name="conditional">The condition to prepend the operation to the earlier conditions.</param>
         public void AppendFilter(string param, ODataFilterOperations op, string value, ODataLogicalOperators conditional)
-            => AppendFilter(param, FilterParameter.Convert(op), value, FilterLogical.Convert(conditional));
+            => AppendFilter(param, ODataTokenString.Convert(op), value, ODataTokenString.Convert(conditional));
 
         /// <summary>
         /// This method appends a new filter command to the existing collection.
@@ -136,7 +136,7 @@ namespace Xigadee
         /// <param name="filterAdd"></param>
         /// <param name="conditional"></param>
         public void AppendFilter(string filterAdd, ODataLogicalOperators conditional)
-            => AppendFilter(filterAdd, FilterLogical.Convert(conditional));
+            => AppendFilter(filterAdd, ODataTokenString.Convert(conditional));
 
         /// <summary>
         /// This method appends a new filter command to the existing collection.

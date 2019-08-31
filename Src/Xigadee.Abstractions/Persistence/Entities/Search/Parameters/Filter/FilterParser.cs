@@ -73,64 +73,6 @@ namespace Xigadee
 
         public FilterOperation Next { get; set; }
 
-        #region Static declarations: Conditionals
-        /// <summary>
-        /// This method converts the shortcut enumeration to the actual string representation.
-        /// </summary>
-        /// <param name="op">The operation.</param>
-        /// <returns>Returns the string equivalent.</returns>
-        public static ODataLogicalOperators Convert(string op)
-        {
-            switch (op?.Trim().ToLowerInvariant()??"")
-            {
-                case ODataConditionalAnd:
-                    return ODataLogicalOperators.OpAnd;
-                case ODataConditionalOr:
-                    return ODataLogicalOperators.OpOr;
-                case ODataConditionalXOr:
-                    return ODataLogicalOperators.OpXor;
-                default:
-                    throw new ArgumentOutOfRangeException(op);
-            }
-        }
-
-        /// <summary>
-        /// This method converts the shortcut enumeration to the actual string representation.
-        /// </summary>
-        /// <param name="op">The operation.</param>
-        /// <returns>Returns the string equivalent.</returns>
-        public static string Convert(ODataLogicalOperators op)
-        {
-            switch (op)
-            {
-                case ODataLogicalOperators.OpAnd:
-                    return ODataConditionalAnd;
-                case ODataLogicalOperators.OpOr:
-                    return ODataConditionalOr;
-                case ODataLogicalOperators.OpXor:
-                    return ODataConditionalXOr;
-                default:
-                    throw new ArgumentOutOfRangeException(op.ToString());
-            }
-        }
-        /// <summary>
-        /// And
-        /// </summary>
-        public const string ODataConditionalAnd = "and";
-        /// <summary>
-        /// Or
-        /// </summary>
-        public const string ODataConditionalOr = "or";
-
-        /// <summary>
-        /// XOr
-        /// </summary>
-        public const string ODataConditionalXOr = "xor";
-        /// <summary>
-        /// And, Or, XOr
-        /// </summary>
-        public static IReadOnlyList<string> ODataConditionals => new[] { ODataConditionalAnd, ODataConditionalOr, ODataConditionalXOr };
-        #endregion
     }
 
 }

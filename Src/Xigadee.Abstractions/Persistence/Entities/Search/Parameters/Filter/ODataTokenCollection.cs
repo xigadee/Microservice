@@ -14,13 +14,6 @@ namespace Xigadee
     {
         #region Constructors
         /// <summary>
-        /// This is the default constructor.
-        /// </summary>
-        public ODataTokenCollection()
-        {
-
-        }
-        /// <summary>
         /// This is the constructor that appends a default string.
         /// </summary>
         /// <param name="filter">The filter string.</param>
@@ -29,9 +22,15 @@ namespace Xigadee
             OriginalFilter = filter;
 
             filter.ForEach(c => Write(c));
+
+            ExpressionTree = new ODataExpressionTree(TokensWithoutSeperators);
         } 
         #endregion
 
+        /// <summary>
+        /// This is the expression tree that holds the ordered collection.
+        /// </summary>
+        protected ODataExpressionTree ExpressionTree { get; }
         /// <summary>
         /// This is the original filter.
         /// </summary>
@@ -135,6 +134,18 @@ namespace Xigadee
 
             return sb.ToString();
         }
+
+        /// <summary>
+        /// The search parameters.
+        /// </summary>
+        public Dictionary<int, FilterParameter> Params => ExpressionTree?.Params;
+
+        /// <summary>
+        /// This is a list of valid solutions for the logical collection.
+        /// </summary>
+        public List<int> Solutions => ExpressionTree?.Solutions;
+
+
     }
 
     #region ODataTokenString
@@ -143,6 +154,132 @@ namespace Xigadee
     /// </summary>
     public class ODataTokenString : ODataTokenStringBase
     {
+        #region OData constants
+        /// <summary>
+        /// This method converts the shortcut enumeration to the actual string representation.
+        /// </summary>
+        /// <param name="op">The operation.</param>
+        /// <returns>Returns the string equivalent.</returns>
+        public static string Convert(ODataFilterOperations op)
+        {
+            switch (op)
+            {
+                case ODataFilterOperations.Equal:
+                    return ODataEqual;
+                case ODataFilterOperations.NotEqual:
+                    return ODataNotEqual;
+                case ODataFilterOperations.LessThan:
+                    return ODataLessThan;
+                case ODataFilterOperations.LessThanOrEqual:
+                    return ODataLessThanOrEqual;
+                case ODataFilterOperations.GreaterThan:
+                    return ODataGreaterThan;
+                case ODataFilterOperations.GreaterThanOrEqual:
+                    return ODataGreaterThanOrEqual;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+        /// <summary>
+        /// Null
+        /// </summary>
+        public const string ODataNull = "null";
+
+        /// <summary>
+        /// Not
+        /// </summary>
+        public const string ODataNot = "not";
+
+        /// <summary>
+        /// Equal
+        /// </summary>
+        public const string ODataEqual = "eq";
+        /// <summary>
+        /// Not equal
+        /// </summary>
+        public const string ODataNotEqual = "ne";
+        /// <summary>
+        /// Less than
+        /// </summary>
+        public const string ODataLessThan = "lt";
+        /// <summary>
+        /// Less than or equal
+        /// </summary>
+        public const string ODataLessThanOrEqual = "le";
+        /// <summary>
+        /// Greater than
+        /// </summary>
+        public const string ODataGreaterThan = "gt";
+        /// <summary>
+        /// Greater than or equal
+        /// </summary>
+        public const string ODataGreaterThanOrEqual = "ge";
+
+        /// <summary>
+        /// And, Or, XOr
+        /// </summary>
+        public static IReadOnlyList<string> ODataExpression => new[] { ODataEqual, ODataNotEqual, ODataLessThan, ODataLessThanOrEqual, ODataGreaterThan, ODataGreaterThanOrEqual };
+
+        #endregion
+        #region Static declarations: Conditionals
+        /// <summary>
+        /// This method converts the shortcut enumeration to the actual string representation.
+        /// </summary>
+        /// <param name="op">The operation.</param>
+        /// <returns>Returns the string equivalent.</returns>
+        public static ODataLogicalOperators Convert(string op)
+        {
+            switch (op?.Trim().ToLowerInvariant() ?? "")
+            {
+                case ODataConditionalAnd:
+                    return ODataLogicalOperators.OpAnd;
+                case ODataConditionalOr:
+                    return ODataLogicalOperators.OpOr;
+                case ODataConditionalXOr:
+                    return ODataLogicalOperators.OpXor;
+                default:
+                    throw new ArgumentOutOfRangeException(op);
+            }
+        }
+
+        /// <summary>
+        /// This method converts the shortcut enumeration to the actual string representation.
+        /// </summary>
+        /// <param name="op">The operation.</param>
+        /// <returns>Returns the string equivalent.</returns>
+        public static string Convert(ODataLogicalOperators op)
+        {
+            switch (op)
+            {
+                case ODataLogicalOperators.OpAnd:
+                    return ODataConditionalAnd;
+                case ODataLogicalOperators.OpOr:
+                    return ODataConditionalOr;
+                case ODataLogicalOperators.OpXor:
+                    return ODataConditionalXOr;
+                default:
+                    throw new ArgumentOutOfRangeException(op.ToString());
+            }
+        }
+        /// <summary>
+        /// And
+        /// </summary>
+        public const string ODataConditionalAnd = "and";
+        /// <summary>
+        /// Or
+        /// </summary>
+        public const string ODataConditionalOr = "or";
+
+        /// <summary>
+        /// XOr
+        /// </summary>
+        public const string ODataConditionalXOr = "xor";
+        /// <summary>
+        /// And, Or, XOr
+        /// </summary>
+        public static IReadOnlyList<string> ODataConditionals => new[] { ODataConditionalAnd, ODataConditionalOr, ODataConditionalXOr };
+        #endregion
+
         #region Constructor
         /// <summary>
         /// The default constructor.
@@ -171,12 +308,12 @@ namespace Xigadee
         /// <summary>
         /// This is a known logical command, and, or xor.
         /// </summary>
-        public bool IsCommandLogical => FilterLogical.ODataConditionals.Contains(ToString().ToLowerInvariant());
+        public bool IsCommandLogical => ODataConditionals.Contains(ToString().ToLowerInvariant());
 
         /// <summary>
         /// This is a known expression, i.e. eq, ne, gt etc.
         /// </summary>
-        public bool IsCommandExpression => FilterParameter.ODataExpression.Contains(ToString().ToLowerInvariant());
+        public bool IsCommandExpression => ODataExpression.Contains(ToString().ToLowerInvariant());
 
         /// <summary>
         /// This is a known command
@@ -186,12 +323,12 @@ namespace Xigadee
         /// <summary>
         /// Null
         /// </summary>
-        public bool IsKeywordNull => string.Equals(FilterParameter.ODataNull, ToString());
+        public bool IsKeywordNull => string.Equals(ODataNull, ToString());
 
         /// <summary>
         /// Not
         /// </summary>
-        public bool IsKeywordNot => string.Equals(FilterParameter.ODataNot, ToString());
+        public bool IsKeywordNot => string.Equals(ODataNot, ToString());
 
         /// <summary>
         /// The token is a key word.
