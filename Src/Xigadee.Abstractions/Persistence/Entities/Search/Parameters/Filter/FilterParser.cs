@@ -11,6 +11,8 @@ namespace Xigadee
         {
             var root = new FilterParserNodeRoot(filter);
 
+            
+            
             return root;
         }
     }

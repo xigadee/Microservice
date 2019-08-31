@@ -11,8 +11,6 @@ namespace Xigadee
     [DebuggerDisplay("Searches={Params.Count}/Solutions={Solutions.Count}|{Filter}")]
     public class FilterCollection
     {
-
-
         #region Constructor
         /// <summary>
         /// This is the default constructor.
