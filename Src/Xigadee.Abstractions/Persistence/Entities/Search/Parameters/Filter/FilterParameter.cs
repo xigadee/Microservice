@@ -92,7 +92,10 @@ namespace Xigadee
             yield return IsNullOperator? ODataTokenString.ODataNull : ValueRaw;
         }
 
-        public string Display => $"{Position}:{Parameter}-{Operator}-{ValueRaw} [Negation:{IsNegation}]";
+        /// <summary>
+        /// This is the debug display.
+        /// </summary>
+        public string Display => $"{Position}:{Parameter}|{Operator}|{ValueRaw} [Neg:{IsNegation}]";
     }
 
 }

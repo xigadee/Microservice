@@ -8,8 +8,13 @@ namespace Xigadee
     /// <summary>
     /// This class builds up the necessary expression tree.
     /// </summary>
+    [DebuggerDisplay("{Debug}")]
     public class ODataExpressionTree
     {
+        #region Declarations
+        private int CurrentPriority = 0;
+        #endregion
+        #region Constructor
         /// <summary>
         /// This is the OData expression tree.
         /// </summary>
@@ -19,25 +24,31 @@ namespace Xigadee
             OriginalTokens = tokensWithoutSeperators;
 
             OriginalTokens.ForEach(c => Write(c));
-        }
+        } 
+        #endregion
 
+        #region Root
         /// <summary>
         /// This is the root node for the expression tree.
         /// </summary>
-        public ExpressionNode Root { get; private set; }
+        public ExpressionNode Root { get; private set; } 
+        #endregion
 
+        #region Current
         /// <summary>
         /// This is the current node.
         /// </summary>
-        public ExpressionNode Current { get; private set; }
+        protected ExpressionNode Current { get; private set; } 
+        #endregion
 
+        #region OriginalTokens
         /// <summary>
         /// This is the list of token.
         /// </summary>
-        public List<ODataTokenBase> OriginalTokens { get; }
+        public List<ODataTokenBase> OriginalTokens { get; } 
+        #endregion
 
-        private int Priority = 0;
-
+        #region Write(ODataTokenBase next)
         /// <summary>
         /// This writes a character to the tokenizer.
         /// </summary>
@@ -46,14 +57,14 @@ namespace Xigadee
         {
             if (next is ODataTokenBracketOpen)
             {
-                Priority++;
+                CurrentPriority++;
                 return;
             }
 
             if (next is ODataTokenBracketClose)
             {
-                Priority--;
-                if (Priority < 0)
+                CurrentPriority--;
+                if (CurrentPriority < 0)
                     throw new ArgumentOutOfRangeException("Close bracket cannot appear before an open bracket.");
 
                 return;
@@ -61,7 +72,7 @@ namespace Xigadee
 
             if (Root == null)
             {
-                Root = new FilterParameterHolder(Priority);
+                Root = new FilterParameterHolder(CurrentPriority);
                 Current = Root;
             }
 
@@ -76,12 +87,12 @@ namespace Xigadee
                 if (Current is FilterParameterHolder)
                 {
                     SetFilterParameterHolder(Current);
-                    nextNode = new FilterLogicalHolder(Priority);
+                    nextNode = new FilterLogicalHolder(CurrentPriority);
                 }
                 else if (Current is FilterLogicalHolder)
                 {
                     SetFilterLogicalHolder(Current);
-                    nextNode = new FilterParameterHolder(Priority);
+                    nextNode = new FilterParameterHolder(CurrentPriority);
                 }
                 else
                     throw new ArgumentOutOfRangeException();
@@ -91,7 +102,10 @@ namespace Xigadee
                 Current = nextNode;
             }
         }
+        #endregion
 
+        #region SetFilterParameterHolder...
+        private Dictionary<int, FilterParameterHolder> HolderParams { get; } = new Dictionary<int, FilterParameterHolder>();
         private void SetFilterParameterHolder(ExpressionNode node)
         {
             var holder = node as FilterParameterHolder;
@@ -99,29 +113,46 @@ namespace Xigadee
             var param = holder.FilterParameter;
             param.Position = Params.Count + 1;
             HolderParams.Add(param.Position, holder);
-        }
+        } 
+        #endregion
 
+        #region SetFilterLogicalHolder...
+        private Dictionary<int, FilterLogicalHolder> HolderLogical { get; } = new Dictionary<int, FilterLogicalHolder>();
         private void SetFilterLogicalHolder(ExpressionNode node)
         {
             var holder = node as FilterLogicalHolder;
 
             HolderLogical.Add(HolderLogical.Count, holder);
         }
+        #endregion
 
-
-        private Dictionary<int, FilterParameterHolder> HolderParams { get; } = new Dictionary<int, FilterParameterHolder>();
-
-        private Dictionary<int, FilterLogicalHolder> HolderLogical { get; } = new Dictionary<int, FilterLogicalHolder>();
-
+        #region Params
         /// <summary>
         /// The search parameters.
         /// </summary>
         public Dictionary<int, FilterParameter> Params => HolderParams.ToDictionary((h) => h.Key, (h) => h.Value.FilterParameter);
+        #endregion
 
+        #region Solutions
         /// <summary>
         /// This is a list of valid solutions for the logical collection.
         /// </summary>
-        public List<int> Solutions { get; } = new List<int>();
+        public List<int> Solutions => CompileSolutions().ToList(); 
+        #endregion
+
+        protected IEnumerable<int> CompileSolutions()
+        {
+            var max = Math.Pow(2, HolderParams.Count);
+
+            for(int i = 0; i< max; i++)
+                if (CalculateSolution(i))
+                    yield return i;
+        }
+
+        protected bool CalculateSolution(int i)
+        {
+            return false;
+        }
     }
 
 
@@ -164,9 +195,16 @@ namespace Xigadee
         public abstract string Display {get;}
     }
 
-
+    #region FilterLogicalHolder
+    /// <summary>
+    /// This class holds the logical operation.
+    /// </summary>
     public class FilterLogicalHolder : ExpressionNode
     {
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="priority">The current priority.</param>
         public FilterLogicalHolder(int priority) : base(priority)
         {
         }
@@ -176,19 +214,31 @@ namespace Xigadee
         /// </summary>
         public override bool Completed => Tokens.Count == 1;
 
+        /// <summary>
+        /// The logical expression.
+        /// </summary>
         public ODataTokenString Expression => GetToken<ODataTokenString>(0);
 
-
+        /// <summary>
+        /// Complete the compilation of the node.
+        /// </summary>
         public override void Compile()
         {
             if (!Expression.IsCommandLogical)
                 throw new ArgumentOutOfRangeException($"{Expression.ToString()} is not valid.");
         }
 
+        /// <summary>
+        /// This is the debug display.
+        /// </summary>
         public override string Display => $"[{Priority}: {Expression.ToString()}]";
 
-    }
+    } 
+    #endregion
 
+    /// <summary>
+    /// This class holds the filter expression.
+    /// </summary>
     public class FilterParameterHolder: ExpressionNode
     {
         public FilterParameterHolder(int priority):base(priority)
