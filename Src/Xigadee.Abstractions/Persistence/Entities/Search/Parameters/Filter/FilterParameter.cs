@@ -5,37 +5,6 @@ using System.Diagnostics;
 namespace Xigadee
 {
     /// <summary>
-    /// These are the OData filter oparations.
-    /// </summary>
-    public enum ODataFilterOperations
-    {
-        /// <summary>
-        /// Equal
-        /// </summary>
-        Equal,
-        /// <summary>
-        /// Not equal
-        /// </summary>
-        NotEqual,
-        /// <summary>
-        /// Less than
-        /// </summary>
-        LessThan,
-        /// <summary>
-        /// Less than or equal
-        /// </summary>
-        LessThanOrEqual,
-        /// <summary>
-        /// Greater than
-        /// </summary>
-        GreaterThan,
-        /// <summary>
-        /// Greater than or equal
-        /// </summary>
-        GreaterThanOrEqual
-    }
-
-    /// <summary>
     /// https://www.ibm.com/support/knowledgecenter/en/SSYJJF_1.0.0/ApplicationSecurityonCloud/api_odata2.html
     /// </summary>
     

@@ -13,6 +13,21 @@ namespace Test.Xigadee
     [TestClass]
     public class SearchFilterCheck
     {
+        private IEnumerable<string> Examples()
+        {
+            yield return "Address eq 'Redmond' or not Price gt 200 and Other eq 'he)llo'";
+            yield return "Address eq 'Redmond' or (not Price gt 200 and Other eq 'he)llo')";
+            yield return "(Address eq 'Redmond') or (not Price gt '(56)' and (Other eq 'h(e)llo' xor Dock eq 'Coolio'))";
+            yield return "( (Address eq 'Redmond') or ((not Price gt '(56)' and (Other eq 'h(e)llo' xor Dock eq 'Coolio')) ) )";
+            yield return "((Address eq 'Redmond') or (not Price gt '(56)' and ((Other eq 'h(e)llo' and Freddo eq 22 )xor Dock eq 'Coolio')))";
+        }
+
+        [TestMethod]
+        public void FilterParserTest()
+        {
+            var nodes = Examples().Select(l => FilterParser.Parse(l)).ToList();
+        }
+
         /// Eq Equal	/Suppliers?$filter=Address/City eq 'Redmond'
         /// Ne Not equal	/Suppliers?$filter=Address/City ne 'London'
         /// Gt Greater than	/Products?$filter=Price gt 20
@@ -49,8 +64,11 @@ namespace Test.Xigadee
 
             sr.AppendFilter("state", "eq", "state", "and");
 
+            var result = sr.ToString();
 
         }
+
+
 
         [TestMethod]
         public void SplitTest()

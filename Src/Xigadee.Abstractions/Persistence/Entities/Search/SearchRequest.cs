@@ -71,33 +71,43 @@ namespace Xigadee
         }
         #endregion
 
+        #region AssignTop(int? value)
         /// <summary>
         /// This shortcut assigns the top parameter directly.
         /// </summary>
         /// <param name="value"></param>
-        public void AssignTop(int? value) => Assign(ODataTop, value?.ToString()??null);
+        public void AssignTop(int? value) => Assign(ODataTop, value?.ToString() ?? null);
+        #endregion
+        #region AssignSkip(int? value)
         /// <summary>
         /// This shortcut assigns the skip parameter directly.
         /// </summary>
         /// <param name="value"></param>
         public void AssignSkip(int? value) => Assign(ODataSkip, value?.ToString() ?? null);
+        #endregion
+        #region AssignId(string value)
         /// <summary>
         /// This shortcut assigns the id parameter directly.
         /// </summary>
         /// <param name="value"></param>
-        public void AssignId(string value) => Assign(ODataId, value);
+        public void AssignId(string value) => Assign(ODataId, value); 
+        #endregion
+        #region AssignETag(string value)
         /// <summary>
         /// This shortcut assigns the ETag parameter directly.
         /// </summary>
         /// <param name="value"></param>
         public void AssignETag(string value) => Assign(ODataETag, value);
-
+        #endregion
+        #region AssignFilter(string value)
         /// <summary>
         /// This method assigns the Filter section directly.
         /// </summary>
         /// <param name="value"></param>
         public void AssignFilter(string value) => Assign(ODataFilter, value);
 
+        #endregion
+        #region AppendFilter...
         /// <summary>
         /// This method appends a new filter command to the existing collection.
         /// </summary>
@@ -110,7 +120,6 @@ namespace Xigadee
             var filterAdd = $"{param} {op} {value}";
             AppendFilter(filterAdd, conditional);
         }
-
         /// <summary>
         /// This method appends a new filter command to the existing collection.
         /// </summary>
@@ -119,7 +128,7 @@ namespace Xigadee
         /// <param name="value">The value to run the operation against.</param>
         /// <param name="conditional">The condition to prepend the operation to the earlier conditions.</param>
         public void AppendFilter(string param, ODataFilterOperations op, string value, ODataLogicalOperators conditional)
-            => AppendFilter(param, FilterParameter.Convert(op), value, FilterCollection.Convert(conditional));
+            => AppendFilter(param, FilterParameter.Convert(op), value, FilterLogical.Convert(conditional));
 
         /// <summary>
         /// This method appends a new filter command to the existing collection.
@@ -127,7 +136,7 @@ namespace Xigadee
         /// <param name="filterAdd"></param>
         /// <param name="conditional"></param>
         public void AppendFilter(string filterAdd, ODataLogicalOperators conditional)
-            => AppendFilter(filterAdd, FilterCollection.Convert(conditional));
+            => AppendFilter(filterAdd, FilterLogical.Convert(conditional));
 
         /// <summary>
         /// This method appends a new filter command to the existing collection.
@@ -142,20 +151,22 @@ namespace Xigadee
                 AssignFilter(filterAdd);
             else
                 AssignFilter(ParamsFilter.Filter + $" {conditional} {filterAdd}");
-
-            Filter = ParamsFilter.Filter;
         }
-
+        #endregion
+        #region AssignSelect(string value)
         /// <summary>
         /// This method assigns the select section directly.
         /// </summary>
         /// <param name="value"></param>
         public void AssignSelect(string value) => Assign(ODataSelect, value);
+        #endregion
+        #region AssignOrderBy(string value)
         /// <summary>
         /// This section sets the order by section directly.
         /// </summary>
         /// <param name="value"></param>
-        public void AssignOrderBy(string value) => Assign(ODataOrderBy, value);
+        public void AssignOrderBy(string value) => Assign(ODataOrderBy, value); 
+        #endregion
 
         #region Assign...
         /// <summary>
@@ -185,7 +196,6 @@ namespace Xigadee
                     break;
                 case ODataFilter:
                     ParamsFilter = new FilterCollection(value?.Trim());
-                    Filter = ParamsFilter.Filter;
                     break;
                 case ODataOrderBy:
                     OrderBy = value?.Trim();
@@ -245,13 +255,14 @@ namespace Xigadee
         /// The raw $filter query value from the incoming request, this maps to the filter algorithm defined
         /// on the server side.
         /// </summary>
-        public string Filter { get; set; }
+        public string Filter => ParamsFilter?.Filter ?? "";
 
         /// <summary>
         /// The raw $orderby query value from the incoming request
         /// </summary>
-        public string OrderBy { get; set; }
+        public string OrderBy { get; private set; }
 
+        #region Top...
         /// <summary>
         /// The raw $top query value from the incoming request
         /// </summary>
@@ -261,6 +272,8 @@ namespace Xigadee
         /// </summary>
         public int? TopValue => int.TryParse(Top, out int value) ? value : default(int?);
 
+        #endregion
+        #region Skip...
         /// <summary>
         /// The raw $skip query value from the incoming request
         /// </summary>
@@ -268,12 +281,13 @@ namespace Xigadee
         /// <summary>
         /// Tries to parse the skip value in to a integer.
         /// </summary>
-        public int? SkipValue => int.TryParse(Skip, out int value) ? value : default(int?);
+        public int? SkipValue => int.TryParse(Skip, out int value) ? value : default(int?); 
+        #endregion
 
         /// <summary>
         /// The raw $select query value from the incoming request, this is used for non-entity searches.
         /// </summary>
-        public string Select { get; set; }
+        public string Select { get; private set; }
 
         /// <summary>
         /// This is a set of additional properties that can be attached to a search request for logging later.
@@ -348,6 +362,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region AppendParam(StringBuilder sb, string part, string value, bool addAmp)
         private bool AppendParam(StringBuilder sb, string part, string value, bool addAmp)
         {
             if (string.IsNullOrEmpty(value))
@@ -359,15 +374,17 @@ namespace Xigadee
             sb.AppendFormat("{0}={1}", part, value);
 
             return true;
-        }
+        } 
+        #endregion
 
+        #region operators: string <--> SearchRequest
         /// <summary>
         /// Implicitly converts a string in to a resource profile.
         /// </summary>
         /// <param name="query">The search query.</param>
         public static implicit operator SearchRequest(string query)
         {
-            return new SearchRequest(query??"");
+            return new SearchRequest(query ?? "");
         }
 
         /// <summary>
@@ -377,7 +394,8 @@ namespace Xigadee
         public static implicit operator string(SearchRequest sr)
         {
             return sr?.ToString();
-        }
+        } 
+        #endregion
     }
 
 }

@@ -238,7 +238,7 @@ namespace Xigadee
         {
             //You should not specify select parameters when selecting the full entity to be returned.
             if (!string.IsNullOrEmpty(key.Select))
-                key.Select = null;
+                key.AssignSelect(null);
 
             var uri = mUriMapper.MakeUri(HttpMethod.Get, key);
 
