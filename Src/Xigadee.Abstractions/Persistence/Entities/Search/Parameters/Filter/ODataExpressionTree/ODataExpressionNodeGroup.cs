@@ -150,7 +150,7 @@ namespace Xigadee
         /// <summary>
         /// This is the debug display.
         /// </summary>
-        public override string Display => $"Group:{Id}";
+        public override string DebugDisplay => $"Group:{Id}";
 
 
 
@@ -205,37 +205,13 @@ namespace Xigadee
                 Current = second;
             }
 
+            if (currentExp == null && First is ODataExpressionNodeBuild)
+                currentExp = Expression.Invoke((First as ODataExpressionNodeBuild).ExpressionBuild(), parameter);
+
             var finalExpression = Expression.Lambda<Func<int, bool>>(currentExp, parameter); 
 
             return finalExpression;
         }
-
-
-        //Expression<Func<int, bool>> expr1 = num => (num & 1) == 1;
-        //var body1 = Expression.Invoke(expr1, parameter); //x => x.Id >= 3
-
-        //Expression<Func<int, bool>> expr2 = num => (num & 2) == 2;
-        //var body2 = Expression.Invoke(expr2, parameter); //x => x.Id >= 3
-
-        //Expression<Func<int, bool>> expr4 = num => (num & 4) == 4;
-        //var body4 = Expression.Invoke(expr4, parameter); //x => x.Id >= 3
-
-        //var andEx1 = Expression.AndAlso(body2, body1); //x.Id >= 3
-        //var andEx = Expression.OrElse(andEx1, body4); //x.Id >= 3
-
-        //var member = Expression.Property(parameter, "Id"); //x.Id
-        //var constant = Expression.Constant(3);
-        //var body = Expression.GreaterThanOrEqual(parameter, constant); //x.Id >= 3
-        //var finalExpression = Expression.Lambda<Func<int, bool>>(body, parameter); //x => x.Id >= 3
-        //var paramX = Expression.Parameter(typeof(int), "p");
-
-        //Expression<Func<int, bool>> expr1 = num => (num & 1) == 1;
-
-        //Expression<Func<int, bool>> expr2 = num => (num & 2) == 2;
-
-        //BinaryExpression body = Expression.AndAlso(expr1, expr2);
-
-        //var ExpressionTree1 = Expression.Lambda<Func<int, bool>>(body, new[] { paramX });
 
     }
 }

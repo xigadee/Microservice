@@ -15,6 +15,8 @@ namespace Test.Xigadee
     {
         private IEnumerable<string> Examples()
         {
+            yield return "Address eq 'Redmond'";
+            yield return "not Address eq 'Redmond'";
             yield return "Address eq 'Redmond' or not Price gt 20.90 and Other eq 'he)llo'";
             yield return "Address eq        'Redmond' or (not Price gt 200 and Other eq 'he)llo')";
             yield return "(Address eq 'Redmond') or (not Price gt '(56)' and (Other eq 'h(e)llo' xor Dock eq 'Coolio'))";
@@ -25,9 +27,10 @@ namespace Test.Xigadee
         [TestMethod]
         public void FilterParserTest()
         {
+            List<ODataTokenCollection> nodes = null;
             try
             {
-                var nodes = Examples().Select(l => new ODataTokenCollection(l)).ToList();
+                nodes = Examples().Select(l => new ODataTokenCollection(l)).ToList();
                 var hmm1 = nodes[3].ToString();
                 var hmm2 = nodes[3].ToString(true);
 

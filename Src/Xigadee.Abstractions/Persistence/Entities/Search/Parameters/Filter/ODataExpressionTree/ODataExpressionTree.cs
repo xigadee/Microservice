@@ -68,6 +68,10 @@ namespace Xigadee
             private int _componentCount = 0;
             private List<int> _solutions = null;
 
+            /// <summary>
+            /// This is the default constructor.
+            /// </summary>
+            /// <param name="originalTokens">The list of original token.</param>
             public ComponentHolder(List<ODataTokenBase> originalTokens)
             {
                 Tokens = originalTokens;
@@ -80,7 +84,10 @@ namespace Xigadee
             public List<ODataTokenBase> Tokens { get; }
             #endregion
 
-
+            /// <summary>
+            /// This is the next component identifier. Useful for debug.
+            /// </summary>
+            /// <returns></returns>
             public int NextComponentId() => ++_componentCount;
 
 
@@ -115,7 +122,6 @@ namespace Xigadee
             }
             #endregion
 
-
             #region GroupRegister
             /// <summary>
             /// This is the list of groups.
@@ -127,7 +133,8 @@ namespace Xigadee
                 int pos = HolderGroups.Count;
                 HolderGroups.Add(pos, group);
                 return pos;
-            } 
+            }
+
             #endregion
             #region SetFilterParameterHolder...
             public Dictionary<int, ODataExpressionNodeFilterParameter> HolderParams { get; } = new Dictionary<int, ODataExpressionNodeFilterParameter>();

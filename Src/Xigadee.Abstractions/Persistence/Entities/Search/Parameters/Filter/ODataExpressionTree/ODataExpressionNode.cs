@@ -9,7 +9,7 @@ namespace Xigadee
     /// <summary>
     /// This is the base expression node.
     /// </summary>
-    [DebuggerDisplay("{Display}")]
+    [DebuggerDisplay("{DebugDisplay}")]
     public abstract class ODataExpressionNode
     {
         /// <summary>
@@ -30,17 +30,30 @@ namespace Xigadee
         /// This is the set of expression tree components.
         /// </summary>
         public ODataExpressionTree.ComponentHolder Components { get; }
-
+        /// <summary>
+        /// The list of tokens for this node.
+        /// </summary>
         public List<ODataTokenBase> Tokens { get; } = new List<ODataTokenBase>();
-
+        /// <summary>
+        /// The previous node in the chain.
+        /// </summary>
         public ODataExpressionNode Previous { get; set; }
-
+        /// <summary>
+        /// The next node in the chain.
+        /// </summary>
         public ODataExpressionNode Next { get; set; }
-
+        /// <summary>
+        /// This method writes the next token to the node.
+        /// </summary>
+        /// <param name="next"></param>
         public virtual void Write(ODataTokenBase next) => Tokens.Add(next);
-
+        /// <summary>
+        /// This method switches to true when the node has reached the required number of tokens.
+        /// </summary>
         public abstract bool Completed { get; }
-
+        /// <summary>
+        /// This method is called when the node is marked as completed.
+        /// </summary>
         public abstract void Compile();
 
         /// <summary>
@@ -54,14 +67,11 @@ namespace Xigadee
         /// <summary>
         /// This is the debug string for the 
         /// </summary>
-        public virtual string Debug => $"{Previous?.Display ?? "NOTSET"}<-{Display}->{Next?.Display ?? "NOTSET"}";
-
-        public abstract string Display { get; }
-
-
-        //public Expression<Func<int, bool>> CompileNode = num => (num & 1) == 1;
-
-
+        public virtual string Debug => $"{Previous?.DebugDisplay ?? "NOTSET"}<-{DebugDisplay}->{Next?.DebugDisplay ?? "NOTSET"}";
+        /// <summary>
+        /// This is the debug display.
+        /// </summary>
+        public abstract string DebugDisplay { get; }
     }
 
     /// <summary>
@@ -73,9 +83,7 @@ namespace Xigadee
         /// This is the default constructor.
         /// </summary>
         /// <param name="components">The expression tree components.</param>
-        public ODataExpressionNodeBuild(ODataExpressionTree.ComponentHolder components):base(components)
-        {
-        }
+        public ODataExpressionNodeBuild(ODataExpressionTree.ComponentHolder components):base(components){}
 
         /// <summary>
         /// This method builds the expression from it's constituent parts.

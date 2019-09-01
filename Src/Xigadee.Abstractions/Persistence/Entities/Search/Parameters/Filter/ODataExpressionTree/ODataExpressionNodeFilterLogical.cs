@@ -38,7 +38,7 @@ namespace Xigadee
         /// <summary>
         /// This is the debug display.
         /// </summary>
-        public override string Display => $"[{Priority}: {Expression?.ToString()}]";
+        public override string DebugDisplay => $"[{Priority}: {Expression?.ToString()}]";
 
 
     }

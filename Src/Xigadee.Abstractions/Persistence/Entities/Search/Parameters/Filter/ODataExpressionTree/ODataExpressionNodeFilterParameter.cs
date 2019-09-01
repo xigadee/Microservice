@@ -93,7 +93,7 @@ namespace Xigadee
         /// <summary>
         /// This is the node debug display.
         /// </summary>
-        public override string Display => $"[{Priority}:{((IsNegation ?? false)?TokenNegation.ToString():" ")}{TokenParameter?.ToString()}|{TokenExpression?.ToString()}|{TokenValue?.ToString()}]";
+        public override string DebugDisplay => $"[{Priority}:{((IsNegation ?? false)?TokenNegation.ToString():" ")}{TokenParameter?.ToString()}|{TokenExpression?.ToString()}|{TokenValue?.ToString()}]";
 
 
         /// <summary>
