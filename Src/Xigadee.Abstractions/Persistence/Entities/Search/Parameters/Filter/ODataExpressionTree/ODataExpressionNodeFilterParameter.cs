@@ -107,7 +107,7 @@ namespace Xigadee
             var bitPosition = Expression.Constant(1 << FilterParameter.Position, typeof(int));
 
             var andEx1 = Expression.And(parameter, bitPosition);
-            Expression eqEx1 = Expression.Equal(andEx1, parameter);
+            Expression eqEx1 = Expression.GreaterThan(andEx1, Expression.Constant(0, typeof(int)));
 
             if (IsNegation ?? false)
                 eqEx1 = Expression.Not(eqEx1);

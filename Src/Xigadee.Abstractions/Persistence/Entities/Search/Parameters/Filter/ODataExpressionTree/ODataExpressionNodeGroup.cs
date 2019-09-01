@@ -152,17 +152,16 @@ namespace Xigadee
         /// </summary>
         public override string DebugDisplay => $"Group:{Id}";
 
-
-
         private bool Extract(ODataExpressionNode Current, 
             out ODataExpressionNodeBuild first, out ODataExpressionNodeFilterLogical logical, out ODataExpressionNodeBuild second)
         {
             first = Current as ODataExpressionNodeBuild;
-            logical = Current.Next as ODataExpressionNodeFilterLogical;
-            second = Current.Next?.Next as ODataExpressionNodeBuild;
+            logical = Current?.Next as ODataExpressionNodeFilterLogical;
+            second = Current?.Next?.Next as ODataExpressionNodeBuild;
 
             return logical != null;
         }
+
         /// <summary>
         /// This method builds the expression from it's constituent parts.
         /// </summary>
@@ -206,7 +205,10 @@ namespace Xigadee
             }
 
             if (currentExp == null && First is ODataExpressionNodeBuild)
-                currentExp = Expression.Invoke((First as ODataExpressionNodeBuild).ExpressionBuild(), parameter);
+            {
+                var exprSingle = (First as ODataExpressionNodeBuild).ExpressionBuild();
+                currentExp = Expression.Invoke(exprSingle, parameter);
+            }
 
             var finalExpression = Expression.Lambda<Func<int, bool>>(currentExp, parameter); 
 
