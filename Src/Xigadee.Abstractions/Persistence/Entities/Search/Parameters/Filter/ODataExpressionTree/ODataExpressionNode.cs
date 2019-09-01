@@ -9,21 +9,27 @@ namespace Xigadee
     /// <summary>
     /// This is the base expression node.
     /// </summary>
-    [DebuggerDisplay("{Debug}")]
+    [DebuggerDisplay("{Display}")]
     public abstract class ODataExpressionNode
     {
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        /// <param name="priority">The current priority.</param>
-        public ODataExpressionNode(int priority)
+        /// <param name="components">The expression tree components.</param>
+        public ODataExpressionNode(ODataExpressionTree.ComponentHolder components)
         {
-            Priority = priority;
+            Components = components;
+            Priority = components.NextComponentId();
         }
         /// <summary>
         /// This is the priority level for the node.
         /// </summary>
         public int Priority { get; }
+
+        /// <summary>
+        /// This is the set of expression tree components.
+        /// </summary>
+        public ODataExpressionTree.ComponentHolder Components { get; }
 
         public List<ODataTokenBase> Tokens { get; } = new List<ODataTokenBase>();
 

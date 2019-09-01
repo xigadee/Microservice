@@ -10,33 +10,28 @@ namespace Xigadee
     public class ODataExpressionNodeGroup : ODataExpressionNode
     {
         #region Declarations
-        private int CurrentPriority = 0;
-        private int GroupPriority = 0;
-
         private bool _completed = false;
         #endregion
         #region Constructor
         /// <summary>
-        /// This is teh default constructor.
-        /// </summary>
-        public ODataExpressionNodeGroup() : this(0, 0)
-        {
-
-        }
-        /// <summary>
         /// This is the default constructor.
         /// </summary>
-        /// <param name="id">The group id.</param>
-        /// <param name="priority">The group priority.</param>
-        public ODataExpressionNodeGroup(int id, int priority) : base(priority)
+        /// <param name="components">The expression tree components.</param>
+        public ODataExpressionNodeGroup(ODataExpressionTree.ComponentHolder components) : base(components)
         {
-            Id = id;
+            Id = components.GroupRegister(this);
         }
         #endregion
 
+        /// <summary>
+        /// This the current node.
+        /// </summary>
         ODataExpressionNode Current { get; set; }
-
-        ODataExpressionNode Root { get; set; }
+        /// <summary>
+        /// This is the first node for the group. 
+        /// This is either the first node in the collection, or the first node after an open bracket appears.
+        /// </summary>
+        ODataExpressionNode First { get; set; }
 
         #region Write...
         /// <summary>
@@ -45,53 +40,84 @@ namespace Xigadee
         /// <param name="next">The character to write.</param>
         public override void Write(ODataTokenBase next)
         {
-            if (next is ODataTokenBracketOpen)
+            if (!(Current is ODataExpressionNodeGroup))
             {
-                CurrentPriority++;
-                return;
-            }
+                if (next is ODataTokenBracketOpen)
+                {
 
-            if (next is ODataTokenBracketClose)
-            {
-                CurrentPriority--;
-                if (CurrentPriority < 0)
-                    throw new ArgumentOutOfRangeException("Close bracket cannot appear before an open bracket.");
+                    //OK, we need to swap out the current expected node in to a new Node Group.
+                    var groupNext = new ODataExpressionNodeGroup(Components);
+                    if (Current != null)
+                    {
+                        var lastNode = Current.Previous;
+                        lastNode.Next = groupNext;
+                        Current = groupNext;
+                    }
+                    return;
+                }
 
-                return;
-            }
+                if (next is ODataTokenBracketClose)
+                {
+                    //CurrentPriority--;
+                    //if (CurrentPriority < 0)
+                    //    throw new ArgumentOutOfRangeException("Close bracket cannot appear before an open bracket.");
 
-            if (Root == null)
-            {
-                Root = new ODataExpressionNodeFilterParameter(CurrentPriority);
-                Current = Root;
+                    _completed = true;
+                    return;
+                }
+
+                if (First == null)
+                    NodeSetFirst();
             }
 
             Current.Write(next);
 
             if (Current.Completed)
-            {
-                Current.Compile();
-
-                ODataExpressionNode nextNode;
-
-                if (Current is ODataExpressionNodeFilterParameter)
-                {
-                    SetFilterParameterHolder(Current);
-                    nextNode = new ODataExpressionNodeFilterLogical(CurrentPriority);
-                }
-                else if (Current is ODataExpressionNodeFilterLogical)
-                {
-                    SetFilterLogicalHolder(Current);
-                    nextNode = new ODataExpressionNodeFilterParameter(CurrentPriority);
-                }
-                else
-                    throw new ArgumentOutOfRangeException();
-
-                Current.Next = nextNode;
-                nextNode.Previous = Current;
-                Current = nextNode;
-            }
+                NodeSetNext();
         }
+        #endregion
+
+        #region NodeSetFirst()
+        private void NodeSetFirst()
+        {
+            First = new ODataExpressionNodeFilterParameter(Components);
+            Current = First;
+        }
+        #endregion
+        #region NodeSetNext...
+        private void NodeSetNext()
+        {
+            //Tell the node to process and internal operations.
+            Current.Compile();
+
+            if (Current is ODataExpressionNodeFilterParameter)
+            {
+                Components.SetFilterParameterHolder(Current);
+                NodeSetNext(new ODataExpressionNodeFilterLogical(Components));
+            }
+            else if (Current is ODataExpressionNodeFilterLogical)
+            {
+                Components.SetFilterLogicalHolder(Current);
+                NodeSetNext(new ODataExpressionNodeFilterParameter(Components));
+            }
+            else if (Current is ODataExpressionNodeGroup)
+            {
+                NodeSetNext(new ODataExpressionNodeFilterLogical(Components));
+            }
+            else
+                throw new ArgumentOutOfRangeException();
+        }
+
+        /// <summary>
+        /// Sets the next node and joins the chain.
+        /// </summary>
+        /// <param name="nextNode"></param>
+        protected void NodeSetNext(ODataExpressionNode nextNode)
+        {
+            Current.Next = nextNode;
+            nextNode.Previous = Current;
+            Current = nextNode;
+        } 
         #endregion
 
         /// <summary>
@@ -99,39 +125,31 @@ namespace Xigadee
         /// </summary>
         public int Id { get; }
 
+        /// <summary>
+        /// Specifies whether the group has completed.
+        /// </summary>
         public override bool Completed => _completed;
 
-        public override string Display => throw new NotImplementedException();
-
+        #region Compile()
+        /// <summary>
+        /// This method is used to clean up the expression chain and to remove the last unused item.
+        /// </summary>
         public override void Compile()
         {
-            throw new NotImplementedException();
-        }
+            if (Current.Completed)
+                throw new ArgumentOutOfRangeException("Overflow expression should not be completed on a close bracket.");
 
-
-        #region SetFilterParameterHolder...
-        public Dictionary<int, ODataExpressionNodeFilterParameter> HolderParams { get; } = new Dictionary<int, ODataExpressionNodeFilterParameter>();
-
-        private void SetFilterParameterHolder(ODataExpressionNode node)
-        {
-            var holder = node as ODataExpressionNodeFilterParameter;
-
-            var param = holder.FilterParameter;
-            param.Position = HolderParams.Count + 1;
-            HolderParams.Add(param.Position, holder);
-        }
-        #endregion
-        #region SetFilterLogicalHolder...
-        public Dictionary<int, ODataExpressionNodeFilterLogical> HolderLogical { get; } = new Dictionary<int, ODataExpressionNodeFilterLogical>();
-
-        private void SetFilterLogicalHolder(ODataExpressionNode node)
-        {
-            var holder = node as ODataExpressionNodeFilterLogical;
-
-            HolderLogical.Add(HolderLogical.Count, holder);
-        }
+            //We're done. Remove the last unused node in the chain.
+            var lastNode = Current.Previous;
+            lastNode.Next = null;
+            Current = lastNode;
+        } 
         #endregion
 
-        public override string Debug => $"Group {Id}";
+        /// <summary>
+        /// This is the debug display.
+        /// </summary>
+        public override string Display => $"Group:{Id}";
+
     }
 }

@@ -10,8 +10,8 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        /// <param name="priority">The current priority.</param>
-        public ODataExpressionNodeFilterLogical(int priority) : base(priority)
+        /// <param name="components">The expression tree components.</param>
+        public ODataExpressionNodeFilterLogical(ODataExpressionTree.ComponentHolder components) : base(components)
         {
         }
 
@@ -37,7 +37,7 @@ namespace Xigadee
         /// <summary>
         /// This is the debug display.
         /// </summary>
-        public override string Display => $"[{Priority}: {Expression.ToString()}]";
+        public override string Display => $"[{Priority}: {Expression?.ToString()}]";
 
     }
 }
