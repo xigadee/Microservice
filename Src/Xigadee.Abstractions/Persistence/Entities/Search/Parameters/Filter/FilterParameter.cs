@@ -97,20 +97,6 @@ namespace Xigadee
         /// This is the debug display.
         /// </summary>
         public string Display => $"{Position}:{Parameter}|{Operator}|{ValueRaw} [Neg:{IsNegation}]";
-
-
-        public Expression<Func<int, bool>> CompileNode => BuildNode();
-
-
-        protected Expression<Func<int, bool>> BuildNode()
-        {
-            ConstantExpression constant = Expression.Constant(Position, typeof(int));
-
-            Expression<Func<int, bool>> expr1 = num => (num & Position) == Position;
-
-            return expr1;
-        }
-
     }
 
 }

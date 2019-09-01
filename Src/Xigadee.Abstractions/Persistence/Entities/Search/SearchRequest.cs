@@ -99,6 +99,21 @@ namespace Xigadee
         /// <param name="value"></param>
         public void AssignETag(string value) => Assign(ODataETag, value);
         #endregion
+        #region AssignSelect(string value)
+        /// <summary>
+        /// This method assigns the select section directly.
+        /// </summary>
+        /// <param name="value"></param>
+        public void AssignSelect(string value) => Assign(ODataSelect, value);
+        #endregion
+        #region AssignOrderBy(string value)
+        /// <summary>
+        /// This section sets the order by section directly.
+        /// </summary>
+        /// <param name="value"></param>
+        public void AssignOrderBy(string value) => Assign(ODataOrderBy, value); 
+        #endregion
+
         #region AssignFilter(string value)
         /// <summary>
         /// This method assigns the Filter section directly.
@@ -152,20 +167,6 @@ namespace Xigadee
             else
                 AssignFilter(ParamsFilter.Filter + $" {conditional} {filterAdd}");
         }
-        #endregion
-        #region AssignSelect(string value)
-        /// <summary>
-        /// This method assigns the select section directly.
-        /// </summary>
-        /// <param name="value"></param>
-        public void AssignSelect(string value) => Assign(ODataSelect, value);
-        #endregion
-        #region AssignOrderBy(string value)
-        /// <summary>
-        /// This section sets the order by section directly.
-        /// </summary>
-        /// <param name="value"></param>
-        public void AssignOrderBy(string value) => Assign(ODataOrderBy, value); 
         #endregion
 
         #region Assign...

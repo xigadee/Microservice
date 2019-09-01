@@ -47,7 +47,6 @@ namespace Xigadee
         /// </summary>
         public int Count => Params?.Count ?? 0;
 
-
         /// <summary>
         /// This method returns true if the filter collection has the specific parameter.
         /// </summary>
