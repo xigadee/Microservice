@@ -59,8 +59,35 @@ namespace Xigadee
         public abstract string Display { get; }
 
 
-        Expression<Func<int, bool>> CompileNode = num => (num & 1) == 1;
+        //public Expression<Func<int, bool>> CompileNode = num => (num & 1) == 1;
 
+
+    }
+
+    /// <summary>
+    /// This class is implemented by builders that return an expression based on their contents.
+    /// </summary>
+    public abstract class ODataExpressionNodeBuild : ODataExpressionNode
+    {
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="components">The expression tree components.</param>
+        public ODataExpressionNodeBuild(ODataExpressionTree.ComponentHolder components):base(components)
+        {
+        }
+
+        /// <summary>
+        /// This method builds the expression from it's constituent parts.
+        /// </summary>
+        /// <returns>Returns the expression that can be called.</returns>
+        public abstract Expression<Func<int, bool>> ExpressionBuild();
+
+        /// <summary>
+        /// This method compiles the expression to a specific function.
+        /// </summary>
+        /// <returns>Returns the actual compiled function.</returns>
+        public Func<int, bool> CompileToExpression() => ExpressionBuild().Compile();
     }
 
 }

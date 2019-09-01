@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace Xigadee
@@ -7,7 +8,7 @@ namespace Xigadee
     /// <summary>
     /// This node is used to group terms. The root node is always a group node.
     /// </summary>
-    public class ODataExpressionNodeGroup : ODataExpressionNode
+    public class ODataExpressionNodeGroup : ODataExpressionNodeBuild
     {
         #region Declarations
         private bool _completed = false;
@@ -150,6 +151,89 @@ namespace Xigadee
         /// This is the debug display.
         /// </summary>
         public override string Display => $"Group:{Id}";
+
+
+
+        private bool Extract(ODataExpressionNode Current, 
+            out ODataExpressionNodeBuild first, out ODataExpressionNodeFilterLogical logical, out ODataExpressionNodeBuild second)
+        {
+            first = Current as ODataExpressionNodeBuild;
+            logical = Current.Next as ODataExpressionNodeFilterLogical;
+            second = Current.Next?.Next as ODataExpressionNodeBuild;
+
+            return logical != null;
+        }
+        /// <summary>
+        /// This method builds the expression from it's constituent parts.
+        /// </summary>
+        /// <returns>Returns the expression that can be called.</returns>
+        public override Expression<Func<int, bool>> ExpressionBuild()
+        {
+            var parameter = Expression.Parameter(typeof(int), "x");
+
+            ODataExpressionNode Current = First;
+
+            ODataExpressionNodeBuild first;
+            ODataExpressionNodeFilterLogical logical;
+            ODataExpressionNodeBuild second;
+
+            Expression currentExp = null;
+
+            while (Extract(Current, out first, out logical, out second))
+            {
+                var Expr1 = Expression.Invoke(first.ExpressionBuild(), parameter);
+                var Expr2 = Expression.Invoke(second.ExpressionBuild(), parameter);
+
+                var op = logical.Expression.ToString().ToLowerInvariant();
+                switch (op)
+                {
+                    case ODataTokenString.ODataConditionalAnd:
+                        currentExp = Expression.And(currentExp ?? Expr1, Expr2);
+                        break;
+                    case ODataTokenString.ODataConditionalOr:
+                        currentExp = Expression.Or(currentExp ?? Expr1, Expr2);
+                        break;
+                    case ODataTokenString.ODataConditionalXOr:
+                        currentExp = Expression.ExclusiveOr(currentExp ?? Expr1, Expr2);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"{nameof(ExpressionBuild)}{op} is not supported.");
+                }
+
+                Current = second;
+            }
+
+            var finalExpression = Expression.Lambda<Func<int, bool>>(currentExp, parameter); 
+
+            return finalExpression;
+        }
+
+
+        //Expression<Func<int, bool>> expr1 = num => (num & 1) == 1;
+        //var body1 = Expression.Invoke(expr1, parameter); //x => x.Id >= 3
+
+        //Expression<Func<int, bool>> expr2 = num => (num & 2) == 2;
+        //var body2 = Expression.Invoke(expr2, parameter); //x => x.Id >= 3
+
+        //Expression<Func<int, bool>> expr4 = num => (num & 4) == 4;
+        //var body4 = Expression.Invoke(expr4, parameter); //x => x.Id >= 3
+
+        //var andEx1 = Expression.AndAlso(body2, body1); //x.Id >= 3
+        //var andEx = Expression.OrElse(andEx1, body4); //x.Id >= 3
+
+        //var member = Expression.Property(parameter, "Id"); //x.Id
+        //var constant = Expression.Constant(3);
+        //var body = Expression.GreaterThanOrEqual(parameter, constant); //x.Id >= 3
+        //var finalExpression = Expression.Lambda<Func<int, bool>>(body, parameter); //x => x.Id >= 3
+        //var paramX = Expression.Parameter(typeof(int), "p");
+
+        //Expression<Func<int, bool>> expr1 = num => (num & 1) == 1;
+
+        //Expression<Func<int, bool>> expr2 = num => (num & 2) == 2;
+
+        //BinaryExpression body = Expression.AndAlso(expr1, expr2);
+
+        //var ExpressionTree1 = Expression.Lambda<Func<int, bool>>(body, new[] { paramX });
 
     }
 }

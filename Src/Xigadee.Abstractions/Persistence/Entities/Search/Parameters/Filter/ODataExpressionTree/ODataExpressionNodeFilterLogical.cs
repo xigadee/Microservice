@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 
 namespace Xigadee
 {
@@ -38,6 +39,7 @@ namespace Xigadee
         /// This is the debug display.
         /// </summary>
         public override string Display => $"[{Priority}: {Expression?.ToString()}]";
+
 
     }
 }

@@ -28,7 +28,7 @@ namespace Xigadee
             //We're done here.
             Root.Compile();
 
-            Components.Compile();
+            Components.Compile(Root);
         }
         #endregion
 
@@ -88,9 +88,11 @@ namespace Xigadee
             /// <summary>
             /// This method is used to calculate the logical solutions for the expression tree.
             /// </summary>
-            public void Compile()
+            public void Compile(ODataExpressionNodeGroup rootNode)
             {
-                _solutions = CompileSolutions().ToList();
+                var expression = rootNode.CompileToExpression();
+
+                _solutions = CompileSolutions(expression).ToList();
             }
 
             #region Solutions
@@ -104,27 +106,21 @@ namespace Xigadee
             /// This method will compile the integer solutions for the searches.
             /// </summary>
             /// <returns>Returns a list of valid integers for the bit positions of each of the searches.</returns>
-            public IEnumerable<int> CompileSolutions()
+            public IEnumerable<int> CompileSolutions(Func<int,bool> fnSolution)
             {
                 var max = Math.Pow(2, HolderParams.Count);
 
                 for (int i = 0; i < max; i++)
-                    if (CalculateSolution(i))
+                    if (fnSolution(i))
                         yield return i;
             }
             #endregion
 
-            /// <summary>
-            /// This method is used to calculate the solutions.
-            /// </summary>
-            /// <param name="i">The specific solution.</param>
-            /// <returns></returns>
-            protected bool CalculateSolution(int i)
-            {
-                return false;
-            }
 
             #region GroupRegister
+            /// <summary>
+            /// This is the list of groups.
+            /// </summary>
             public Dictionary<int, ODataExpressionNodeGroup> HolderGroups { get; } = new Dictionary<int, ODataExpressionNodeGroup>();
 
             public int GroupRegister(ODataExpressionNodeGroup group)
@@ -142,7 +138,7 @@ namespace Xigadee
                 var holder = node as ODataExpressionNodeFilterParameter;
 
                 var param = holder.FilterParameter;
-                param.Position = HolderParams.Count + 1;
+                param.Position = HolderParams.Count;
                 HolderParams.Add(param.Position, holder);
             }
             #endregion
