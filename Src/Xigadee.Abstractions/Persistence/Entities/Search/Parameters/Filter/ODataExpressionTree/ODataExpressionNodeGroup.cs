@@ -181,10 +181,12 @@ namespace Xigadee
 
             while (Extract(Current, out first, out logical, out second))
             {
-                var Expr1 = Expression.Invoke(first.ExpressionBuild(), parameter);
-                var Expr2 = Expression.Invoke(second.ExpressionBuild(), parameter);
+                Expression Expr1 = Expression.Invoke(first.ExpressionBuild(), parameter);
+
+                Expression Expr2 = Expression.Invoke(second.ExpressionBuild(), parameter);
 
                 var op = logical.Expression.ToString().ToLowerInvariant();
+
                 switch (op)
                 {
                     case ODataTokenString.ODataConditionalAnd:

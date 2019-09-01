@@ -32,7 +32,6 @@ namespace Xigadee
         }
         #endregion
 
-
         #region Root
         /// <summary>
         /// This is the root node for the expression tree.
