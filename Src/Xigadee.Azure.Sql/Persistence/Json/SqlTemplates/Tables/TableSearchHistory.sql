@@ -21,7 +21,6 @@ CREATE TABLE [{NamespaceTable}].[{EntityName}SearchHistoryCache]
     ,[SearchId] BIGINT NOT NULL 
     ,[EntityId] BIGINT NOT NULL 
 	,CONSTRAINT [FK_{EntityName}SearchHistoryCache_SearchId] FOREIGN KEY ([SearchId]) REFERENCES [{NamespaceTable}].[{EntityName}SearchHistory]([Id])
-	,CONSTRAINT [FK_{EntityName}SearchHistoryCache_EntityId] FOREIGN KEY ([EntityId]) REFERENCES [{NamespaceTable}].[{EntityName}]([Id])
 )
 GO
 CREATE INDEX[IX_{EntityName}SearchHistoryCache_SearchHistory] ON [{NamespaceTable}].[{EntityName}SearchHistoryCache] ([SearchId]) INCLUDE ([EntityId]) 
