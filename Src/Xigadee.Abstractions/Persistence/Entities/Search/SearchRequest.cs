@@ -51,6 +51,14 @@ namespace Xigadee
         {
         }
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="srb">The search response base.</param>
+        public SearchRequest(SearchResponseBase srb):this()
+        {
+            this.AssignEtagPagination(srb);
+        }
+        /// <summary>
         /// Initializes a new instance of the <see cref="SearchRequest"/> class.
         /// </summary>
         /// <param name="query">The search parameters.</param>

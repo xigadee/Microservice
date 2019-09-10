@@ -108,5 +108,26 @@ namespace Xigadee
                 yield return res.Key;
 
         }
+
+        /// <summary>
+        /// This method assigns the pagination to the next block if the Etag is set.
+        /// </summary>
+        /// <param name="sr">This is the base search request to adjust.</param>
+        /// <param name="srb">This is the stripped down parameters results set from the search request.</param>
+        /// <param name="TopAdjust">This is the default top adjust figure. By default it is set to 50.</param>
+        /// <param name="SkipAdjust">This is the default skip adjust figure. By default it is set to 0.</param>
+        public static void AssignEtagPagination(this SearchRequest sr, SearchResponseBase srb, int TopAdjust = 50, int SkipAdjust = 0)
+        {
+            if (srb == null || string.IsNullOrWhiteSpace(srb.Etag))
+                return;
+
+            sr.ETag = srb.Etag;
+
+            int skip = (srb.Skip ?? 0) + (srb.RecordCount ?? SkipAdjust);
+            int top = srb.Top ?? TopAdjust;
+
+            sr.Skip = skip.ToString();
+            sr.Top = top.ToString();
+        }
     }
 }

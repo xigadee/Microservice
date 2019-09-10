@@ -28,6 +28,12 @@ namespace Xigadee
         /// This is the set of entities for the response.
         /// </summary>
         public virtual List<E> Data { get; set; } = new List<E>();
+
+        /// <summary>
+        /// This is the number of records in the Data collection. This can be set so that it reports another number.
+        /// This could be needed for specific use cases for record pagination.
+        /// </summary>
+        public override int? RecordCount { get => base.RecordCount ?? Data.Count; set => base.RecordCount = value; }
     }
 
     /// <summary>
@@ -60,6 +66,10 @@ namespace Xigadee
         /// </summary>
         public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
 
+        /// <summary>
+        /// This is the actual number of records returned in the result. It is used for pagination.
+        /// </summary>
+        public virtual int? RecordCount { get; set; }
         /// <summary>
         /// This method populates the base request values to allow them to be passed though back to the client.
         /// </summary>
