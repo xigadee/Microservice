@@ -53,7 +53,7 @@ namespace Xigadee
             try
             {
                 var json = dataReader["Body"]?.ToString();
-                var entity = JsonConvert.DeserializeObject<E>(json);
+                var entity = CreateEntity(json);
                 var sig = dataReader.GetFieldValue<string>(dataReader.GetOrdinal("Sig"));
                 SignatureValidate(entity, sig);
                 ctx.ResponseEntities.Add(entity);
@@ -120,6 +120,17 @@ namespace Xigadee
         }
         #endregion
 
+        #region CreateEntity(string json)
+        /// <summary>
+        /// This method deserializes the entity from the json string.
+        /// </summary>
+        /// <param name="json">The json returned from the SQL database.</param>
+        /// <returns>Returns the entity.</returns>
+        protected virtual E CreateEntity(string json)
+        {
+            return JsonConvert.DeserializeObject<E>(json);
+        } 
+        #endregion
         #region CreateBody(E entity)
         /// <summary>
         /// This method converts the entity in to JSON body. 

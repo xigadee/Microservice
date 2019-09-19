@@ -407,10 +407,12 @@ namespace Xigadee
                             }
                         }
                     }
-                    catch (InvalidOperationException)
+                    catch (InvalidOperationException iox)
                     {
                         if (paramReturnValue.Value == null || (int)paramReturnValue.Value == 0)
                             throw;
+
+                        ctx.ResponseMessage = iox.Message;
                     }
 
                     if (paramReturnValue.Value != null)
