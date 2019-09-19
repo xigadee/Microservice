@@ -446,7 +446,7 @@ namespace Xigadee
             if (columnSchema.Any(dbc => dbc.ColumnName.Equals("ErrorNumber")))
             {
                 response.ResponseMessage = dataReader["ErrorNumber"].ToString();
-                response.ResponseCode = "2601".Equals(response.ResponseMessage) ? 409 : 500;
+                response.ResponseCode = "2601".Equals(response.ResponseMessage) ? 430 : 500;
             }
 
             if (columnSchema.Any(dbc => dbc.ColumnName.Equals("ErrorMessage")))
