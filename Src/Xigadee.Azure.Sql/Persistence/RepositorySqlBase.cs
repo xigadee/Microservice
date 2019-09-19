@@ -424,8 +424,9 @@ namespace Xigadee
                 else
                 {
                     ctx.ResponseCode = 500;
-                    ctx.ResponseMessage = ex.Message;
                 }
+                //Moved exception error message to be obvious.
+                ctx.ResponseMessage = ex.Message;
 
                 throw;
             }
