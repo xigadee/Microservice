@@ -366,7 +366,7 @@ namespace Xigadee
         /// <param name="populateRequest">Populate command i.e. add SQL parameters</param>
         /// <param name="processResponse">Read an entity out from a SQL Data Reader Record</param>
         /// <returns>Returns a response object with a set of returned entities.</returns>
-        protected async Task ExecuteSqlCommand<KT,ET>(SqlEntityContext<KT,ET> ctx
+        protected async virtual Task ExecuteSqlCommand<KT,ET>(SqlEntityContext<KT,ET> ctx
             , Action<SqlEntityContext<KT, ET>> populateRequest
             , Action<SqlDataReader, SqlEntityContext<KT, ET>> processResponse = null) 
             where KT : IEquatable<KT>

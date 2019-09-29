@@ -19,7 +19,24 @@ namespace Tests.Xigadee
         {
             //ArrayHelper.BinarySearchExt
 
-            
+            var result0 = TestEnum.Three.IsInFlag(TestEnum.Three);
+
+            var result1 = TestEnum.Three.IsInFlag(TestEnum.One);
+            var result2 = TestEnum.One.IsInFlag(TestEnum.Three);
+
+            var resultn0 = TestEnum.Three.IsNotInFlag(TestEnum.Three);
+
+            var resultn1 = TestEnum.Three.IsNotInFlag(TestEnum.One);
+            var resultn2 = TestEnum.One.IsNotInFlag(TestEnum.Three);
+
         }
+    }
+
+    [Flags]
+    public enum TestEnum
+    {
+        One = 1,
+        Two = 2,
+        Three = 3
     }
 }
