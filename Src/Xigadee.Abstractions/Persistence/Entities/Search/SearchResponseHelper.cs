@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Xigadee
@@ -20,8 +18,9 @@ namespace Xigadee
         /// <param name="converter">The model converter.</param>
         /// <param name="skip">The optional entity skip function.</param>
         /// <param name="adjustSkippedTotal">Specifies whether the total record count should be adjusted for skipped records.</param>
+        /// <param name="adjust">This action can be used to adjust each model individually.</param>
         /// <returns>Returns the relevant response.</returns>
-        public static SearchResponse<M> ConvertToModel<E, M>(this SearchResponse<E> response, Func<E, M> converter, Func<E, bool> skip = null, bool adjustSkippedTotal = true)
+        public static SearchResponse<M> ConvertToModel<E, M>(this SearchResponse<E> response, Func<E, M> converter, Func<E, bool> skip = null, bool adjustSkippedTotal = true, Action<E,M> adjust = null)
         {
             var modelResponse = new SearchResponse<M>();
 
@@ -41,7 +40,9 @@ namespace Xigadee
                     continue;
                 }
 
-                modelResponse.Data.Add(converter(entity));
+                var model = converter(entity);
+                adjust?.Invoke(entity,model);
+                modelResponse.Data.Add(model);
             }
 
             return modelResponse;
@@ -57,8 +58,9 @@ namespace Xigadee
         /// <param name="converter">The model converter.</param>
         /// <param name="skip">The optional entity skip function.</param>
         /// <param name="adjustSkippedTotal">Specifies whether the total record count should be adjusted for skipped records.</param>
+        /// <param name="adjust">This action can be used to adjust each model individually.</param>
         /// <returns>Returns the relevant response.</returns>
-        public static async Task<SearchResponse<M>> ConvertToModelAsync<E, M>(this SearchResponse<E> response, Func<E, Task<M>> converter, Func<E, Task<bool>> skip = null, bool adjustSkippedTotal = true)
+        public static async Task<SearchResponse<M>> ConvertToModelAsync<E, M>(this SearchResponse<E> response, Func<E, Task<M>> converter, Func<E, Task<bool>> skip = null, bool adjustSkippedTotal = true, Action<E, M> adjust = null)
         {
             var modelResponse = new SearchResponse<M>();
 
@@ -78,7 +80,9 @@ namespace Xigadee
                     continue;
                 }
 
-                modelResponse.Data.Add(await converter(entity));
+                var model = await converter(entity);
+                adjust?.Invoke(entity, model);
+                modelResponse.Data.Add(model);
             }
 
             return modelResponse;
