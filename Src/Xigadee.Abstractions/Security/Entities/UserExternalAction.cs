@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Xigadee
 {
@@ -30,5 +32,53 @@ namespace Xigadee
         /// Gets or sets the option expiry date/time for the action.
         /// </summary>
         public DateTime? DateExpiry { get; set; }
+
+        #region StateChanges ...
+        /// <summary>
+        /// This is the list of historical state changes.
+        /// </summary>
+        public List<UserExternalActionStateChange> StateChanges { get; set; } = new List<UserExternalActionStateChange>();
+        /// <summary>
+        /// This method changes the state to the new state and sets the state change history.
+        /// </summary>
+        /// <param name="newState">The new state.</param>
+        /// <param name="description">The optional description.</param>
+        public void StateChange(string newState, string description = null)
+        {
+            var sc = new UserExternalActionStateChange();
+
+            sc.StateOld = State;
+            sc.StateNew = newState;
+            sc.Description = description;
+
+            State = newState;
+
+            StateChanges.Add(sc);
+        }
+        #endregion
+    }
+
+    /// <summary>
+    /// This helper class holds the state change information.
+    /// </summary>
+    [DebuggerDisplay("{StateOld}->{StateNew} @ {TimeStamp}: {Description}")]
+    public class UserExternalActionStateChange
+    {
+        /// <summary>
+        /// The original state.
+        /// </summary>
+        public string StateOld { get; set; }
+        /// <summary>
+        /// The new state.
+        /// </summary>
+        public string StateNew { get; set; }
+        /// <summary>
+        /// The UTC time for the change.
+        /// </summary>
+        public DateTime TimeStamp { get; set; } = DateTime.UtcNow;
+        /// <summary>
+        /// The optional description.
+        /// </summary>
+        public string Description { get; set; }
     }
 }

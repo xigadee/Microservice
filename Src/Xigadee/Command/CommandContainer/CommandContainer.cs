@@ -321,8 +321,5 @@ namespace Xigadee
         }
         #endregion
 
-
     }
-
-
 }

@@ -103,8 +103,5 @@ namespace Xigadee
 
             return solutions;
         }
-
-
     }
-
 }
