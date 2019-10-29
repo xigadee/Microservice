@@ -119,6 +119,12 @@ namespace Xigadee
         public object Context { get; set; }
         #endregion
 
+        /// <summary>
+        /// When this is set to disabled the schedule will not be executed.
+        /// This is typically set by a process that wishes to stop polling.
+        /// </summary>
+        public bool Disabled { get; set; } = false;
+
         #region Active
         /// <summary>
         /// Indicates whether the schedule is currently executing.
@@ -148,6 +154,9 @@ namespace Xigadee
         /// </summary>
         public virtual bool Start()
         {
+            if (Disabled)
+                return false;
+
             if (Active)
             {
                 ExecutingSoSkip();
@@ -347,6 +356,9 @@ namespace Xigadee
         {
             get
             {
+                if (Disabled)
+                    return false;
+
                 //One time hit for the first execution.
                 if (mExecutionCount == 0 && !InitialInterval.HasValue && !UTCPollTime.HasValue && !Interval.HasValue)
                     return true;
@@ -417,7 +429,7 @@ namespace Xigadee
         {
             get
             {
-                return $"{ScheduleType}:'{Name ?? Id.ToString("N").ToUpperInvariant()}' Active={Active} [ShouldExecute={ShouldExecute}] @ {NextExecuteTime} Run={ExecutionCount}";
+                return $"{ScheduleType}:'{Name ?? Id.ToString("N").ToUpperInvariant()}' Disabled={Disabled} Active={Active} [ShouldExecute={ShouldExecute}] @ {NextExecuteTime} Run={ExecutionCount}";
             }
         }
         #endregion
