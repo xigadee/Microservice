@@ -12,4 +12,7 @@ CREATE TABLE[{NamespaceTable}].[{EntityName}History]
 	,[Sig] VARCHAR(256) NULL
 	,[Body] NVARCHAR(MAX) NULL
 )
+GO
+CREATE INDEX [IX_{EntityName}History_EntityId] ON [{NamespaceTable}].[{EntityName}History] ([EntityId])
+GO
 --#endregion

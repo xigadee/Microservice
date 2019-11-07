@@ -31,8 +31,8 @@ CREATE UNIQUE INDEX[IX_SearchHistory_ETag] ON [dbo].[SearchHistory] ([ETag])
 GO
 CREATE PROCEDURE [dbo].spSearchLog
 	 @ETag UNIQUEIDENTIFIER
-	,@EntityType VARCHAR(50)
-	,@SearchType VARCHAR(50)
+	,@EntityType VARCHAR(100)
+	,@SearchType VARCHAR(100)
 	,@Body NVARCHAR(MAX)
 AS
 BEGIN

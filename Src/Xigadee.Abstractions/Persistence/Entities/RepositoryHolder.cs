@@ -91,7 +91,6 @@ namespace Xigadee
     /// <summary>
     /// The Repository holder class.
     /// </summary>
-    /// <seealso cref="Xigadee.RepositoryHolder{K}" />
     public class RepositoryHolder
     {
         /// <summary>
