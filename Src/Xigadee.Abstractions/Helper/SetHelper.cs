@@ -14,13 +14,33 @@ namespace Xigadee
         /// <param name="compareset">The set of values to check for inclusion.</param>
         /// <returns>Returns true if set.</returns>
         public static bool IsIn(this string value, params string[] compareset) => IsIn(value, (r, t) => Equals(r, t), compareset);
-
+        /// <summary>
+        /// Integer specific matching.
+        /// </summary>
+        /// <param name="value">The value to match.</param>
+        /// <param name="compareset">The comparison set.</param>
+        /// <returns>Returns true if there is a match.</returns>
         public static bool IsIn(this int value, params int[] compareset) => IsIn(value, (r, t) => Equals(r, t), compareset);
-
+        /// <summary>
+        /// Integer specific matching.
+        /// </summary>
+        /// <param name="value">The value to match.</param>
+        /// <param name="compareset">The comparison set.</param>
+        /// <returns>Returns true if there is not a match.</returns>
         public static bool IsNotIn(this int value, params int[] compareset) => !value.IsIn(compareset);
-
+        /// <summary>
+        /// Big integer specific matching.
+        /// </summary>
+        /// <param name="value">The value to match.</param>
+        /// <param name="compareset">The comparison set.</param>
+        /// <returns>Returns true if there is a match.</returns>
         public static bool IsIn(this long value, params long[] compareset) => IsIn(value, (r, t) => Equals(r, t), compareset);
-
+        /// <summary>
+        /// Big integer specific matching.
+        /// </summary>
+        /// <param name="value">The value to match.</param>
+        /// <param name="compareset">The comparison set.</param>
+        /// <returns>Returns true if there is not a match.</returns>
         public static bool IsNotIn(this long value, params long[] compareset) => !value.IsIn(compareset);
 
         /// <summary>
