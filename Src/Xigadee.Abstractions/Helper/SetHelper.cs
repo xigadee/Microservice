@@ -14,6 +14,15 @@ namespace Xigadee
         /// <param name="compareset">The set of values to check for inclusion.</param>
         /// <returns>Returns true if set.</returns>
         public static bool IsIn(this string value, params string[] compareset) => IsIn(value, (r, t) => Equals(r, t), compareset);
+
+        public static bool IsIn(this int value, params int[] compareset) => IsIn(value, (r, t) => Equals(r, t), compareset);
+
+        public static bool IsNotIn(this int value, params int[] compareset) => !value.IsIn(compareset);
+
+        public static bool IsIn(this long value, params long[] compareset) => IsIn(value, (r, t) => Equals(r, t), compareset);
+
+        public static bool IsNotIn(this long value, params long[] compareset) => !value.IsIn(compareset);
+
         /// <summary>
         /// Enum specific matching.
         /// </summary>
