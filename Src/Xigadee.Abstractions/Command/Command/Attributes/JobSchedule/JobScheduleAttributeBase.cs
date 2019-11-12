@@ -22,7 +22,7 @@ namespace Xigadee
     /// <summary>
     /// This attribute can be set against a command method to register it for a schedule job poll call.
     /// </summary>
-    [DebuggerDisplay("{Name}: {InitialWait}-{Frequency} IsLongRunning={IsLongRunningProcess}")]
+    [DebuggerDisplay("{Name}: {InitialWait}-{Frequency} IsLongRunning={IsLongRunningProcess} Priority={priority}")]
     public abstract class JobScheduleAttributeBase: CommandMethodAttributeBase
     {
         private string mInitialWait, mFrequency;
@@ -40,20 +40,27 @@ namespace Xigadee
         /// The string should be in the format of a [ws][-]{ d | [d.]hh:mm[:ss[.ff]] }[ws] as defined in the Timespan.Parse method.
         /// </param>
         /// <param name="isLongRunningProcess">Specifies whether the schedule is a long running process.</param>
+        /// <param name="commandPriority">This value specifies the priority that the job should execute as. Leave this as null to use the default value.</param>
         /// <see cref="https://msdn.microsoft.com/en-us/library/se73z7b9(v=vs.110).aspx"/>
-        protected JobScheduleAttributeBase(string name, bool isMasterJob, string initialWait = null, string frequency = null, bool isLongRunningProcess = false)
+        protected JobScheduleAttributeBase(string name, bool isMasterJob, string initialWait = null, string frequency = null, bool isLongRunningProcess = false, int? commandPriority = null)
         {
             Name = name ?? throw new ArgumentNullException("name", $"{GetType().Name}");
             mInitialWait = initialWait;
             mFrequency = frequency;
             IsLongRunningProcess = isLongRunningProcess;
             IsMasterJob = isMasterJob;
+            CommandPriority = commandPriority;
         }
 
         /// <summary>
         /// Gets a value indicating whether this instance is connected to master job.
         /// </summary>
         public bool IsMasterJob { get; }
+
+        /// <summary>
+        /// This is the execution priority for the schedule.
+        /// </summary>
+        public int? CommandPriority { get; }
 
         /// <summary>
         /// This is the Initial Wait as a timespan.

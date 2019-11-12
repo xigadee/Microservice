@@ -22,7 +22,7 @@ namespace Xigadee
         public CommandTimeoutSchedule(Func<Schedule, CancellationToken, Task> execute
             , ScheduleTimerConfig timerConfig
             , string name)
-            : base(execute, timerConfig, name)
+            : base(execute, timerConfig, name, executionPriority:3)
         {
         }
         #endregion

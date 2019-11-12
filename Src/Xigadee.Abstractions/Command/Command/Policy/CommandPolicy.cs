@@ -44,6 +44,11 @@ namespace Xigadee
         public bool TransmissionPayloadTraceEnabled { get; set; }
 
         /// <summary>
+        /// This is the default job schedule execution priorty if not set explicitly.
+        /// </summary>
+        public int JobScheduleDefaultExecutionPriority { get; set; } = (int)TaskTrackerPriority.Low;
+
+        /// <summary>
         /// This is the default listening channel for incoming messages.
         /// </summary>
         public virtual string ChannelId { get; set; }

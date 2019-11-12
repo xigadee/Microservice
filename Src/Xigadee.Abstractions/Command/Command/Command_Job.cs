@@ -49,6 +49,7 @@ namespace Xigadee
                     , name: holder.Attribute.Name ?? holder.Reference()
                     , isLongRunning: holder.Attribute.IsLongRunningProcess
                     , isMasterJob: holder.Attribute.IsMasterJob
+                    , executionPriority: holder.Attribute.CommandPriority
                     );
             }
         }
@@ -85,6 +86,7 @@ namespace Xigadee
         /// <param name="tearUp">The set up action.</param>
         /// <param name="tearDown">The clear down action.</param>
         /// <param name="isMasterJob">Indicates whether this schedule is associated to a master job.</param>
+        /// <param name="executionPriority">The schedule execution priority.</param>
         /// <returns>Returns the new schedule.</returns>
         protected virtual CommandJobSchedule JobScheduleRegister(Func<Schedule, CancellationToken, Task> execute
             , ScheduleTimerConfig timerConfig
@@ -93,12 +95,12 @@ namespace Xigadee
             , bool isLongRunning = false
             , Action<Schedule> tearUp = null
             , Action<Schedule> tearDown = null
-            , bool isMasterJob = false)
+            , bool isMasterJob = false
+            , int? executionPriority = null)
         {
             var schedule = new CommandJobSchedule();
 
-            schedule.Initialise(execute, timerConfig, context, name, isLongRunning, tearUp, tearDown, isMasterJob);
-
+            schedule.Initialise(execute, timerConfig, context, name, isLongRunning, tearUp, tearDown, isMasterJob, executionPriority);
             return JobScheduleRegister(schedule);
         }
         /// <summary>
@@ -121,6 +123,9 @@ namespace Xigadee
             //Set the identifiers for debug.
             schedule.CommandId = ComponentId;
             schedule.CommandName = FriendlyName;
+
+            if (!schedule.ExecutionPriority.HasValue)
+                schedule.ExecutionPriority = Policy.JobScheduleDefaultExecutionPriority;
 
             Scheduler.Register(schedule);
             mSchedules.Add(schedule);

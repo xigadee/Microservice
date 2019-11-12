@@ -31,8 +31,10 @@ namespace Xigadee
         /// <param name="initialTime">The optional initial time to start the poll.</param>
         /// <param name="shouldExecute">A flag that indicates whether the schedule execution is active. The default is true.</param>
         /// <param name="isInternal">Specifies whether the poll is internal. The default is false.</param>
+        /// <param name="executionPriority">For non-internal tasks, this is the expected execution priority for the schedule.</param>
         /// <returns>Returns the new schedule after it has been added to the collection.</returns>
         Schedule Register(Func<Schedule, CancellationToken, Task> action, TimeSpan? frequency
-            , string name = null, TimeSpan? initialWait = null, DateTime? initialTime = null, bool shouldExecute = true, bool isInternal = false);
+            , string name = null, TimeSpan? initialWait = null, DateTime? initialTime = null, bool shouldExecute = true, bool isInternal = false, int? executionPriority = null
+);
     }
 }

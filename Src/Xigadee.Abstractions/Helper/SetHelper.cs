@@ -22,27 +22,12 @@ namespace Xigadee
         /// <returns>Returns true if there is a match.</returns>
         public static bool IsIn(this int value, params int[] compareset) => IsIn(value, (r, t) => Equals(r, t), compareset);
         /// <summary>
-        /// Integer specific matching.
-        /// </summary>
-        /// <param name="value">The value to match.</param>
-        /// <param name="compareset">The comparison set.</param>
-        /// <returns>Returns true if there is not a match.</returns>
-        public static bool IsNotIn(this int value, params int[] compareset) => !value.IsIn(compareset);
-        /// <summary>
         /// Big integer specific matching.
         /// </summary>
         /// <param name="value">The value to match.</param>
         /// <param name="compareset">The comparison set.</param>
         /// <returns>Returns true if there is a match.</returns>
-        public static bool IsIn(this long value, params long[] compareset) => IsIn(value, (r, t) => Equals(r, t), compareset);
-        /// <summary>
-        /// Big integer specific matching.
-        /// </summary>
-        /// <param name="value">The value to match.</param>
-        /// <param name="compareset">The comparison set.</param>
-        /// <returns>Returns true if there is not a match.</returns>
-        public static bool IsNotIn(this long value, params long[] compareset) => !value.IsIn(compareset);
-
+        public static bool IsIn(this long value, params long[] compareset) => IsIn(value, (r, t) => Equals(r, t), compareset);        
         /// <summary>
         /// Enum specific matching.
         /// </summary>
@@ -86,6 +71,21 @@ namespace Xigadee
         /// <param name="compareset">The set of values to check for exclusion.</param>
         /// <returns>Returns true if not in the set.</returns>
         public static bool IsNotIn(this string value, params string[] compareset) => IsNotIn(value,(r, t) => Equals(r, t), compareset);
+        /// <summary>
+        /// Integer specific matching.
+        /// </summary>
+        /// <param name="value">The value to match.</param>
+        /// <param name="compareset">The comparison set.</param>
+        /// <returns>Returns true if there is not a match.</returns>
+        public static bool IsNotIn(this int value, params int[] compareset) => !value.IsIn(compareset);
+
+        /// <summary>
+        /// Big integer specific matching.
+        /// </summary>
+        /// <param name="value">The value to match.</param>
+        /// <param name="compareset">The comparison set.</param>
+        /// <returns>Returns true if there is not a match.</returns>
+        public static bool IsNotIn(this long value, params long[] compareset) => !value.IsIn(compareset);
         /// <summary>
         /// Enum specific matching.
         /// </summary>

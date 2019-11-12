@@ -28,6 +28,7 @@ namespace Xigadee
         /// <param name="tearUp">The set up action.</param>
         /// <param name="tearDown">The clear down action.</param>
         /// <param name="isMasterJob">Indicates whether this schedule is associated to a master job.</param>
+        /// <param name="executionPriority">This is the priority that the job should run as.</param>
         public CommandJobSchedule(Func<Schedule, CancellationToken, Task> execute
             , ScheduleTimerConfig timerConfig
             , object context = null
@@ -36,9 +37,10 @@ namespace Xigadee
             , Action<Schedule> tearUp = null
             , Action<Schedule> tearDown = null
             , bool isMasterJob = false
-            ) : base(execute, timerConfig, name, context, isLongRunning)
+            , int? executionPriority = null
+            ) : base(execute, timerConfig, name, context, isLongRunning, executionPriority)
         {
-            Initialise(execute, timerConfig, context, name, isLongRunning, tearUp, tearDown, isMasterJob);
+            Initialise(execute, timerConfig, context, name, isLongRunning, tearUp, tearDown, isMasterJob, executionPriority);
         } 
         #endregion
 
@@ -54,6 +56,7 @@ namespace Xigadee
         /// <param name="tearUp">The set up action.</param>
         /// <param name="tearDown">The clear down action.</param>
         /// <param name="isMasterJob">Indicates whether this schedule is associated to a master job.</param>
+        /// <param name="executionPriority">The schedule execution priority.</param>
         public virtual void Initialise(Func<Schedule, CancellationToken, Task> execute
             , ScheduleTimerConfig timerConfig
             , object context = null
@@ -61,9 +64,10 @@ namespace Xigadee
             , bool isLongRunning = false
             , Action<Schedule> tearUp = null
             , Action<Schedule> tearDown = null
-            , bool isMasterJob = false)
+            , bool isMasterJob = false
+            , int? executionPriority = null)
         {
-            base.Initialise(execute, timerConfig, name, context, isLongRunning);
+            base.Initialise(execute, timerConfig, name, context, isLongRunning ,executionPriority);
 
             TearUp = tearUp;
             TearDown = tearDown;

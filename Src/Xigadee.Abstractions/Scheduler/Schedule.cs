@@ -43,9 +43,10 @@ namespace Xigadee
         /// <param name="context">The context.</param>
         /// <param name="timerConfig">The optional timer configuration.</param>
         /// <param name="isLongRunning">Specifies whether the schedule is a long running process.</param>
-        public Schedule(Func<Schedule, CancellationToken, Task> execute, ScheduleTimerConfig timerConfig, string name = null, object context = null, bool isLongRunning = false) :this()
+        /// <param name="executionPriority">This is the execution priority for the schedule. Leave this as null to get the default run setting.</param>
+        public Schedule(Func<Schedule, CancellationToken, Task> execute, ScheduleTimerConfig timerConfig, string name = null, object context = null, bool isLongRunning = false, int? executionPriority = null) :this()
         {
-            Initialise(execute, timerConfig, name, context);
+            Initialise(execute, timerConfig, name, context, isLongRunning, executionPriority);
             Statistics.Name = name;
         }
         #endregion
@@ -59,11 +60,13 @@ namespace Xigadee
         /// <param name="context">The context.</param>
         /// <param name="timerConfig">The optional timer configuration.</param>
         /// <param name="isLongRunning">Specifies whether the schedule is a long running process.</param>
+        /// <param name="executionPriority">The default execution priority. Leave this as null or not set to use the default value.</param>
         public virtual void Initialise(Func<Schedule, CancellationToken, Task> execute
             , ScheduleTimerConfig timerConfig
             , string name = null
             , object context = null
-            , bool isLongRunning = false)
+            , bool isLongRunning = false
+            , int? executionPriority = null)
         {
             mExecute = execute ?? throw new ArgumentNullException("execute", $"{GetType().Name}/{nameof(Initialise)}");
 
@@ -76,6 +79,8 @@ namespace Xigadee
             mTimerConfig = timerConfig ?? throw new ArgumentNullException("timerConfig");
 
             IsLongRunning = isLongRunning;
+
+            ExecutionPriority = executionPriority;
         }
         #endregion
 
