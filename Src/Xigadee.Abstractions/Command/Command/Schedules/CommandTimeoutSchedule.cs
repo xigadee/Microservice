@@ -19,10 +19,12 @@ namespace Xigadee
         /// <param name="execute">The function to execute.</param>
         /// <param name="timerConfig">The timer configuration.</param>
         /// <param name="name">The name.</param>
+        /// <param name="executionPriority">This is the priority that the timeout job should run as.</param>
         public CommandTimeoutSchedule(Func<Schedule, CancellationToken, Task> execute
             , ScheduleTimerConfig timerConfig
-            , string name)
-            : base(execute, timerConfig, name, executionPriority:3)
+            , string name
+            , int? executionPriority)
+            : base(execute, timerConfig, name, executionPriority: executionPriority)
         {
         }
         #endregion

@@ -50,7 +50,7 @@ namespace Xigadee
             mScheduleTimeout = new CommandTimeoutSchedule(TimeOutScheduler
                 , Policy.OutgoingRequestsTimeoutPollInterval
                 , $"{FriendlyName} Command OutgoingRequests Timeout Poll"
-                );
+                , Policy.OutgoingRequestsTimeoutPriority);
             mScheduleTimeout.CommandId = ComponentId;
 
             Scheduler.Register(mScheduleTimeout);
@@ -431,24 +431,34 @@ namespace Xigadee
         {
             if (!(mOutgoingRequests?.IsEmpty ?? true))
             {
-                var timeoutSchedule = schedule as CommandTimeoutSchedule;
 
-                var results = mOutgoingRequests.Values
-                    .Where(i => i.HasExpired())
-                    .Select((k) => k.Id)
-                    .ToList();
-
-                if (results.Count > 0)
+                try
                 {
-                    //Increment the record of time out requests.
-                    timeoutSchedule?.TimeoutIncrement(results.Count);
+                    schedule.ShouldExecute = false;
 
-                    //Loop through each time out and cancel it.
-                    results.ForEach((id) => OutgoingRequestTimeout(id));
+                    var results = mOutgoingRequests.Values
+                        .Where(i => i.HasExpired())
+                        .Select((k) => k.Id)
+                        .ToList();
+
+                    if (results.Count > 0)
+                    {
+                        var timeoutSchedule = schedule as CommandTimeoutSchedule;
+
+                        //Increment the record of time out requests.
+                        timeoutSchedule?.TimeoutIncrement(results.Count);
+
+                        //Loop through each time out and cancel it.
+                        results.ForEach((id) => OutgoingRequestTimeout(id));
+                    }
+                }
+                finally
+                {
+                    schedule.ShouldExecute = true;
                 }
             }
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
         #endregion
         #region --> TimeoutTaskManager(string originatorKey)

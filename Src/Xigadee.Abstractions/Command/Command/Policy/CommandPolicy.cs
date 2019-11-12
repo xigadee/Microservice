@@ -93,6 +93,10 @@ namespace Xigadee
         /// </summary>
         public virtual ScheduleTimerConfig OutgoingRequestsTimeoutPollInterval { get; set; } = new ScheduleTimerConfig(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(10));
 
+        /// <summary>
+        /// This is the time out job priorty. The default is the lowest priorty.
+        /// </summary>
+        public virtual int OutgoingRequestsTimeoutPriority { get; set; } = 0;
         //Master Job
         /// <summary>
         /// Gets or sets the master job negotiation strategy. The default is MasterJobNegotiationStrategy. You can set this to the MasterJobNegotiationStrategyDebug class 
