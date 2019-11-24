@@ -351,6 +351,19 @@ namespace Xigadee
         /// </summary>
         public DateTime? NextExecuteTime { get; protected set; }
         #endregion
+        #region NextExecuteTimeOverride(DateTime utcNext)
+        /// <summary>
+        /// This method manually sets the next execute time for the schedule.
+        /// It overrides any automatic settings and resets any disabled flags.
+        /// </summary>
+        /// <param name="utcNext">The next UTC time to execute.</param>
+        public void NextExecuteTimeOverride(DateTime utcNext)
+        {
+            NextExecuteTime = utcNext;
+            mShouldExecute = true;
+            Disabled = false;
+        } 
+        #endregion
 
         #region ShouldExecute
         /// <summary>
