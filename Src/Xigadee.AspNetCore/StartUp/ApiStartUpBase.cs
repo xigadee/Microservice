@@ -228,9 +228,24 @@ namespace Xigadee
         /// <param name="app">The application.</param>
         protected virtual void ConfigureLogging(IApplicationBuilder app)
         {
-            //Add our default logger with the default configuration.
-            //LoggerFactory.AddProvider(...
+            var prov = new ApplicationLoggerProvider();
 
+            ConfigureLoggingSubscribers(prov.Publisher);
+
+            LoggerProvider = prov;
+
+            //Add our default logger with the default configuration.
+            LoggerFactory.AddProvider(prov);
+        }
+        #endregion
+        #region 2a. ConfigureLoggingSubscribers(ILogEventPublisher publisher)
+        /// <summary>
+        /// Use this override to add your specific logging subscribers to published events.
+        /// </summary>
+        /// <param name="publisher">The publisher collection.</param>
+        protected virtual void ConfigureLoggingSubscribers(ILogEventPublisher publisher)
+        {
+            
         }
         #endregion
         #region 3. ContextConnect(IApplicationBuilder app, ILoggerFactory loggerFactory) -> CXC ->
@@ -284,6 +299,10 @@ namespace Xigadee
         /// Gets or sets the logger factory.
         /// </summary>
         protected ILoggerFactory LoggerFactory { get; set; }
+        /// <summary>
+        /// This is the logger provider for the application.
+        /// </summary>
+        protected ApplicationLoggerProvider LoggerProvider { get; set; }
         #endregion
         #region Context
         /// <summary>

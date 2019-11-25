@@ -71,8 +71,6 @@ namespace Xigadee
             Message = message;
             Category = category;
             Ex = ex;
-
-            AdditionalData = new Dictionary<string, string>();
         }
         #endregion        
         /// <summary>
@@ -94,6 +92,6 @@ namespace Xigadee
         /// <summary>
         /// Gets the additional data collection associated with the event..
         /// </summary>
-        public virtual Dictionary<string, string> AdditionalData { get; }
+        public virtual Dictionary<string, string> AdditionalData { get; } = new Dictionary<string, string>();
     }
 }

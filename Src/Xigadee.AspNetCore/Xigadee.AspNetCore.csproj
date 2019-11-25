@@ -33,6 +33,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <Folder Include="Logging\Telemetry\" />
     <Folder Include="Swagger\" />
     <Folder Include="Properties\" />
   </ItemGroup>
