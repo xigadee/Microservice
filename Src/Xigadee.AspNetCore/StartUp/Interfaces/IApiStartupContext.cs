@@ -49,5 +49,10 @@ namespace Xigadee
         /// This can be used to process and set the repositories and the singleton registrations.
         /// </summary>
         ContextDirectives Directives { get; }
+
+        /// <summary>
+        /// This is the service identity for the Api.
+        /// </summary>
+        IApiServiceIdentity ServiceIdentity { get; }
     }
 }

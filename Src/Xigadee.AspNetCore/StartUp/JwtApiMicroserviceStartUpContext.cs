@@ -40,6 +40,28 @@ namespace Xigadee
         public ConfigAuthenticationJwt SecurityJwt { get; set; }
         #endregion
 
+        #region ServiceIdentitySet()
+        /// <summary>
+        /// This method sets the service identity for the application.
+        /// This is primarily used for logging and contains the various parameters needed
+        /// to identity this instance when debugging and logging.
+        /// </summary>
+        protected override void ServiceIdentitySet()
+        {
+            //Set the Microservice Identity
+            string instanceId = System.Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID");
+            string siteName = System.Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME");
+
+            var url = string.IsNullOrEmpty(siteName) ? "http://localhost" : $"https://{siteName}.azurewebsites.net/";
+
+            var ass = GetType().Assembly;
+
+            ServiceIdentity = new ApiServiceIdentity(Id, System.Environment.MachineName, Environment.ApplicationName
+                , ass.GetName().Version.ToString(), url, instanceId, Environment.EnvironmentName
+                , SecurityJwt?.Audience);
+        }
+        #endregion
+
         #region CXB => ModulesCreateInstance(IServiceCollection services)
         /// <summary>
         /// Connects the application components and registers the relevant services.

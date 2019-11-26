@@ -17,6 +17,11 @@ namespace Xigadee
         /// This is the unique service Id which is regenerated each time the service starts up.
         /// </summary>
         public readonly Guid Id = Guid.NewGuid(); 
+
+        /// <summary>
+        /// This is the service identity for the Api.
+        /// </summary>
+        public IApiServiceIdentity ServiceIdentity { get; protected set; }
         #endregion
         #region Constructor
         /// <summary>
@@ -75,6 +80,8 @@ namespace Xigadee
             BindConfigMicroservice();
 
             BindConfigHealthCheck();
+
+            ServiceIdentitySet();
         }
         #endregion
 
@@ -119,6 +126,28 @@ namespace Xigadee
             {
                 Configuration.Bind(BindNameConfigHealthCheck, ConfigHealthCheck);
             }
+        }
+        #endregion
+
+        #region ServiceIdentitySet()
+        /// <summary>
+        /// This method sets the service identity for the application.
+        /// This is primarily used for logging and contains the various parameters needed
+        /// to identity this instance when debugging and logging.
+        /// </summary>
+        protected virtual void ServiceIdentitySet()
+        {
+            //Set the Microservice Identity
+            string instanceId = System.Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID");
+            string siteName = System.Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME");
+
+            var url = string.IsNullOrEmpty(siteName) ? "http://localhost" : $"https://{siteName}.azurewebsites.net/";
+
+            var ass = GetType().Assembly;
+
+            ServiceIdentity = new ApiServiceIdentity(Id, System.Environment.MachineName, Environment.ApplicationName
+                , ass.GetName().Version.ToString(), url, instanceId, Environment.EnvironmentName);
+
         } 
         #endregion
 
