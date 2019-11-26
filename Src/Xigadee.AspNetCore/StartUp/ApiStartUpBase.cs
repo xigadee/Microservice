@@ -228,7 +228,7 @@ namespace Xigadee
         {
             var prov = new ApplicationLoggerProvider();
 
-            ConfigureLoggingSubscribers(prov.Publisher);
+            ConfigureLoggingSubscribers(app, prov);
 
             LoggerProvider = prov;
 
@@ -236,12 +236,13 @@ namespace Xigadee
             LoggerFactory.AddProvider(prov);
         }
         #endregion
-        #region 2a. ConfigureLoggingSubscribers(ILogEventPublisher publisher)
+        #region 2a. ConfigureLoggingSubscribers(IApplicationBuilder app, ApplicationLoggerProvider provider)
         /// <summary>
         /// Use this override to add your specific logging subscribers to published events.
         /// </summary>
-        /// <param name="publisher">The publisher collection.</param>
-        protected virtual void ConfigureLoggingSubscribers(ILogEventPublisher publisher)
+        /// <param name="app">The application builder.</param>
+        /// <param name="provider">The logger provider.</param>
+        protected virtual void ConfigureLoggingSubscribers(IApplicationBuilder app, ApplicationLoggerProvider provider)
         {
             
         }

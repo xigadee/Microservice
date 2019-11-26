@@ -128,7 +128,6 @@ namespace Xigadee
             }
         }
         #endregion
-
         #region ServiceIdentitySet()
         /// <summary>
         /// This method sets the service identity for the application.
