@@ -3,6 +3,29 @@ using System.Linq;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This context is used to hold the necessary data for an in-line command request.
+    /// </summary>
+    public class OnDataCollectionContext : CommandContextBase<IMicroserviceDispatch>
+    {
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="serviceHandlers">The service handler container.</param>
+        /// <param name="collector">The data collector.</param>
+        /// <param name="sharedServices">The shared service context.</param>
+        /// <param name="originatorId">This is the Microservice identifiers.</param>
+        /// <param name="outgoingRequest">This is the outgoing request initiator.</param>
+        public OnDataCollectionContext(
+          IServiceHandlers serviceHandlers
+        , IDataCollection collector
+        , ISharedService sharedServices
+        , MicroserviceId originatorId
+        , IMicroserviceDispatch outgoingRequest) : base(serviceHandlers, collector, sharedServices, originatorId, outgoingRequest)
+        {
+        }
+    }
+
     public static partial class CorePipelineExtensions
     {
         /// <summary>
@@ -25,29 +48,6 @@ namespace Xigadee
             var comp = pipeline.Service.DataCollection.Register(new OnEventDataCollectionComponent(supported, action, () => ms.Dispatch));
 
             return pipeline;
-        }
-
-        /// <summary>
-        /// This context is used to hold the necessary data for an in-line command request.
-        /// </summary>
-        public class OnDataCollectionContext : CommandContextBase<IMicroserviceDispatch>
-        {
-            /// <summary>
-            /// This is the default constructor.
-            /// </summary>
-            /// <param name="serviceHandlers">The service handler container.</param>
-            /// <param name="collector">The data collector.</param>
-            /// <param name="sharedServices">The shared service context.</param>
-            /// <param name="originatorId">This is the Microservice identifiers.</param>
-            /// <param name="outgoingRequest">This is the outgoing request initiator.</param>
-            public OnDataCollectionContext(
-              IServiceHandlers serviceHandlers
-            , IDataCollection collector
-            , ISharedService sharedServices
-            , MicroserviceId originatorId
-            , IMicroserviceDispatch outgoingRequest): base(serviceHandlers, collector, sharedServices, originatorId, outgoingRequest)
-            {
-            }
         }
 
         internal class OnEventDataCollectionComponent: DataCollectorBase, IRequireServiceHandlers, IRequireDataCollector

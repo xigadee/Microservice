@@ -144,8 +144,12 @@ namespace Xigadee
 
             var ass = GetType().Assembly;
 
-            ServiceIdentity = new ApiServiceIdentity(Id, System.Environment.MachineName, Environment.ApplicationName
-                , ass.GetName().Version.ToString(), url, instanceId, Environment.EnvironmentName);
+            ServiceIdentity = new ApiServiceIdentity(Id
+                , System.Environment.MachineName
+                , Environment.ApplicationName
+                , ass.GetName().Version.ToString()
+                , url, instanceId
+                , Environment.EnvironmentName);
 
         } 
         #endregion

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -27,12 +28,26 @@ namespace Xigadee
         {
             HostingEnvironment = env;
 
+            LoggerProviderCreate();
+
             ContextCreate();
 
             ContextInitialize();
         }
         #endregion
-        #region 1. ContextCreate()
+        #region 1. LoggerProviderCreate()
+        /// <summary>
+        /// This method creates the LoggerProvider to allow processes such as the Microservice to connect
+        /// their logging systems early.
+        /// </summary>
+        protected virtual void LoggerProviderCreate()
+        {
+            LoggerProvider = new ApplicationLoggerProvider();
+            //This method tells the provider to hold messages internally until the release method is called.
+            LoggerProvider.Hold();
+        }
+        #endregion
+        #region 2. ContextCreate()
         /// <summary>
         /// Initializes the context
         /// </summary>
@@ -41,7 +56,7 @@ namespace Xigadee
             Context = new CTX();
         }
         #endregion
-        #region 2. ContextInitialize() -> CXA ->
+        #region 3. ContextInitialize() -> CXA ->
         /// <summary>
         /// Initializes the context
         /// </summary>
@@ -107,6 +122,8 @@ namespace Xigadee
         {
             MicroserviceCreate();
 
+            MicroserviceDataCollectionConnect();
+
             MicroserviceConfigure();
 
             MicroserviceHostedServiceCreate();
@@ -123,15 +140,140 @@ namespace Xigadee
         protected virtual void MicroserviceCreate()
         {
             Pipeline = new MicroservicePipeline();
+
         }
         #endregion
-        #region 3b. MicroserviceConfigure()
+        #region 3b. MicroserviceDataCollectionConnect()
+        /// <summary>
+        /// This method connects the DataCollection to the Logger Provider.
+        /// </summary>
+        protected virtual void MicroserviceDataCollectionConnect()
+        {
+            //This method pipes the incoming data collection events to the ASP.NET Core logger.
+            Pipeline.OnDataCollection(MicroserviceOnDataCollection);
+        }
+        /// <summary>
+        /// This method is called when a collection event is raised withing the Microservice.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        /// <param name="ev">The event.</param>
+        protected virtual void MicroserviceOnDataCollection(OnDataCollectionContext ctx, EventHolder ev)
+        {
+            switch (ev.DataType)
+            {
+                //Let's send the most important events to their respective methods.
+                case DataCollectionSupport.Statistics:
+                    MicroserviceOnDataCollection_Statistics(ctx, ev);
+                    break;
+                case DataCollectionSupport.Telemetry:
+                    MicroserviceOnDataCollection_Telemetry(ctx, ev);
+                    break;
+                case DataCollectionSupport.EventSource:
+                    MicroserviceOnDataCollection_EventSource(ctx, ev);
+                    break;
+                case DataCollectionSupport.Logger:
+                    if (MicroserviceOnDataCollection_Logger(ctx, ev, out LogEventApplication lev))
+                        LoggerProvider.AddLogEventToQueue(lev);
+                    break;
+                default:
+                    MicroserviceOnDataCollection_Other(ctx, ev);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// This method is called for the less common Microservice event types.
+        /// </summary>
+        /// <param name="ctx">The incoming context.</param>
+        /// <param name="ev">The incoming EventHolder.</param>
+        protected virtual void MicroserviceOnDataCollection_Other(OnDataCollectionContext ctx, EventHolder ev) { }
+
+        /// <summary>
+        /// This method is called when the Microservice logs new statistics.
+        /// </summary>
+        /// <param name="ctx">The incoming context.</param>
+        /// <param name="ev">The incoming EventHolder.</param>
+        protected virtual void MicroserviceOnDataCollection_Statistics(OnDataCollectionContext ctx, EventHolder ev) { }
+
+        /// <summary>
+        /// This method is called when the Microservice logs new telemetry.
+        /// </summary>
+        /// <param name="ctx">The incoming context.</param>
+        /// <param name="ev">The incoming EventHolder.</param>
+        protected virtual void MicroserviceOnDataCollection_Telemetry(OnDataCollectionContext ctx, EventHolder ev){}
+
+        /// <summary>
+        /// This method is called when the Microservice logs new event source messages.
+        /// </summary>
+        /// <param name="ctx">The incoming context.</param>
+        /// <param name="ev">The incoming EventHolder.</param>
+        protected virtual void MicroserviceOnDataCollection_EventSource(OnDataCollectionContext ctx, EventHolder ev) { }
+
+        /// <summary>
+        /// This method pipes the incoming Microservice logging event in to the ASP.NET Core logging system.
+        /// You can override this method to filter out specific messages.
+        /// </summary>
+        /// <param name="ctx">The incoming context.</param>
+        /// <param name="ev">The incoming EventHolder.</param>
+        /// <param name="levOut">The outgoing event.</param>
+        /// <returns>Returns true if the event should be logged.</returns>
+        protected virtual bool MicroserviceOnDataCollection_Logger(OnDataCollectionContext ctx, EventHolder ev
+            , out LogEventApplication levOut)
+        {
+            levOut = null;
+            var le = ev.Data as LogEvent;
+            //Check for the unexpected.
+            if (le == null)
+                return false;
+
+            var lev = new LogEventApplication();
+            lev.Message = le.Message;
+            lev.Exception = le.Ex;
+            lev.Name = ctx.OriginatorId.Name;
+            lev.State = le;
+            if (le.AdditionalData != null && le.AdditionalData.Count > 0)
+            {
+                if (lev.FormattedParameters == null)
+                    lev.FormattedParameters = new Dictionary<string, object>();
+                le.AdditionalData.ForEach(kv => lev.FormattedParameters.Add(kv.Key, kv.Value));
+            }
+
+            switch (le.Level)
+            {
+                case LoggingLevel.Fatal:
+                    lev.LogLevel = LogLevel.Critical;
+                    break;
+                case LoggingLevel.Error:
+                    lev.LogLevel = LogLevel.Error;
+                    break;
+                case LoggingLevel.Warning:
+                    lev.LogLevel = LogLevel.Warning;
+                    break;
+                case LoggingLevel.Info:
+                    lev.LogLevel = LogLevel.Information;
+                    break;
+                case LoggingLevel.Trace:
+                    lev.LogLevel = LogLevel.Trace;
+                    break;
+                case LoggingLevel.Status:
+                    lev.LogLevel = LogLevel.Information;
+                    break;
+                default:
+                    lev.LogLevel = LogLevel.None;
+                    break;
+            }
+
+            levOut = lev;
+            return true;
+        }
+        #endregion
+        #region 3c. MicroserviceConfigure()
         /// <summary>
         /// Creates and configures the Xigadee microservice pipeline.
         /// </summary>
         protected virtual void MicroserviceConfigure() { }
         #endregion
-        #region 3c. MicroserviceHostedServiceCreate()
+        #region 3d. MicroserviceHostedServiceCreate()
         /// <summary>
         /// Creates and configures the Xigadee microservice pipeline.
         /// </summary>
@@ -226,14 +368,15 @@ namespace Xigadee
         /// <param name="app">The application.</param>
         protected virtual void ConfigureLogging(IApplicationBuilder app)
         {
-            var prov = new ApplicationLoggerProvider();
-
-            ConfigureLoggingSubscribers(app, prov);
-
-            LoggerProvider = prov;
+            ConfigureLoggingSubscribers(app, LoggerProvider);
 
             //Add our default logger with the default configuration.
-            LoggerFactory.AddProvider(prov);
+            LoggerFactory.AddProvider(LoggerProvider);
+
+            //This method releases any held messages.
+            //These messages were initially held while the logging infrastructure was being set up.
+            //This is to ensure that we don't loose our initial set up logging.
+            LoggerProvider.Release();
         }
         #endregion
         #region 2a. ConfigureLoggingSubscribers(IApplicationBuilder app, ApplicationLoggerProvider provider)

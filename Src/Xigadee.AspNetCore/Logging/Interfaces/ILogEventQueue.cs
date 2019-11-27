@@ -13,5 +13,14 @@ namespace Xigadee
         /// </summary>
         /// <param name="logEvent">The log event.</param>
         void Add(LogEventApplication logEvent);
+
+        /// <summary>
+        /// This method makes the queue hold incoming messages in memory until the Release() method is called.
+        /// </summary>
+        void Hold();
+        /// <summary>
+        /// This releases the queue and sets it to poll immediately.
+        /// </summary>
+        void Release();
     }
 }

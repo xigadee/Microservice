@@ -33,10 +33,10 @@ namespace Xigadee
         {
             _loopPauseTimeInMs = loopPauseTimeInMs;
             _logEventPublisher = logEventPublisher;
+
             _threadQueueReader = new Thread(new ParameterizedThreadStart(Start));
 
             _mrseQueueReader = new ManualResetEventSlim(false);
-            ResetQueueReader();
 
             _threadQueueReader.Start();
         }
@@ -49,12 +49,33 @@ namespace Xigadee
         {
             _queueReaderActive = false;
 
-            StartQueueReader();
+            UnlockQueueReader();
 
             _threadQueueReader.Join();
+            //Pass on the good news.
             _logEventPublisher.Dispose();
         } 
         #endregion
+
+        /// <summary>
+        /// If this is set to true, the queue will hold the incoming log messages internally.
+        /// </summary>
+        private bool OnHold { get; set; }
+
+        /// <summary>
+        /// This method makes the queue hold incoming messages in memory until the Release() method is called.
+        /// </summary>
+        public void Hold() => OnHold = true;
+
+        /// <summary>
+        /// This releases the queue and sets it to poll immediately.
+        /// </summary>
+        public void Release()
+        {
+            OnHold = false;
+
+            UnlockQueueReader();
+        }
 
         /// <summary>
         /// Adds the specified log event to the queue.
@@ -64,7 +85,7 @@ namespace Xigadee
         {
             _eventQueue.Enqueue(logEvent);
 
-            StartQueueReader();
+            UnlockQueueReader();
         }
 
 
@@ -75,13 +96,11 @@ namespace Xigadee
             PublishLogEvent(logEvent);
         }
 
-        private void PauseQueueReader() => _mrseQueueReader.Wait(_loopPauseTimeInMs);
-
         private void PublishLogEvent(LogEventApplication logEvent) => _logEventPublisher.Publish(logEvent);
 
         private void ResetQueueReader() => _mrseQueueReader.Reset();
 
-        private void StartQueueReader() => _mrseQueueReader.Set();
+        private void UnlockQueueReader() => _mrseQueueReader.Set();
 
 
         private void Start(object state)
@@ -93,12 +112,14 @@ namespace Xigadee
                 // Loop to infinity until an exception is called for the thread or _queueReaderActive is set to false.
                 while (_queueReaderActive)
                 {
-                    PauseQueueReader();
+                    _mrseQueueReader.Reset();
 
-                    while (_eventQueue.TryDequeue(out var logEvent))
-                        PublishLogEvent(logEvent);
+                    if (!OnHold)
+                        while (_eventQueue.TryDequeue(out var logEvent))
+                            PublishLogEvent(logEvent);
 
-                    ResetQueueReader();
+                    //We wait for a short while, and then check anyway.
+                    _mrseQueueReader.Wait(_loopPauseTimeInMs);
                 }
             }
             catch (ThreadAbortException)
