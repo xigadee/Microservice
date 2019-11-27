@@ -54,9 +54,10 @@ namespace Xigadee
             _threadQueueReader.Join();
             //Pass on the good news.
             _logEventPublisher.Dispose();
-        } 
+        }
         #endregion
 
+        #region Hold/Release()
         /// <summary>
         /// If this is set to true, the queue will hold the incoming log messages internally.
         /// </summary>
@@ -76,7 +77,8 @@ namespace Xigadee
 
             UnlockQueueReader();
         }
-
+        #endregion
+        #region Add(LogEventApplication logEvent)
         /// <summary>
         /// Adds the specified log event to the queue.
         /// </summary>
@@ -86,7 +88,8 @@ namespace Xigadee
             _eventQueue.Enqueue(logEvent);
 
             UnlockQueueReader();
-        }
+        } 
+        #endregion
 
 
         private void PublishLogEvent(LogLevel level, string message, string header, Exception ex = null)
@@ -98,10 +101,7 @@ namespace Xigadee
 
         private void PublishLogEvent(LogEventApplication logEvent) => _logEventPublisher.Publish(logEvent);
 
-        private void ResetQueueReader() => _mrseQueueReader.Reset();
-
         private void UnlockQueueReader() => _mrseQueueReader.Set();
-
 
         private void Start(object state)
         {
@@ -119,6 +119,8 @@ namespace Xigadee
                             PublishLogEvent(logEvent);
 
                     //We wait for a short while, and then check anyway.
+                    //We don't want this to keep polling, so we set a delay. 
+                    //However, any incoming messages will trigger it to loop.
                     _mrseQueueReader.Wait(_loopPauseTimeInMs);
                 }
             }
@@ -130,6 +132,8 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
+                Stop();
+
                 PublishLogEvent(LogLevel.Critical, "Unhandled exception shutting down", "Logging", ex);
             }
         }
