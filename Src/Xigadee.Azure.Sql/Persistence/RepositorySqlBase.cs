@@ -5,7 +5,6 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-
 namespace Xigadee
 {
     /// <summary>
@@ -54,6 +53,32 @@ namespace Xigadee
         }
         #endregion
 
+        #region ContextLogger
+        /// <summary>
+        /// This method logs the response to the request.
+        /// </summary>
+        /// <param name="ctx">The SQL context.</param>
+        /// <param name="action">The repository action.</param>
+        /// <param name="key">The entity key.</param>
+        protected void ContextLogger(SqlEntityContext ctx, string action, K key) => ContextLoggerInternal(ctx, action, key.ToString());
+        /// <summary>
+        /// This method logs the response to the request.
+        /// </summary>
+        /// <param name="ctx">The SQL context.</param>
+        /// <param name="action">The repository action.</param>
+        /// <param name="keyValue">The key type.</param>
+        /// <param name="keyReference">The key value.</param>
+        protected void ContextLogger(SqlEntityContext ctx, string action, string keyValue, string keyReference) => ContextLoggerInternal(ctx, action, $"{keyValue}|{keyReference}"); 
+
+        private void ContextLoggerInternal(SqlEntityContext ctx, string action, string data)
+        {
+            if (ctx.IsSuccessResponse)
+                Collector?.LogMessage($"{action} {typeof(E).Name}/{data} success: {ctx.ResponseCode}");
+            else
+                Collector?.LogWarning($"{action} {typeof(E).Name}/{data} failed: {ctx.ResponseCode}: {ctx.ResponseMessage}");
+        }
+        #endregion
+
         #region Create
         /// <summary>
         /// Implements the internal SQL create logic.
@@ -71,12 +96,9 @@ namespace Xigadee
                 );
 
             if (ctx.IsSuccessResponse)
-            {
                 ctx.ResponseEntities.Add(ctx.EntityOutgoing);
-                Collector?.LogMessage($"Create {typeof(E).Name}/{key} success");
-            }
-            else
-                Collector?.LogWarning($"Create {typeof(E).Name}/{key} failed: {ctx.ResponseCode}: {ctx.ResponseMessage}");
+
+            ContextLogger(ctx, "Create", key);
 
             return ProcessOutputEntity(ctx, holderAction);
         }
@@ -95,10 +117,7 @@ namespace Xigadee
                 , DbDeserializeEntity
                 );
 
-            if (ctx.IsSuccessResponse)
-                Collector?.LogMessage($"Read {typeof(E).Name}/{key} success");
-            else
-                Collector?.LogWarning($"Read {typeof(E).Name}/{key} failed: {ctx.ResponseCode}: {ctx.ResponseMessage}");
+            ContextLogger(ctx, "Read", key);
 
             return ProcessOutputEntity(ctx, holderAction);
         }
@@ -116,10 +135,7 @@ namespace Xigadee
                 , DbDeserializeEntity
                 );
 
-            if (ctx.IsSuccessResponse)
-                Collector?.LogMessage($"Read {typeof(E).Name}/{refKey}|{refValue} success");
-            else
-                Collector?.LogWarning($"Read {typeof(E).Name}/{refKey}|{refValue} failed: {ctx.ResponseCode}: {ctx.ResponseMessage}");
+            ContextLogger(ctx, "Read", refKey, refValue);
 
             return ProcessOutputEntity(ctx, holderAction);
         }
@@ -141,12 +157,9 @@ namespace Xigadee
                 );
 
             if (ctx.IsSuccessResponse)
-            {
                 ctx.ResponseEntities.Add(ctx.EntityOutgoing);
-                Collector?.LogMessage($"Update {typeof(E).Name}/{key} success");
-            }
-            else
-                Collector?.LogWarning($"Update {typeof(E).Name}/{key} failed: {ctx.ResponseCode}: {ctx.ResponseMessage}");
+
+            ContextLogger(ctx, "Update", key);
 
             return ProcessOutputEntity(ctx, holderAction);
         }
@@ -165,10 +178,7 @@ namespace Xigadee
                 , DbDeserializeVersion
                 );
 
-            if (ctx.IsSuccessResponse)
-                Collector?.LogMessage($"Delete {typeof(E).Name}/{key} success");
-            else
-                Collector?.LogWarning($"Delete {typeof(E).Name}/{key} failed: {ctx.ResponseCode}: {ctx.ResponseMessage}");
+            ContextLogger(ctx, "Delete", key);
 
             return ProcessOutputVersion(ctx, key, holderAction);
         }
@@ -186,10 +196,7 @@ namespace Xigadee
                 , DbDeserializeVersion
                 );
 
-            if (ctx.IsSuccessResponse)
-                Collector?.LogMessage($"Delete {typeof(E).Name}/{refKey}|{refValue} success");
-            else
-                Collector?.LogWarning($"Delete {typeof(E).Name}/{refKey}|{refValue} failed: {ctx.ResponseCode}: {ctx.ResponseMessage}");
+            ContextLogger(ctx, "Delete", refKey, refValue);
 
             return ProcessOutputVersion(ctx, onEvent: holderAction);
         }
@@ -208,11 +215,7 @@ namespace Xigadee
                 , DbDeserializeVersion
                 );
 
-            if (ctx.IsSuccessResponse)
-                Collector?.LogMessage($"Version {typeof(E).Name}/{key} success");
-            else
-                Collector?.LogWarning($"Version {typeof(E).Name}/{key} failed: {ctx.ResponseCode}: {ctx.ResponseMessage}");
-
+            ContextLogger(ctx, "Version", key);
 
             return ProcessOutputVersion(ctx, key, holderAction);
         }
@@ -231,10 +234,7 @@ namespace Xigadee
                 , DbDeserializeVersion
                 );
 
-            if (ctx.IsSuccessResponse)
-                Collector?.LogMessage($"Version {typeof(E).Name}/{refKey}|{refValue} success");
-            else
-                Collector?.LogWarning($"Version {typeof(E).Name}/{refKey}|{refValue} failed: {ctx.ResponseCode}: {ctx.ResponseMessage}");
+            ContextLogger(ctx, "Version", refKey, refValue);
 
             return ProcessOutputVersion(ctx, onEvent: holderAction);
         }
@@ -263,6 +263,8 @@ namespace Xigadee
                 , DbSerializeSearchRequest
                 , DbDeserializeSearchResponse
                 );
+
+            ContextLogger(ctx, "Search", rq);
 
             var rs = new RepositoryHolder<SearchRequest, SearchResponse>(rq, null, ctx.EntityOutgoing, ctx.ResponseCode, ctx.ResponseMessage);
 
@@ -295,6 +297,8 @@ namespace Xigadee
                 , DbDeserializeSearchResponseEntity
                 );
 
+            ContextLogger(ctx, "SearchEntity", rq);
+
             var rs = new RepositoryHolder<SearchRequest, SearchResponse<E>>(rq, null, ctx.EntityOutgoing, ctx.ResponseCode, ctx.ResponseMessage);
 
             OnAfterSearchEntityEvent(rs);
@@ -303,6 +307,13 @@ namespace Xigadee
         }
         #endregion
 
+        #region History(HistoryRequest<K> rq, RepositorySettings options = null)
+        /// <summary>
+        /// This is the history request that returns a list of historical entities for a particular entity.
+        /// </summary>
+        /// <param name="rq">The history request.</param>
+        /// <param name="options">The repository settings.</param>
+        /// <returns>Returns the repository holder.</returns>
         public override async Task<RepositoryHolder<HistoryRequest<K>, HistoryResponse<E>>> History(HistoryRequest<K> rq, RepositorySettings options = null)
         {
             OnBeforeHistoryEvent(rq);
@@ -318,12 +329,15 @@ namespace Xigadee
                 , DbDeserializeHistoryResponse
                 );
 
+            ContextLogger(ctx, "History", rq);
+
             var rs = new RepositoryHolder<HistoryRequest<K>, HistoryResponse<E>>(rq, null, ctx.EntityOutgoing, ctx.ResponseCode, ctx.ResponseMessage);
 
             OnAfterHistoryEvent(rs);
 
             return rs;
-        }
+        } 
+        #endregion
 
         /// <summary>
         /// This returns the name of the search stored procedure.

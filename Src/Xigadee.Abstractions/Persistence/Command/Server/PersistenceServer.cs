@@ -92,6 +92,22 @@ namespace Xigadee
         }
         #endregion
 
+        #region Collector
+        /// <summary>
+        /// This is the data collector override.
+        /// This override sets the collector on the repository.
+        /// </summary>
+        public override IDataCollection Collector
+        {
+            get => base.Collector;
+            set
+            {
+                base.Collector = value;
+                Repository.Collector = value;
+            }
+        } 
+        #endregion
+
         #region Repository
         /// <summary>
         /// Gets the internal repository.
