@@ -2,8 +2,7 @@
 
 namespace Xigadee
 {
-    public class HistoryResponse<K>: HistoryBase<K>
-        where K : IEquatable<K>
+    public class HistoryResponse<E>: SearchResponse<E>
     {
 
     }

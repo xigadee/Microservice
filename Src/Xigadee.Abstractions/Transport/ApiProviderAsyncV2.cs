@@ -248,6 +248,26 @@ namespace Xigadee
         }
         #endregion
 
+        #region History(HistoryRequest<K> key, RepositorySettings options = null)
+        /// <summary>
+        /// This method reads an entity based on the key passed.
+        /// </summary>
+        /// <param name="key">The key request.</param>
+        /// <param name="options">These are the repository options which define the request type..</param>
+        /// <returns>This is the holder containing the response and the entity where necessary.</returns>
+        public virtual async Task<RepositoryHolder<HistoryRequest<K>, HistoryResponse<E>>> History(HistoryRequest<K> key, RepositorySettings options = null)
+        {
+            //You should not specify select parameters when selecting the full entity to be returned.
+            if (!string.IsNullOrEmpty(key.Select))
+                key.AssignSelect(null);
+
+            var uri = mUriMapper.MakeUri(HttpMethod.Get, key);
+
+            return await CallClient<HistoryRequest<K>, HistoryResponse<E>>(uri, options
+                , deserializer: (r, b, rs) => rs.Entity = EntityDeserialize<HistoryResponse<E>>(r, b)
+                );
+        }
+        #endregion
 
         #region EntityDeserialize<ET>...
         /// <summary>

@@ -40,6 +40,8 @@ namespace Xigadee
         }
     }
     #endregion
+
+    #region PersistenceServer<K, E, S, P>
     /// <summary>
     /// Initializes a new instance of the PersistenceServer class that hosts a repository in the Microservice.
     /// </summary>
@@ -76,9 +78,10 @@ namespace Xigadee
             , ICacheManager<K, E> cacheManager = null
             , TimeSpan? defaultTimeout = null
             , P policy = null
-            ):base(policy)
+            ) : base(policy)
         {
             Repository = repository ?? throw new ArgumentNullException("repository");
+            Repository.Collector = Collector;
 
             Policy.DefaultTimeout = defaultTimeout ?? DefaultTimeout;
             Policy.PersistenceRetryPolicy = persistenceRetryPolicy ?? new PersistenceRetryPolicy();
@@ -93,7 +96,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the internal repository.
         /// </summary>
-        public virtual IRepositoryAsyncServer<K, E> Repository { get; } 
+        public virtual IRepositoryAsyncServer<K, E> Repository { get; }
         #endregion
 
         #region CacheManager
@@ -122,7 +125,7 @@ namespace Xigadee
             base.StatisticsRecalculate(stats);
 
             StatisticsInternal.RequestsInPlay = RequestsCurrent.Values.Select((v) => v?.Debug).ToArray();
-        } 
+        }
         #endregion
 
         #region EntityType
@@ -177,7 +180,7 @@ namespace Xigadee
             PersistenceCommandRegister<SearchRequest, SearchResponse>(EntityActions.Search, ProcessSearch);
             PersistenceCommandRegister<SearchRequest, SearchResponse<E>>(EntityActions.SearchEntity, ProcessSearchEntity);
             //History
-            PersistenceCommandRegister<HistoryRequest<K>, HistoryResponse<K>>(EntityActions.History, ProcessHistory);
+            PersistenceCommandRegister<HistoryRequest<K>, HistoryResponse<E>>(EntityActions.History, ProcessHistory);
         }
         #endregion
         #region PersistenceCommandRegister<KT,ET>...
@@ -219,8 +222,8 @@ namespace Xigadee
                     rsMessage.MessageType = incoming.Message.MessageType;
                     rsMessage.ActionType = "";
 
-                    var rsPayload = new TransmissionPayload(rsMessage, traceEnabled:Policy.TransmissionPayloadTraceEnabled);
-                    
+                    var rsPayload = new TransmissionPayload(rsMessage, traceEnabled: Policy.TransmissionPayloadTraceEnabled);
+
                     bool hasTimedOut = false;
 
                     try
@@ -424,7 +427,7 @@ namespace Xigadee
             {
                 Collector?.LogException($"RaiseEntityChangeEvent {entityType}/{actionType} failed for {traceId.ToString("N")}", ex);
             }
-        } 
+        }
         #endregion
 
         //Timeout correction
@@ -571,11 +574,11 @@ namespace Xigadee
                     data.EntityVersion = settings.VersionId;
                 }
 
-                Collector.Write(new EventSourceEvent {Entry = data, OriginatorId = originatorKey, UtcTimeStamp = DateTime.UtcNow}, true);
+                Collector.Write(new EventSourceEvent { Entry = data, OriginatorId = originatorKey, UtcTimeStamp = DateTime.UtcNow }, true);
             }
             catch (Exception ex)
             {
-                Collector?.LogException($"Exception thrown for log to event source on {typeof (E).Name}-{actionType}-{originatorKey}", ex);
+                Collector?.LogException($"Exception thrown for log to event source on {typeof(E).Name}-{actionType}-{originatorKey}", ex);
             }
 
             return Task.CompletedTask;
@@ -798,10 +801,10 @@ namespace Xigadee
 
             //if (result == null || !result.IsSuccess)
             //{
-                //if (Transform.Version == null)
-                //    //If we don't set a version maker then how can we return the version.
-                //    result = new PersistenceResponseHolder(PersistenceResponse.NotImplemented501) { IsSuccess = false };
-                //else
+            //if (Transform.Version == null)
+            //    //If we don't set a version maker then how can we return the version.
+            //    result = new PersistenceResponseHolder(PersistenceResponse.NotImplemented501) { IsSuccess = false };
+            //else
             var result = await InternalVersion(holder.Rq.Key, holder);
 
             //    if ((CacheManager?.IsActive ?? false) && !CacheManager.IsReadOnly && result.IsSuccess)
@@ -880,13 +883,17 @@ namespace Xigadee
         /// </summary>
         /// <param name="holder">The is the entity history data.</param>
         /// <returns>This is an async task.</returns>
-        protected virtual async Task ProcessHistory(PersistenceRequestHolder<HistoryRequest<K>, HistoryResponse<K>> holder)
+        protected virtual async Task ProcessHistory(PersistenceRequestHolder<HistoryRequest<K>, HistoryResponse<E>> holder)
         {
             holder.Rs.ResponseCode = (int)PersistenceResponse.NotImplemented501;
             holder.Rs.ResponseMessage = "History is not implemented.";
         }
-        #endregion
 
+        protected virtual Task<RepositoryHolder<HistoryRequest<K>, HistoryResponse<E>>> InternalHistory(HistoryRequest<K> key, PersistenceRequestHolder<HistoryRequest<K>, HistoryResponse<E>> holder)
+            => Repository.History(key);
+
+
+        #endregion
 
         #region ProcessOutput<KT,ET>...
         /// <summary>
@@ -1021,5 +1028,6 @@ namespace Xigadee
         public virtual TimeSpan DefaultTimeout { get; } = TimeSpan.FromSeconds(10);
         #endregion
 
-    }
+    } 
+    #endregion
 }

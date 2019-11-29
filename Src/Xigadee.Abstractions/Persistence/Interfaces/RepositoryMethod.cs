@@ -37,6 +37,7 @@
         /// Read the entity version by the reference
         /// </summary>
         VersionByRef,
+
         /// <summary>
         /// Search the entities and retrieve a set of entity properties
         /// </summary>
@@ -44,6 +45,11 @@
         /// <summary>
         /// Search the entities and retrieve a set of entities
         /// </summary>
-        SearchEntity
+        SearchEntity,
+
+        /// <summary>
+        /// Retrieve the historical set of entity versions.
+        /// </summary>
+        History
     }
 }

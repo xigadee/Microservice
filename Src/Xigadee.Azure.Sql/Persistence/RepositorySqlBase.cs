@@ -71,7 +71,12 @@ namespace Xigadee
                 );
 
             if (ctx.IsSuccessResponse)
+            {
                 ctx.ResponseEntities.Add(ctx.EntityOutgoing);
+                Collector?.LogMessage($"Create {typeof(E).Name}/{key} success");
+            }
+            else
+                Collector?.LogWarning($"Create {typeof(E).Name}/{key} failed: {ctx.ResponseCode}: {ctx.ResponseMessage}");
 
             return ProcessOutputEntity(ctx, holderAction);
         }
@@ -90,6 +95,11 @@ namespace Xigadee
                 , DbDeserializeEntity
                 );
 
+            if (ctx.IsSuccessResponse)
+                Collector?.LogMessage($"Read {typeof(E).Name}/{key} success");
+            else
+                Collector?.LogWarning($"Read {typeof(E).Name}/{key} failed: {ctx.ResponseCode}: {ctx.ResponseMessage}");
+
             return ProcessOutputEntity(ctx, holderAction);
         }
         /// <summary>
@@ -105,6 +115,11 @@ namespace Xigadee
                 , DbSerializeKeyReference
                 , DbDeserializeEntity
                 );
+
+            if (ctx.IsSuccessResponse)
+                Collector?.LogMessage($"Read {typeof(E).Name}/{refKey}|{refValue} success");
+            else
+                Collector?.LogWarning($"Read {typeof(E).Name}/{refKey}|{refValue} failed: {ctx.ResponseCode}: {ctx.ResponseMessage}");
 
             return ProcessOutputEntity(ctx, holderAction);
         }
@@ -126,7 +141,12 @@ namespace Xigadee
                 );
 
             if (ctx.IsSuccessResponse)
+            {
                 ctx.ResponseEntities.Add(ctx.EntityOutgoing);
+                Collector?.LogMessage($"Update {typeof(E).Name}/{key} success");
+            }
+            else
+                Collector?.LogWarning($"Update {typeof(E).Name}/{key} failed: {ctx.ResponseCode}: {ctx.ResponseMessage}");
 
             return ProcessOutputEntity(ctx, holderAction);
         }
@@ -145,6 +165,11 @@ namespace Xigadee
                 , DbDeserializeVersion
                 );
 
+            if (ctx.IsSuccessResponse)
+                Collector?.LogMessage($"Delete {typeof(E).Name}/{key} success");
+            else
+                Collector?.LogWarning($"Delete {typeof(E).Name}/{key} failed: {ctx.ResponseCode}: {ctx.ResponseMessage}");
+
             return ProcessOutputVersion(ctx, key, holderAction);
         }
         /// <summary>
@@ -160,6 +185,11 @@ namespace Xigadee
                 , DbSerializeKeyReference
                 , DbDeserializeVersion
                 );
+
+            if (ctx.IsSuccessResponse)
+                Collector?.LogMessage($"Delete {typeof(E).Name}/{refKey}|{refValue} success");
+            else
+                Collector?.LogWarning($"Delete {typeof(E).Name}/{refKey}|{refValue} failed: {ctx.ResponseCode}: {ctx.ResponseMessage}");
 
             return ProcessOutputVersion(ctx, onEvent: holderAction);
         }
@@ -178,6 +208,12 @@ namespace Xigadee
                 , DbDeserializeVersion
                 );
 
+            if (ctx.IsSuccessResponse)
+                Collector?.LogMessage($"Version {typeof(E).Name}/{key} success");
+            else
+                Collector?.LogWarning($"Version {typeof(E).Name}/{key} failed: {ctx.ResponseCode}: {ctx.ResponseMessage}");
+
+
             return ProcessOutputVersion(ctx, key, holderAction);
         }
 
@@ -194,6 +230,11 @@ namespace Xigadee
                 , DbSerializeKeyReference
                 , DbDeserializeVersion
                 );
+
+            if (ctx.IsSuccessResponse)
+                Collector?.LogMessage($"Version {typeof(E).Name}/{refKey}|{refValue} success");
+            else
+                Collector?.LogWarning($"Version {typeof(E).Name}/{refKey}|{refValue} failed: {ctx.ResponseCode}: {ctx.ResponseMessage}");
 
             return ProcessOutputVersion(ctx, onEvent: holderAction);
         }
@@ -262,6 +303,28 @@ namespace Xigadee
         }
         #endregion
 
+        public override async Task<RepositoryHolder<HistoryRequest<K>, HistoryResponse<E>>> History(HistoryRequest<K> rq, RepositorySettings options = null)
+        {
+            OnBeforeHistoryEvent(rq);
+
+            var response = new HistoryResponse<E>();
+            response.PopulateSearchRequest(rq);
+
+            var ctx = new SqlEntityContext<HistoryRequest<K>, HistoryResponse<E>>(SearchEntitySpName(rq.Id), options, rq);
+            ctx.EntityOutgoing = response;
+
+            await ExecuteSqlCommand(ctx
+                , DbSerializeHistoryRequest
+                , DbDeserializeHistoryResponse
+                );
+
+            var rs = new RepositoryHolder<HistoryRequest<K>, HistoryResponse<E>>(rq, null, ctx.EntityOutgoing, ctx.ResponseCode, ctx.ResponseMessage);
+
+            OnAfterHistoryEvent(rs);
+
+            return rs;
+        }
+
         /// <summary>
         /// This returns the name of the search stored procedure.
         /// </summary>
@@ -275,11 +338,18 @@ namespace Xigadee
         /// <returns>Returns the stored procedure name.</returns>
         protected virtual string SearchEntitySpName(string id) => SpNamer.StoredProcedureSearchEntity(id ?? "Default");
 
+
         /// <summary>
         /// This method serializes the entity in to the SqlCommand.
         /// </summary>
         /// <param name="ctx">The context</param>
         protected virtual void DbSerializeSearchRequest(SqlEntityContext<SearchRequest, SearchResponse> ctx) => DbSerializeSearchRequestCombined(ctx);
+
+        /// <summary>
+        /// This method serializes the request in to SQL parameters.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        protected abstract void DbSerializeHistoryRequest(SqlEntityContext<HistoryRequest<K>, HistoryResponse<E>> ctx);
 
         /// <summary>
         /// This method serializes the entity in to the SqlCommand.
@@ -299,6 +369,12 @@ namespace Xigadee
         /// <param name="dataReader">The data reader.</param>
         /// <param name="ctx">The context</param>
         protected abstract void DbDeserializeSearchResponse(SqlDataReader dataReader, SqlEntityContext<SearchRequest, SearchResponse> ctx);
+        /// <summary>
+        /// This method deserializes the SQL response.
+        /// </summary>
+        /// <param name="dataReader">The data reader.</param>
+        /// <param name="ctx">The context.</param>
+        protected abstract void DbDeserializeHistoryResponse(SqlDataReader dataReader, SqlEntityContext<HistoryRequest<K>, HistoryResponse<E>> ctx);
 
         /// <summary>
         /// This method deserializes the entity in to the SqlCommand.
@@ -409,6 +485,8 @@ namespace Xigadee
                     }
                     catch (InvalidOperationException iox)
                     {
+                        Collector?.LogException($"{nameof(ExecuteSqlCommand)} Invalid Operation exception: {typeof(E).Name} - {iox.Message}");
+
                         if (paramReturnValue.Value == null || (int)paramReturnValue.Value == 0)
                             throw;
 
@@ -421,6 +499,8 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
+                Collector?.LogException($"{nameof(ExecuteSqlCommand)} Unhandled exception: {typeof(E).Name} - {ex.Message}");
+
                 if (paramReturnValue?.Value != null)
                     ctx.ResponseCode = (int)paramReturnValue.Value;
                 else
@@ -444,6 +524,7 @@ namespace Xigadee
         /// <returns>Returns true if errors are detected.</returns>
         protected virtual bool SqlErrorsCheck<ET>(SqlDataReader dataReader, SqlEntityContext<ET> response, Exception ex = null)
         {
+
             var columnSchema = dataReader.GetColumnSchema();
             if (columnSchema.Any(dbc => dbc.ColumnName.Equals("ErrorNumber")))
             {
@@ -453,6 +534,8 @@ namespace Xigadee
 
             if (columnSchema.Any(dbc => dbc.ColumnName.Equals("ErrorMessage")))
                 response.ResponseMessage = $"{response.ResponseMessage}-{dataReader["ErrorMessage"]}";
+
+            Collector?.LogWarning($"{nameof(ExecuteSqlCommand)} Sql Error returned: {typeof(E).Name} - {response.ResponseCode}: {response.ResponseMessage}");
 
             return !string.IsNullOrEmpty(response.ResponseMessage);
         }

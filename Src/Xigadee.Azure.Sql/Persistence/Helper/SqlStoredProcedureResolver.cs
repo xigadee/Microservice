@@ -224,6 +224,11 @@ namespace Xigadee
         /// <returns>Returns the combined string which matches to a specific search stored procedure.</returns>
         public virtual string StoredProcedureSearchEntityJson(string id) => ExternalSchema + $"{_spNames[RepositoryMethod.SearchEntity]}_{id?.Trim().ToLowerInvariant() ?? "Default"}_Json";
 
+        /// <summary>
+        /// Gets the stored procedure version.
+        /// </summary>
+        public virtual string StoredProcedureHistory => ExternalSchema + _spNames[RepositoryMethod.History];
+
 
         /// <summary>
         /// This is the shared internal upsert stored procedure.

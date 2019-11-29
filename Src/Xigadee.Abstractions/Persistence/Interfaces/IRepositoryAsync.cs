@@ -83,5 +83,14 @@ namespace Xigadee
         /// <param name="options">The options.</param>
         /// <returns>Returns the holder with the response and data.</returns>
         Task<RepositoryHolder<SearchRequest, SearchResponse<E>>> SearchEntity(SearchRequest key, RepositorySettings options = null);
+
+        /// <summary>
+        /// This method returns a list of the same entity.
+        /// </summary>
+        /// <param name="key">The Search Request key.</param>
+        /// <param name="options">The repository options.</param>
+        /// <returns>Returns the list of entities.</returns>
+        Task<RepositoryHolder<HistoryRequest<K>, HistoryResponse<E>>> History(HistoryRequest<K> key, RepositorySettings options = null);
+
     }
 }

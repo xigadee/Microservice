@@ -125,6 +125,32 @@ namespace Xigadee
         }
 
         /// <summary>
+        /// Searches the entity store are returns full entities.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="options">The options.</param>
+        /// <returns>
+        /// Returns the holder with the response and data.
+        /// </returns>
+        public async Task<RepositoryHolder<HistoryRequest<K>, HistoryResponse<E>>> History(HistoryRequest<K> key, RepositorySettings options = null)
+        {
+            var rs = await Repository.History(key, options);
+
+            return rs.ToBase((e) =>
+            {
+                var sr = new HistoryResponse<E>();
+
+                sr.Etag = rs.Entity.Etag;
+                sr.Skip = rs.Entity.Skip;
+                sr.Top = rs.Entity.Top;
+
+                sr.Data = rs.Entity.Data?.Select((el) => el as E).ToList();
+
+                return sr;
+            });
+        }
+
+        /// <summary>
         /// Deletes the entity by the specified key.
         /// </summary>
         /// <param name="key">The key.</param>

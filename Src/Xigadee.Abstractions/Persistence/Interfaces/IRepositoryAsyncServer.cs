@@ -10,6 +10,10 @@ namespace Xigadee
         where K : IEquatable<K>
     {
         /// <summary>
+        /// This collection class is used to collect logging information.
+        /// </summary>
+        IDataCollection Collector { get; set; }
+        /// <summary>
         /// Gets the name of the entity.
         /// </summary>
         string EntityName { get; }
@@ -80,5 +84,7 @@ namespace Xigadee
         /// Occurs before an entity is read.
         /// </summary>
         event EventHandler<RepositoryHolder<K, Tuple<K, string>>> OnAfterVersion;
+
+
     }
 }

@@ -60,7 +60,9 @@ namespace Xigadee
             }
             catch (JsonException e)
             {
-                throw;// new RepositoryException($"Unable to deserialize correspondent from {dllVersion} to {_dllVersion}", e);
+                Collector?.LogException($"Unable to deserialize entity {typeof(E).Name} - {e.Message}");
+
+                throw;
             }
         } 
         #endregion
@@ -72,28 +74,38 @@ namespace Xigadee
         /// <param name="ctx">The context</param>
         protected override void DbSerializeEntity(SqlEntityContext<E> ctx)
         {
-            var cmd = ctx.Command;
-            var entity = ctx.EntityOutgoing;
+            try
+            {
+                var cmd = ctx.Command;
+                var entity = ctx.EntityOutgoing;
 
-            cmd.Parameters.Add(new SqlParameter("@ExternalId", SqlDbType.UniqueIdentifier) { Value = entity.Id });
+                cmd.Parameters.Add(new SqlParameter("@ExternalId", SqlDbType.UniqueIdentifier) { Value = entity.Id });
 
-            cmd.Parameters.Add(new SqlParameter("@VersionId", SqlDbType.UniqueIdentifier) { Value = ctx.EntityIncoming.VersionId });
+                cmd.Parameters.Add(new SqlParameter("@VersionId", SqlDbType.UniqueIdentifier) { Value = ctx.EntityIncoming.VersionId });
 
-            cmd.Parameters.Add(new SqlParameter("@VersionIdNew", SqlDbType.UniqueIdentifier) { Value = entity.VersionId });
+                cmd.Parameters.Add(new SqlParameter("@VersionIdNew", SqlDbType.UniqueIdentifier) { Value = entity.VersionId });
 
-            cmd.Parameters.Add(new SqlParameter("@UserIdAudit", SqlDbType.UniqueIdentifier) { Value = entity.UserIdAudit });
-            cmd.Parameters.Add(new SqlParameter("@DateCreated", SqlDbType.DateTime) { Value = entity.DateCreated });
-            cmd.Parameters.Add(new SqlParameter("@DateUpdated", SqlDbType.DateTime) { Value = entity.DateUpdated });
+                cmd.Parameters.Add(new SqlParameter("@UserIdAudit", SqlDbType.UniqueIdentifier) { Value = entity.UserIdAudit });
+                cmd.Parameters.Add(new SqlParameter("@DateCreated", SqlDbType.DateTime) { Value = entity.DateCreated });
+                cmd.Parameters.Add(new SqlParameter("@DateUpdated", SqlDbType.DateTime) { Value = entity.DateUpdated });
 
-            cmd.Parameters.Add(new SqlParameter("@Body", SqlDbType.NVarChar) { Value = CreateBody(entity) });
+                cmd.Parameters.Add(new SqlParameter("@Body", SqlDbType.NVarChar) { Value = CreateBody(entity) });
 
-            cmd.Parameters.Add(new SqlParameter("@References", SqlDbType.Structured)
-            { TypeName = $"{SpNamer.ExternalSchema}[KvpTableType]", Value = CreateReferences(entity) });
+                cmd.Parameters.Add(new SqlParameter("@References", SqlDbType.Structured)
+                { TypeName = $"{SpNamer.ExternalSchema}[KvpTableType]", Value = CreateReferences(entity) });
 
-            cmd.Parameters.Add(new SqlParameter("@Properties", SqlDbType.Structured)
-            { TypeName = $"{SpNamer.ExternalSchema}[KvpTableType]", Value = CreateProperties(entity) });
+                cmd.Parameters.Add(new SqlParameter("@Properties", SqlDbType.Structured)
+                { TypeName = $"{SpNamer.ExternalSchema}[KvpTableType]", Value = CreateProperties(entity) });
 
-            cmd.Parameters.Add(new SqlParameter("@Sig", SqlDbType.VarChar, 255) { Value = SignatureCreate(entity) });
+                cmd.Parameters.Add(new SqlParameter("@Sig", SqlDbType.VarChar, 255) { Value = SignatureCreate(entity) });
+            }
+            catch (Exception e)
+            {
+                Collector?.LogWarning($"Unable to serialize entity {typeof(E).Name}/{ctx.EntityOutgoing.Id} - {e.Message}");
+
+                throw;
+            }
+
         }
         #endregion
 
@@ -268,17 +280,6 @@ namespace Xigadee
             rs.Data.Add(values);
         }
 
-        protected class SqlProperties
-        {
-            public List<SqlProperty> Property { get; set; }
-        }
-
-        protected class SqlProperty
-        {
-            public string Type;
-            public string Value;
-        }
-
         /// <summary>
         /// This method resolves the reader in to the search response.
         /// </summary>
@@ -299,6 +300,43 @@ namespace Xigadee
             rs.CacheHit = entityHolder.CacheHit;
         }
 
+        protected override void DbSerializeHistoryRequest(SqlEntityContext<HistoryRequest<K>, HistoryResponse<E>> ctx)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void DbDeserializeHistoryResponse(SqlDataReader dataReader, SqlEntityContext<HistoryRequest<K>, HistoryResponse<E>> ctx)
+        {
+            throw new NotImplementedException();
+        }
+
+        #region Helper classes
+
+        /// <summary>
+        /// This collection holds the sql properties.
+        /// </summary>
+        protected class SqlProperties
+        {
+            /// <summary>
+            /// The list of properties.
+            /// </summary>
+            public List<SqlProperty> Property { get; set; }
+        }
+
+        /// <summary>
+        /// This class holds a SQL property.
+        /// </summary>
+        protected class SqlProperty
+        {
+            /// <summary>
+            /// The type.
+            /// </summary>
+            public string Type;
+            /// <summary>
+            /// The value.
+            /// </summary>
+            public string Value;
+        }
         private class SQLSearchResponse
         {
             public List<SQLSearchResult> SearchResponse { get; set; }
@@ -313,7 +351,7 @@ namespace Xigadee
                     yield return result.Extract<TE>();
             }
 
-            public SQLSearchResult Default => SearchResponse.Count == 1?SearchResponse[0]:null;
+            public SQLSearchResult Default => SearchResponse.Count == 1 ? SearchResponse[0] : null;
 
             public Guid? ETag => Default?.ETag;
             public int? Skip => Default?.Skip;
@@ -350,5 +388,6 @@ namespace Xigadee
             public RE Extract<RE>() => JsonConvert.DeserializeObject<RE>(Body);
         }
 
+        #endregion
     }
 }

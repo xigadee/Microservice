@@ -418,6 +418,31 @@ namespace Xigadee
         }
         #endregion
 
+        #region SearchEntity(SearchRequest key)
+        /// <summary>
+        /// Searches the collection using the specified parameters.
+        /// </summary>
+        public override async Task<RepositoryHolder<HistoryRequest<K>, HistoryResponse<E>>> History(HistoryRequest<K> rq
+            , RepositorySettings options = null)
+        {
+            throw new NotImplementedException();
+            //OnBeforeSearchEvent(rq);
+
+            //var result = await SearchInternal(rq, options, (rs) =>
+            //{
+            //    var output = new SearchResponse<E>();
+            //    output.PopulateSearchRequest(rq);
+            //    output.Data = rs.Select(i => i.Entity).ToList();
+            //    return output;
+            //});
+
+            //OnAfterSearchEntityEvent(result);
+
+            //return result;
+        }
+        #endregion
+
+
         #region SearchInternal<S> ...
         /// <summary>
         /// This method provides the generic search method.

@@ -91,6 +91,10 @@ namespace Xigadee
         /// </summary>
         string StoredProcedureSearchEntity(string id);
 
+        /// <summary>
+        /// Gets the history stored procedure name.
+        /// </summary>
+        string StoredProcedureHistory { get; }
 
         /// <summary>
         /// Gets the search stored procedure name.

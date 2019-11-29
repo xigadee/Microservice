@@ -11,6 +11,13 @@ namespace Xigadee
     public abstract class RepositoryBase<K, E> : RepositoryBase, IRepositoryAsyncServer<K, E>
         where K : IEquatable<K>
     {
+        #region Collector
+        /// <summary>
+        /// This is the data collector used to collect logging and data information.
+        /// </summary>
+        public virtual IDataCollection Collector { get; set; } 
+        #endregion
+
         #region Events
 
         #region OnBeforeCreate...
@@ -175,6 +182,29 @@ namespace Xigadee
         /// </summary>
         /// <param name="rs">The search response.</param>
         protected void OnAfterSearchEntityEvent(RepositoryHolder<SearchRequest, SearchResponse<E>> rs) => OnAfterSearchEntity?.Invoke(this, rs);
+        #endregion
+
+        #region OnBeforeHistory...
+        /// <summary>
+        /// Occurs before an entity history is retrieved.
+        /// </summary>
+        public event EventHandler<HistoryRequest<K>> OnBeforeHistory;
+        /// <summary>
+        /// Called when a history event occurs.
+        /// </summary>
+        /// <param name="key">The search request.</param>
+        protected void OnBeforeHistoryEvent(HistoryRequest<K> key) => OnBeforeHistory?.Invoke(this, key);
+        #endregion
+        #region OnAfterHistory...
+        /// <summary>
+        /// Occurs after a history is created.
+        /// </summary>
+        public event EventHandler<RepositoryHolder<HistoryRequest<K>, HistoryResponse<E>>> OnAfterHistory;
+        /// <summary>
+        /// Called after a history event occurs.
+        /// </summary>
+        /// <param name="rs">The search response.</param>
+        protected void OnAfterHistoryEvent(RepositoryHolder<HistoryRequest<K>, HistoryResponse<E>> rs) => OnAfterHistory?.Invoke(this, rs);
         #endregion
 
         #endregion
@@ -515,6 +545,18 @@ namespace Xigadee
         /// Returns the holder with the response and entities.
         /// </returns>
         public abstract Task<RepositoryHolder<SearchRequest, SearchResponse<E>>> SearchEntity(SearchRequest rq, RepositorySettings options = null);
+        #endregion
+
+        #region History
+        /// <summary>
+        /// This method is used to return a selection of previous versions of an entity. 
+        /// </summary>
+        /// <param name="key">The search key.</param>
+        /// <param name="options">The repository options.</param>
+        /// <returns>
+        /// Returns the holder with the response and entities.
+        /// </returns>
+        public abstract Task<RepositoryHolder<HistoryRequest<K>, HistoryResponse<E>>> History(HistoryRequest<K> key, RepositorySettings options = null);
         #endregion
     }
 
