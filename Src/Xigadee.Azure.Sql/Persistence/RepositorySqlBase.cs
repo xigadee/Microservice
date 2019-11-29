@@ -60,7 +60,7 @@ namespace Xigadee
         /// <param name="ctx">The SQL context.</param>
         /// <param name="action">The repository action.</param>
         /// <param name="key">The entity key.</param>
-        protected void ContextLogger(SqlEntityContext ctx, string action, K key) => ContextLoggerInternal(ctx, action, key.ToString());
+        protected void ContextLogger<X>(SqlEntityContext ctx, string action, X key) => ContextLoggerInternal(ctx, action, key.ToString());
         /// <summary>
         /// This method logs the response to the request.
         /// </summary>

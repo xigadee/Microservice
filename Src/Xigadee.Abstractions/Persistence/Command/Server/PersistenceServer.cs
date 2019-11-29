@@ -938,7 +938,6 @@ namespace Xigadee
         }
         #endregion
 
-
         //Response Processing
         //#region ProcessOutputEntity...
         ///// <summary>
