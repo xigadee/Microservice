@@ -162,12 +162,16 @@ namespace Xigadee
                 Policy.ResourceConsumer = resourceTracker.RegisterConsumer(EntityType, Policy.ResourceProfile);
 
             base.StartInternal();
+
+            Collector?.LogMessage($"Repository {typeof(E).Name} started.");
         }
         /// <summary>
         /// This method stops the persistence command.
         /// </summary>
         protected override void StopInternal()
         {
+            Collector?.LogMessage($"Repository {typeof(E).Name} stopping.");
+
             base.StopInternal();
             Policy.ResourceConsumer = null;
         }
