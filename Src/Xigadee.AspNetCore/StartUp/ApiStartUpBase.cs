@@ -490,7 +490,7 @@ namespace Xigadee
             }
             catch (Exception ex)
             {
-                Context?.Logger.LogError(ex, $"Health check failed.");
+                Context?.Logger.LogInformation(ex, $"Health check failed.");
             }
 
             context.Response.StatusCode = 404;
@@ -503,7 +503,7 @@ namespace Xigadee
         /// <summary>
         /// Gets the heartbeat output that is sent back to the polling client.
         /// </summary>
-        protected virtual string HealthCheckOutput => $"{Context.ConfigApplication.Name} => {DateTime.UtcNow:s} @ {Context.Id}";
+        protected virtual string HealthCheckOutput => $"{Context.ConfigApplication?.Name} => {DateTime.UtcNow:s} @ {Context.Id}";
         #endregion
     }
 }

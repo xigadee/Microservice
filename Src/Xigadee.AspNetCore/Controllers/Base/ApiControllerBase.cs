@@ -29,13 +29,15 @@ namespace Xigadee
         /// This method wraps a request to a module or other methods and captures exceptions and processes them
         /// in a consistent manner.
         /// </summary>
-        /// <param name="name">The name of the calling method. This is used for more detailed logging.</param>
         /// <param name="a">The function to execute.</param>
         /// <param name="extendErrors">Specifies whether the error should be appended to the response.</param>
+        /// <param name="name">The name of the calling method. This is used for more detailed logging.</param>
+        /// <param name="includeDescription">A boolean flag that indicates whether the error description should be included in the response. The default is false.</param>
         /// <returns></returns>
         protected async Task<IActionResult> ProcessRequest(Func<Task<IActionResult>> a
             , bool extendErrors = true
             , [CallerMemberName] string name = null
+            , bool includeDescription = false
             )
         {
             try
@@ -44,10 +46,10 @@ namespace Xigadee
             }
             catch (HttpStatusOutputException hex)
             {
-                _logger.LogWarning(hex, $"{GetType().Name}/{name} output exception - {hex.StatusCode}/{hex.StatusSubcode}/{hex.Message}");
+                _logger.LogInformation(hex, $"{GetType().Name}/{name} output exception - {hex.StatusCode}/{hex.StatusSubcode}/{hex.Message}");
 
                 if (extendErrors)
-                    return StatusCode(hex.StatusCode, ErrorFormat(hex));
+                    return StatusCode(hex.StatusCode, ErrorFormat(hex, includeDescription));
 
                 if (hex.ErrorPayload != null)
                     return StatusCode(hex.StatusCode, hex.ErrorPayload);
@@ -69,10 +71,14 @@ namespace Xigadee
         /// This method is used to format an error object to be returned to the client for an error.
         /// </summary>
         /// <param name="hex">The http exception.</param>
+        /// <param name="includeDescription">A boolean flag that indicates whether the error description should be included in the response. The default is false.</param>
         /// <returns>Returns a detailed error message</returns>
-        protected virtual ErrorMessage ErrorFormat(HttpStatusOutputException hex)
+        protected virtual ErrorMessage ErrorFormat(HttpStatusOutputException hex, bool includeDescription)
         {
-            return new ErrorMessage { Code = hex.StatusCode, Subcode = hex.StatusSubcode };
+            var em = new ErrorMessage { Code = hex.StatusCode, Subcode = hex.StatusSubcode };
+            if (includeDescription)
+                em.Description = hex.Message;
+            return em;
         }
 
         /// <summary>
