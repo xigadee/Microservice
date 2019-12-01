@@ -30,6 +30,19 @@ namespace Tests.Xigadee
             var resultn2 = TestEnum.One.IsNotInFlag(TestEnum.Three);
 
         }
+
+        [TestMethod]
+        public async Task ArrayAsync()
+        {
+            var items = new[] { 10,20,30,40 };
+
+            await items.ForEach((i) => ChildTask(i));
+        }
+
+        private async Task ChildTask(int item)
+        {
+            await Task.Delay(item);
+        }
     }
 
     [Flags]

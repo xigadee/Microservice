@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
+
 namespace Xigadee
 {
     /// <summary>
@@ -34,6 +36,24 @@ namespace Xigadee
             foreach (var item in items)
                 action(item);
         }
+        #endregion
+        #region ForEach<T>(this IEnumerable<T> items, Func<T, Task> action)
+        /// <summary>
+        /// The ForEach extension iterates through the items collection and calls them asyncronously, and executes the action for each item.
+        /// </summary>
+        /// <typeparam name="T">The item type to process.</typeparam>
+        /// <param name="items">The collection of items to process.</param>
+        /// <param name="action">The action to be executed against each item in the collection.</param>
+        /// <returns>This is the task.</returns>
+        [DebuggerStepThrough]
+        public static async Task ForEach<T>(this IEnumerable<T> items, Func<T, Task> action)
+        {
+            if (items == null) throw new ArgumentNullException("items", "The items enumeration cannot be null.");
+            if (action == null) throw new ArgumentNullException("action", "The action delegate cannot be null.");
+
+            foreach (var item in items)
+                await action(item);
+        } 
         #endregion
 
         #region ForIndex<T>(this IEnumerable<T> items, Action<int, T> action)
