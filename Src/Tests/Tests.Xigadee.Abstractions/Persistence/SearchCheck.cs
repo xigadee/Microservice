@@ -83,6 +83,21 @@ namespace Test.Xigadee
 
         }
 
+        [TestMethod]
+        public void AppendTestsUnderscore()
+        {
+            var sr = new SearchRequest();
+
+            sr.AppendFilter("type_action", "eq", "actionType", "and");
+
+            sr.AppendFilter("typetemplate", "eq", "template_Type", "and");
+
+            sr.AppendFilter("state", "eq", "state", "and");
+
+            var result = sr.ToString();
+
+        }
+
 
 
         [TestMethod]

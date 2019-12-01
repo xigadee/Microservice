@@ -84,7 +84,7 @@ namespace Xigadee
             else if (ODataTokenString.CanStart(next))
                 Tokens.Add(new ODataTokenString(next));
             else
-                throw new ArgumentOutOfRangeException($"Invalid character {next} at position {Length}");
+                throw new ArgumentOutOfRangeException($"Invalid character '{next}' at position {Length}");
         }
 
         /// <summary>
@@ -290,12 +290,13 @@ namespace Xigadee
 
         /// <summary>
         /// Specifies that the token can start if it is a character or digit. We accept unicode character as well.
+        /// We also accept the underscore character.
         /// </summary>
         /// <param name="c">The character.</param>
         /// <returns>Returns true if it can start.</returns>
         public static bool CanStart(char c)
         {
-            return char.IsLetterOrDigit(c);
+            return char.IsLetterOrDigit(c) || c =='_';
         }
 
         /// <summary>
