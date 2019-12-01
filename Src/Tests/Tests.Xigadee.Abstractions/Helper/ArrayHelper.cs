@@ -36,7 +36,7 @@ namespace Tests.Xigadee
         {
             var items = new[] { 10,20,30,40 };
 
-            await items.ForEach((i) => ChildTask(i));
+            await items.ForEachAsync((i) => ChildTask(i));
         }
 
         private async Task ChildTask(int item)
