@@ -37,7 +37,7 @@ namespace Xigadee
                 action(item);
         }
         #endregion
-        #region ForEach<T>(this IEnumerable<T> items, Func<T, Task> action)
+        #region ForEachAsync<T>(this IEnumerable<T> items, Func<T, Task> action)
         /// <summary>
         /// The ForEach extension iterates through the items collection and calls them asyncronously, and executes the action for each item.
         /// </summary>
@@ -46,7 +46,7 @@ namespace Xigadee
         /// <param name="action">The action to be executed against each item in the collection.</param>
         /// <returns>This is the task.</returns>
         [DebuggerStepThrough]
-        public static async Task ForEach<T>(this IEnumerable<T> items, Func<T, Task> action)
+        public static async Task ForEachAsync<T>(this IEnumerable<T> items, Func<T, Task> action)
         {
             if (items == null) throw new ArgumentNullException("items", "The items enumeration cannot be null.");
             if (action == null) throw new ArgumentNullException("action", "The action delegate cannot be null.");
