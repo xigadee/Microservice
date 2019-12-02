@@ -73,9 +73,11 @@ namespace Xigadee
         private void ContextLoggerInternal(SqlEntityContext ctx, string action, string data)
         {
             if (ctx.IsSuccessResponse)
-                Collector?.LogMessage($"{action} {typeof(E).Name}/{data} success: {ctx.ResponseCode}");
+                Collector?.LogMessage($"{action}@{typeof(E).Name}/{data} success: {ctx.ResponseCode}");
+            else if (ctx.IsNotFoundResponse)
+                Collector?.LogMessage($"{action}@{typeof(E).Name}/{data} not found: {ctx.ResponseCode}: {ctx.ResponseMessage}");
             else
-                Collector?.LogWarning($"{action} {typeof(E).Name}/{data} failed: {ctx.ResponseCode}: {ctx.ResponseMessage}");
+                Collector?.LogWarning($"{action}@{typeof(E).Name}/{data} failed: {ctx.ResponseCode}: {ctx.ResponseMessage}");
         }
         #endregion
 

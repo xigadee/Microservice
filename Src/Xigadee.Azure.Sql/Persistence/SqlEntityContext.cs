@@ -45,6 +45,12 @@ namespace Xigadee
         /// Specifies that the response code is a success.
         /// </summary>
         public bool IsSuccessResponse => ResponseCode >= 200 && ResponseCode <= 299;
+
+        /// <summary>
+        /// The response is a not found response.
+        /// </summary>
+        public bool IsNotFoundResponse => ResponseCode == 404;
+
         /// <summary>
         /// Gets or sets the response code.
         /// </summary>
