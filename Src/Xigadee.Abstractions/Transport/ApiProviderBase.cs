@@ -16,10 +16,6 @@ namespace Xigadee
     {
         #region Declarations
         /// <summary>
-        /// This is the assembly version
-        /// </summary>
-        protected readonly string mAssemblyVersion;
-        /// <summary>
         /// This is a list of auth handlers to be used to authorise the request.
         /// </summary>
         protected readonly List<IApiProviderAuthBase> mAuthHandlers;
@@ -35,10 +31,7 @@ namespace Xigadee
         /// The http client handler this is used to add client based certificates.
         /// </summary>
         protected readonly HttpClientHandler mHandler;
-        /// <summary>
-        /// This is the user agent that will be passed in the request header
-        /// </summary>
-        protected readonly string mUserAgent;
+
         /// <summary>
         /// This is the primary transport used for sending requests.
         /// </summary>
@@ -49,6 +42,12 @@ namespace Xigadee
         protected readonly Dictionary<string, TransportSerializer> mTransportSerializers;
         #endregion
         #region Constructor
+
+        protected ApiProviderBase(ApiProviderBase parent)
+        {
+
+
+        }
         /// <summary>
         /// This is the default constructor.
         /// </summary>
@@ -60,12 +59,9 @@ namespace Xigadee
             )
         {
             // Get the types assembly version to add to the request headers
-            mAssemblyVersion = AssemblyVersionGet();
             mAuthHandlers = authHandlers?.ToList() ?? new List<IApiProviderAuthBase>();
 
             mUri = uri ?? throw new ArgumentNullException("uri");
-            // Get the types assembly version to add to the request headers
-            mUserAgent = UserAgentGet();
 
             mHandler = new HttpClientHandler();
             mHandler.AllowAutoRedirect = false;
@@ -150,7 +146,7 @@ namespace Xigadee
         /// <summary>
         /// Get a new http client or uses the override.
         /// </summary>
-        protected HttpClient Client => ClientOverride ?? new HttpClient(mHandler); 
+        protected internal HttpClient Client => ClientOverride ?? new HttpClient(mHandler); 
         #endregion
         #region ClientOverride
         /// <summary>
@@ -188,10 +184,10 @@ namespace Xigadee
         /// This virtual method sets the necessary headers for the request.
         /// </summary>
         /// <param name="rq">The http request.</param>
-        protected virtual void RequestHeadersSet(HttpRequestMessage rq)
+        protected internal virtual void RequestHeadersSet(HttpRequestMessage rq)
         {
-            rq.Headers.Add("User-Agent", mUserAgent);
-            rq.Headers.Add("x-api-clientversion", mAssemblyVersion);
+            rq.Headers.Add("User-Agent", UserAgentGet());
+            rq.Headers.Add("x-api-clientversion", AssemblyVersionGet());
             rq.Headers.Add("x-api-version", "2016-08-01");
         }
         #endregion
@@ -201,7 +197,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="rq">The http request object.</param>
         /// <param name="Prefer">The prefer collection.</param>
-        protected virtual void RequestHeadersPreferSet(HttpRequestMessage rq, Dictionary<string, string> Prefer)
+        protected internal virtual void RequestHeadersPreferSet(HttpRequestMessage rq, Dictionary<string, string> Prefer)
         {
             if (Prefer != null && Prefer.Count > 0)
                 rq.Headers.Add("Prefer", Prefer.Select((k) => string.Format("{0}={1}", k.Key, k.Value)));
@@ -212,7 +208,7 @@ namespace Xigadee
         /// This method sets the prefer request headers for the Api call.
         /// </summary>
         /// <param name="rq">The http request object.</param>
-        protected virtual void RequestHeadersAuth(HttpRequestMessage rq)
+        protected internal virtual void RequestHeadersAuth(HttpRequestMessage rq)
         {
             mAuthHandlers?.ForEach((a) => a.ProcessRequest(rq));
         }
@@ -222,7 +218,7 @@ namespace Xigadee
         /// This method sets the media quality type for the entity transfer.
         /// </summary>
         /// <param name="rq">The http request.</param>
-        protected virtual void RequestHeadersSetTransport(HttpRequestMessage rq)
+        protected internal virtual void RequestHeadersSetTransport(HttpRequestMessage rq)
         {
             rq.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
@@ -537,7 +533,7 @@ namespace Xigadee
         /// <param name="httpRs">The Http Response object.</param>
         /// <param name="objectDeserializer">The optional object entity deserializer.</param>
         /// <param name="errorObjectDeserializer">The optional error object deserializer.</param>
-        protected async Task ProcessResponse<O,R>(R response
+        protected static async Task ProcessResponse<O,R>(R response
             , HttpResponseMessage httpRs
             , Func<HttpContent, Task<O>> objectDeserializer
             , Func<HttpContent, Task<object>> errorObjectDeserializer = null)
@@ -575,5 +571,19 @@ namespace Xigadee
             }
         }
         #endregion
+    }
+
+    /// <summary>
+    /// This class is used to implement specific Api specific sections, while inheriting the main settings from the parent.
+    /// </summary>
+    public abstract class ApiProviderChildBase: ApiProviderBase
+    {
+        protected ApiProviderBase _parent;
+
+        public ApiProviderChildBase(ApiProviderBase parent):base(parent)
+        {
+            _parent = parent;
+        }
+
     }
 }
