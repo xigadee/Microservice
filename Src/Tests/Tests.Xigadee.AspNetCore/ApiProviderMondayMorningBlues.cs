@@ -29,10 +29,7 @@ namespace Tests.Xigadee
             var httpRq = new HttpRequestMessage(
                 HttpMethod.Post, mUriMapper.Server + "/security/sessioncreate");
 
-            //Set the Http client or override.
-            var client = ClientOverride ?? new HttpClient(mHandler);
-
-            var result = await client.SendAsync(httpRq);
+            var result = await Context.Client.SendAsync(httpRq);
 
             if (result.IsSuccessStatusCode)
             {
@@ -42,8 +39,8 @@ namespace Tests.Xigadee
 
                 if (!string.IsNullOrEmpty(token))
                 {
-                    mAuthHandlers.Clear();
-                    mAuthHandlers.Add(new JwtAuthProvider(token));
+                    Context.AuthHandlers.Clear();
+                    Context.AuthHandlers.Add(new JwtAuthProvider(token));
                 }
 
                 return true;
@@ -55,9 +52,6 @@ namespace Tests.Xigadee
         {
             var httpRq = new HttpRequestMessage(HttpMethod.Post, mUriMapper.Server + "/security/logoff");
 
-            //Set the Http client or override.
-            var client = ClientOverride ?? new HttpClient(mHandler);
-
             //Set the headers
             RequestHeadersSet(httpRq);
 
@@ -67,7 +61,7 @@ namespace Tests.Xigadee
             //Sets the authentication.
             RequestHeadersAuth(httpRq);
 
-            HttpResponseMessage result = await client.SendAsync(httpRq);
+            HttpResponseMessage result = await Context.Client.SendAsync(httpRq);
 
             return result.IsSuccessStatusCode;
         }
@@ -76,9 +70,6 @@ namespace Tests.Xigadee
         public async Task<bool> SessionLogon(string username, string password)
         {
             var httpRq = new HttpRequestMessage(HttpMethod.Post, mUriMapper.Server + "/security/logon");
-
-            //Set the Http client or override.
-            var client = ClientOverride ?? new HttpClient(mHandler);
 
             //Set the headers
             RequestHeadersSet(httpRq);
@@ -95,7 +86,7 @@ namespace Tests.Xigadee
             {
                 httpRq.Content = content;
 
-                result = await client.SendAsync(httpRq);
+                result = await Context.Client.SendAsync(httpRq);
             }
 
             return result?.IsSuccessStatusCode ?? false;

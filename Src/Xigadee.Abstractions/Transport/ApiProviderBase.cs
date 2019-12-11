@@ -14,39 +14,74 @@ namespace Xigadee
     /// </summary>
     public abstract class ApiProviderBase
     {
-        #region Declarations
+        #region Class -> ConnectionContext
         /// <summary>
-        /// This is a list of auth handlers to be used to authorise the request.
+        /// This class holds the connection context.
         /// </summary>
-        protected readonly List<IApiProviderAuthBase> mAuthHandlers;
-        /// <summary>
-        /// The manual cert validation function.
-        /// </summary>
-        protected readonly Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> mManualCertValidation;
-        /// <summary>
-        /// This is the base Uri for the calls.
-        /// </summary>
-        protected readonly Uri mUri;
-        /// <summary>
-        /// The http client handler this is used to add client based certificates.
-        /// </summary>
-        protected readonly HttpClientHandler mHandler;
-
-        /// <summary>
-        /// This is the primary transport used for sending requests.
-        /// </summary>
-        protected string mTransportOutDefault;
-        /// <summary>
-        /// This is the collection of transports available for serialization.
-        /// </summary>
-        protected readonly Dictionary<string, TransportSerializer> mTransportSerializers;
-        #endregion
-        #region Constructor
-
-        protected ApiProviderBase(ApiProviderBase parent)
+        public class ConnectionContext
         {
+            /// <summary>
+            /// This is a list of auth handlers to be used to authorise the request.
+            /// </summary>
+            public List<IApiProviderAuthBase> AuthHandlers { get; set; }
+            /// <summary>
+            /// The manual cert validation function.
+            /// </summary>
+            public Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> ManualCertValidation { get; set; }
+            /// <summary>
+            /// This is the base Uri for the calls.
+            /// </summary>
+            public Uri Uri { get; set; }
+            /// <summary>
+            /// The http client handler this is used to add client based certificates.
+            /// </summary>
+            public HttpClientHandler Handler { get; set; }
 
+            /// <summary>
+            /// This is the primary transport used for sending requests.
+            /// </summary>
+            public string TransportOutDefault { get; set; }
+            /// <summary>
+            /// This is the collection of transports available for serialization.
+            /// </summary>
+            public Dictionary<string, TransportSerializer> TransportSerializers { get; set; }
 
+            #region TransportSerializerDefault
+            /// <summary>
+            /// This is the default serializer.
+            /// </summary>
+            public TransportSerializer TransportSerializerDefault => TransportSerializers[TransportOutDefault];
+            #endregion
+
+            #region Client
+            /// <summary>
+            /// Get a new http client or uses the override.
+            /// </summary>
+            public HttpClient Client => ClientOverride ?? new HttpClient(Handler);
+            #endregion
+            #region ClientOverride
+            /// <summary>
+            /// Gets or sets the client override. This can be used for testing. It uses the HttpClient passed instead
+            /// or creating a new client for each request.
+            /// </summary>
+            public HttpClient ClientOverride { get; set; }
+            #endregion
+        }
+        #endregion
+
+        #region Constructor
+        /// <summary>
+        /// This is the parent constructor. This is used when creating a child container that inherits the parent security settings.
+        /// </summary>
+        /// <param name="parent">The parent connection.</param>
+        protected ApiProviderBase(ApiProviderBase parent) : this(parent.Context) { }
+        /// <summary>
+        /// This is the parent constructor. This is used when creating a child container that inherits the parent security settings.
+        /// </summary>
+        /// <param name="context">The connection context.</param>
+        protected ApiProviderBase(ConnectionContext context)
+        {
+            Context = context;
         }
         /// <summary>
         /// This is the default constructor.
@@ -58,39 +93,48 @@ namespace Xigadee
             , IEnumerable<TransportSerializer> transportOverride = null
             )
         {
+            Context = new ConnectionContext();
+
             // Get the types assembly version to add to the request headers
-            mAuthHandlers = authHandlers?.ToList() ?? new List<IApiProviderAuthBase>();
+            Context.AuthHandlers = authHandlers?.ToList() ?? new List<IApiProviderAuthBase>();
 
-            mUri = uri ?? throw new ArgumentNullException("uri");
+            Context.Uri = uri ?? throw new ArgumentNullException("uri");
 
-            mHandler = new HttpClientHandler();
-            mHandler.AllowAutoRedirect = false;
+            Context.Handler = new HttpClientHandler();
+            Context.Handler.AllowAutoRedirect = false;
 
             if (manualCertValidation != null)
             {
-                mManualCertValidation = manualCertValidation;
-                mHandler.ServerCertificateCustomValidationCallback = ValidateCerts;
+                Context.ManualCertValidation = manualCertValidation;
+                Context.Handler.ServerCertificateCustomValidationCallback = ValidateCerts;
             }
 
             if (clientCert != null)
             {
-                mHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
-                mHandler.ClientCertificates.Add(clientCert);
+                Context.Handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+                Context.Handler.ClientCertificates.Add(clientCert);
             }
 
             if (transportOverride == null || transportOverride.Count() == 0)
             {
-                mTransportSerializers = new Dictionary<string, TransportSerializer>();
+                Context.TransportSerializers = new Dictionary<string, TransportSerializer>();
                 var defaultTs = new JsonTransportSerializer();
-                mTransportOutDefault = defaultTs.MediaType.ToLowerInvariant();
-                mTransportSerializers[mTransportOutDefault] = defaultTs;
+                Context.TransportOutDefault = defaultTs.MediaType.ToLowerInvariant();
+                Context.TransportSerializers[Context.TransportOutDefault] = defaultTs;
             }
             else
             {
-                mTransportOutDefault = transportOverride.First().MediaType.ToLowerInvariant();
-                mTransportSerializers = transportOverride.ToDictionary(t => t.MediaType.ToLowerInvariant(), t => t);
+                Context.TransportOutDefault = transportOverride.First().MediaType.ToLowerInvariant();
+                Context.TransportSerializers = transportOverride.ToDictionary(t => t.MediaType.ToLowerInvariant(), t => t);
             }
         }
+        #endregion
+
+        #region Context
+        /// <summary>
+        /// This is the Api connection context.
+        /// </summary>
+        public ConnectionContext Context { get; }
         #endregion
 
         #region UserAgentGet()
@@ -130,30 +174,18 @@ namespace Xigadee
             , X509Chain chain
             , SslPolicyErrors errs)
         {
-            return mManualCertValidation(message, cert, chain, errs);
+            return Context.ManualCertValidation(message, cert, chain, errs);
 
             //return errs == SslPolicyErrors.None;
         }
         #endregion
-        #region TransportSerializerDefault
-        /// <summary>
-        /// This is the default serializer.
-        /// </summary>
-        protected TransportSerializer TransportSerializerDefault => mTransportSerializers[mTransportOutDefault]; 
-        #endregion
 
-        #region Client
-        /// <summary>
-        /// Get a new http client or uses the override.
-        /// </summary>
-        protected internal HttpClient Client => ClientOverride ?? new HttpClient(mHandler); 
-        #endregion
         #region ClientOverride
         /// <summary>
         /// Gets or sets the client override. This can be used for testing. It uses the HttpClient passed instead
         /// or creating a new client for each request.
         /// </summary>
-        public HttpClient ClientOverride { get; set; }
+        public HttpClient ClientOverride { get => Context.ClientOverride; set => Context.ClientOverride = value; }
         #endregion
 
         #region Request(HttpMethod verb, Uri uri, HttpContent content = null)
@@ -184,7 +216,7 @@ namespace Xigadee
         /// This virtual method sets the necessary headers for the request.
         /// </summary>
         /// <param name="rq">The http request.</param>
-        protected internal virtual void RequestHeadersSet(HttpRequestMessage rq)
+        protected virtual void RequestHeadersSet(HttpRequestMessage rq)
         {
             rq.Headers.Add("User-Agent", UserAgentGet());
             rq.Headers.Add("x-api-clientversion", AssemblyVersionGet());
@@ -197,7 +229,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="rq">The http request object.</param>
         /// <param name="Prefer">The prefer collection.</param>
-        protected internal virtual void RequestHeadersPreferSet(HttpRequestMessage rq, Dictionary<string, string> Prefer)
+        protected virtual void RequestHeadersPreferSet(HttpRequestMessage rq, Dictionary<string, string> Prefer)
         {
             if (Prefer != null && Prefer.Count > 0)
                 rq.Headers.Add("Prefer", Prefer.Select((k) => string.Format("{0}={1}", k.Key, k.Value)));
@@ -208,9 +240,9 @@ namespace Xigadee
         /// This method sets the prefer request headers for the Api call.
         /// </summary>
         /// <param name="rq">The http request object.</param>
-        protected internal virtual void RequestHeadersAuth(HttpRequestMessage rq)
+        protected virtual void RequestHeadersAuth(HttpRequestMessage rq)
         {
-            mAuthHandlers?.ForEach((a) => a.ProcessRequest(rq));
+            Context.AuthHandlers?.ForEach((a) => a.ProcessRequest(rq));
         }
         #endregion
         #region RequestHeadersSetTransport(HttpRequestMessage rq)
@@ -218,7 +250,7 @@ namespace Xigadee
         /// This method sets the media quality type for the entity transfer.
         /// </summary>
         /// <param name="rq">The http request.</param>
-        protected internal virtual void RequestHeadersSetTransport(HttpRequestMessage rq)
+        protected virtual void RequestHeadersSetTransport(HttpRequestMessage rq)
         {
             rq.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
@@ -263,8 +295,9 @@ namespace Xigadee
         /// <returns>Returns the combined uri.</returns>
         protected virtual Uri UriBaseAppend(string part, string query = null)
         {
-            var end = string.Concat(mUri.LocalPath, part).Replace("//", "/");
-            var bd = new UriBuilder(mUri.Scheme, mUri.Host, mUri.Port, end);
+            var uri = Context.Uri;
+            var end = string.Concat(uri.LocalPath, part).Replace("//", "/");
+            var bd = new UriBuilder(uri.Scheme, uri.Host, uri.Port, end);
             bd.Query = query;
             return bd.Uri;
         }
@@ -476,7 +509,7 @@ namespace Xigadee
             adjustIn?.Invoke(httpRq);
 
             //Executes the request to the remote header.
-            var httpRs = await Client.SendAsync(httpRq);
+            var httpRs = await Context.Client.SendAsync(httpRq);
 
             //Processes any response headers.
             ResponseHeadersAuth(httpRq, httpRs);
@@ -571,19 +604,5 @@ namespace Xigadee
             }
         }
         #endregion
-    }
-
-    /// <summary>
-    /// This class is used to implement specific Api specific sections, while inheriting the main settings from the parent.
-    /// </summary>
-    public abstract class ApiProviderChildBase: ApiProviderBase
-    {
-        protected ApiProviderBase _parent;
-
-        public ApiProviderChildBase(ApiProviderBase parent):base(parent)
-        {
-            _parent = parent;
-        }
-
     }
 }

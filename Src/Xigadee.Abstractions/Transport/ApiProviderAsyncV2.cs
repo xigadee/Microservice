@@ -312,7 +312,7 @@ namespace Xigadee
         /// <param name="rq">The http request.</param>
         protected override void RequestHeadersSetTransport(HttpRequestMessage rq)
         {
-            mTransportSerializers.ForEach((t) => rq.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(t.Value.MediaType, t.Value.Priority)));
+            Context.TransportSerializers.ForEach((t) => rq.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(t.Value.MediaType, t.Value.Priority)));
         }
         #endregion
 
@@ -392,7 +392,7 @@ namespace Xigadee
                     httpRq.Content = content;
 
                 //Executes the request to the remote header.
-                var httpRs = await Client.SendAsync(httpRq);
+                var httpRs = await Context.Client.SendAsync(httpRq);
 
                 //Processes any response headers.
                 ResponseHeadersAuth(httpRq, httpRs);
@@ -442,9 +442,9 @@ namespace Xigadee
             if (Equals(entity, default(ET)))
                 throw new ArgumentNullException("entity");
 
-            var data = TransportSerializerDefault.GetData(entity);
+            var data = Context.TransportSerializerDefault.GetData(entity);
             var content = new ByteArrayContent(data);
-            content.Headers.ContentType = new MediaTypeWithQualityHeaderValue(mTransportOutDefault);
+            content.Headers.ContentType = new MediaTypeWithQualityHeaderValue(Context.TransportOutDefault);
 
             return content;
         }
@@ -460,9 +460,9 @@ namespace Xigadee
         {
             string mediaType = rs.Content.Headers.ContentType.MediaType;
 
-            if (mTransportSerializers.ContainsKey(mediaType.ToLowerInvariant()))
+            if (Context.TransportSerializers.ContainsKey(mediaType.ToLowerInvariant()))
             {
-                var transport = mTransportSerializers[mediaType];
+                var transport = Context.TransportSerializers[mediaType];
                 return transport.GetObject<ET>(data);
             }
 
