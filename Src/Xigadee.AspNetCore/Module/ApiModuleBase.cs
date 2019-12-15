@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using System.Runtime.CompilerServices;
 namespace Xigadee
 {
     /// <summary>
@@ -32,5 +29,16 @@ namespace Xigadee
         {
             return Task.CompletedTask;
         }
+
+        /// <summary>
+        /// This helper method returns a short name for the module and the current line number.
+        /// </summary>
+        /// <param name="memberName">This is filled in by the compiler.</param>
+        /// <param name="sourceLineNumber">This is populated by the compiler.</param>
+        /// <returns>Returns the debug string.</returns>
+        public string ErrString(
+            [CallerMemberName] string memberName = "",
+            [CallerLineNumber] int sourceLineNumber = 0) =>
+            $"{GetType().Name}/{memberName}@{sourceLineNumber}";
     }
 }
