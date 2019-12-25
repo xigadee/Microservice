@@ -216,64 +216,6 @@ namespace Xigadee
 
         #endregion
 
-        #region CallCloudBlockBlob...
-        /// <summary>
-        /// This is wrapper class that provides generic exception handling support
-        /// and retrieves the standard metadata for each request.
-        /// </summary>
-        /// <param name="rq">The request.</param>
-        /// <param name="rs">The response.</param>
-        /// <param name="action">The async action task.</param>
-        /// <returns>Returns a task with the response.</returns>
-        protected async Task<StorageResponseHolder> CallCloudBlockBlob(StorageRequestHolder rq
-            , Func<StorageRequestHolder, StorageResponseHolder, bool, Task> action)
-        {
-            int start = Statistics.ActiveIncrement();
-            var rs = new StorageResponseHolder();
-            try
-            {
-                var refEntityDirectory = mEntityContainer.GetDirectoryReference(rq.Directory);
-                rq.Blob = refEntityDirectory.GetBlockBlobReference(rq.SafeKey);
-
-                bool exists = await rq.Blob.ExistsAsync();// TODO: Work out why we can't pass the cancellation token: rq.CancelSet);
-                if (exists)
-                {
-                    MetadataGet(rq.Blob, rq);
-                    exists ^= rq.IsDeleted;
-                }
-
-                await action(rq, rs, exists);
-            }
-            catch (StorageException sex)
-            {
-                rs.Ex = sex;
-                rs.IsSuccess = false;
-                rs.StatusCode = sex.RequestInformation.HttpStatusCode;
-                rs.IsTimeout = rs.StatusCode == 500 || rs.StatusCode == 503;
-            }
-            catch (TaskCanceledException tcex)
-            {
-                rs.Ex = tcex;
-                rs.IsTimeout = true;
-                rs.IsSuccess = false;
-                rs.StatusCode = 502;
-            }
-            catch (Exception ex)
-            {
-                rs.Ex = ex;
-                rs.IsSuccess = false;
-                rs.StatusCode = 500;
-            }
-            finally
-            {
-                if (!rs.IsSuccess)
-                    Statistics.ErrorIncrement();
-                Statistics.ActiveDecrement(start);
-            }
-
-            return rs;
-        }
-        #endregion
 
         protected override Task<RepositoryHolder<K, E>> CreateInternal(K key, E entity, RepositorySettings options, Action<RepositoryHolder<K, E>> holderAction)
         {
@@ -332,8 +274,67 @@ namespace Xigadee
         }
 
         #region Blob methods
+        #region CallCloudBlockBlob...
+        /// <summary>
+        /// This is wrapper class that provides generic exception handling support
+        /// and retrieves the standard metadata for each request.
+        /// </summary>
+        /// <param name="rq">The request.</param>
+        /// <param name="rs">The response.</param>
+        /// <param name="action">The async action task.</param>
+        /// <returns>Returns a task with the response.</returns>
+        protected async Task<StorageResponseHolder> CloudBlockBlobOperation(StorageRequestHolder rq
+            , Func<StorageRequestHolder, StorageResponseHolder, bool, Task> action)
+        {
+            int start = Statistics.ActiveIncrement();
+            var rs = new StorageResponseHolder();
+            try
+            {
+                var refEntityDirectory = mEntityContainer.GetDirectoryReference(rq.Directory);
+                rq.Blob = refEntityDirectory.GetBlockBlobReference(rq.SafeKey);
+
+                bool exists = await rq.Blob.ExistsAsync();// TODO: Work out why we can't pass the cancellation token: rq.CancelSet);
+                if (exists)
+                {
+                    MetadataGet(rq.Blob, rq);
+                    exists ^= rq.IsDeleted;
+                }
+
+                await action(rq, rs, exists);
+            }
+            catch (StorageException sex)
+            {
+                rs.Ex = sex;
+                rs.IsSuccess = false;
+                rs.StatusCode = sex.RequestInformation.HttpStatusCode;
+                rs.IsTimeout = rs.StatusCode == 500 || rs.StatusCode == 503;
+            }
+            catch (TaskCanceledException tcex)
+            {
+                rs.Ex = tcex;
+                rs.IsTimeout = true;
+                rs.IsSuccess = false;
+                rs.StatusCode = 502;
+            }
+            catch (Exception ex)
+            {
+                rs.Ex = ex;
+                rs.IsSuccess = false;
+                rs.StatusCode = 500;
+            }
+            finally
+            {
+                if (!rs.IsSuccess)
+                    Statistics.ErrorIncrement();
+                Statistics.ActiveDecrement(start);
+            }
+
+            return rs;
+        }
+        #endregion
+
         #region Create...
-        protected virtual async Task<StorageResponseHolder> BlobCreate(string key
+        protected virtual Task<StorageResponseHolder> BlobCreate(string key
             , byte[] body
             , string contentType = null
             , string contentEncoding = null
@@ -345,7 +346,7 @@ namespace Xigadee
         {
             var request = new StorageRequestHolder(key, cancel, directory);
 
-            return await CallCloudBlockBlob(request,
+            return CloudBlockBlobOperation(request,
                 async (rq, rs, exists) =>
                 {
                     if (!exists)
@@ -380,14 +381,14 @@ namespace Xigadee
         }
         #endregion
         #region Update...
-        protected virtual async Task<StorageResponseHolder> BlobUpdate(string key, byte[] body,
+        protected virtual Task<StorageResponseHolder> BlobUpdate(string key, byte[] body,
             string contentType = null, string contentEncoding = null,
             string version = null, string oldVersion = null,
             string directory = null, IEnumerable<KeyValuePair<string, string>> metadata = null,
             CancellationToken? cancel = null, bool createSnapshot = false, bool useEncryption = true)
         {
             var request = new StorageRequestHolder(key, cancel, directory);
-            return await CallCloudBlockBlob(request,
+            return CloudBlockBlobOperation(request,
                 async (rq, rs, exists) =>
                 {
                     if (!exists)
@@ -435,13 +436,18 @@ namespace Xigadee
         #endregion
         #region CreateOrUpdate...
         protected virtual async Task<StorageResponseHolder> BlobCreateOrUpdate(string key, byte[] body,
-            string contentType = null, string contentEncoding = null,
-            string version = null, string oldVersion = null,
-            string directory = null, IEnumerable<KeyValuePair<string, string>> metadata = null,
-            CancellationToken? cancel = null, bool createSnapshot = false, bool useEncryption = true)
+            string contentType = null
+            , string contentEncoding = null
+            , string version = null
+            , string oldVersion = null
+            , string directory = null
+            , IEnumerable<KeyValuePair<string, string>> metadata = null
+            , CancellationToken? cancel = null
+            , bool createSnapshot = false
+            , bool useEncryption = true)
         {
             var request = new StorageRequestHolder(key, cancel, directory);
-            var response = await CallCloudBlockBlob(request,
+            var response = await CloudBlockBlobOperation(request,
                 async (rq, rs, exists) =>
                 {
                     if (oldVersion != null && oldVersion != rq.VersionId)
@@ -486,13 +492,13 @@ namespace Xigadee
         }
         #endregion
         #region Read...
-        protected virtual async Task<StorageResponseHolder> BlobRead(string key
+        protected virtual Task<StorageResponseHolder> BlobRead(string key
             , string directory = null
             , CancellationToken? cancel = null
             , bool useEncryption = true)
         {
             var request = new StorageRequestHolder(key, cancel, directory);
-            return await CallCloudBlockBlob(request,
+            return CloudBlockBlobOperation(request,
                 async (rq, rs, exists) =>
                 {
                     if (exists)
@@ -520,10 +526,10 @@ namespace Xigadee
         }
         #endregion
         #region Version...
-        protected virtual async Task<StorageResponseHolder> BlobVersion(string key, string directory = null, CancellationToken? cancel = null)
+        protected virtual Task<StorageResponseHolder> BlobVersion(string key, string directory = null, CancellationToken? cancel = null)
         {
             var request = new StorageRequestHolder(key, cancel, directory);
-            return await CallCloudBlockBlob(request,
+            return CloudBlockBlobOperation(request,
                 async (rq, rs, exists) =>
                 {
                     if (exists)
@@ -536,12 +542,12 @@ namespace Xigadee
         }
         #endregion
         #region Delete...
-        protected virtual async Task<StorageResponseHolder> BlobDelete(string key, string directory = null, string version = null
+        protected virtual Task<StorageResponseHolder> BlobDelete(string key, string directory = null, string version = null
             , CancellationToken? cancel = null
             , bool createSnapshotBeforeDelete = true, bool hardDelete = false)
         {
             var request = new StorageRequestHolder(key, cancel, directory);
-            return await CallCloudBlockBlob(request,
+            return CloudBlockBlobOperation(request,
                 async (rq, rs, exists) =>
                 {
                     //Does the entity currently exist?
