@@ -4,7 +4,9 @@ using Microsoft.Azure.Storage.Blob;
 using Microsoft.Azure.Storage.RetryPolicies;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Xigadee
@@ -273,38 +275,7 @@ namespace Xigadee
         }
         #endregion
 
-
-        public override Task<RepositoryHolder<HistoryRequest<K>, HistoryResponse<E>>> History(HistoryRequest<K> key, RepositorySettings options = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest rq, RepositorySettings options = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<RepositoryHolder<SearchRequest, SearchResponse<E>>> SearchEntity(SearchRequest rq, RepositorySettings options = null)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override Task<RepositoryHolder<K, E>> CreateInternal(K key, E entity, RepositorySettings options, Action<RepositoryHolder<K, E>> holderAction)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRefInternal(string refKey, string refValue, RepositorySettings options = null, Action<RepositoryHolder<K, Tuple<K, string>>> holderAction = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task<RepositoryHolder<K, Tuple<K, string>>> DeleteInternal(K key, RepositorySettings options, Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task<RepositoryHolder<K, E>> ReadByRefInternal(string refKey, string refValue, RepositorySettings options, Action<RepositoryHolder<K, E>> holderAction)
         {
             throw new NotImplementedException();
         }
@@ -319,6 +290,37 @@ namespace Xigadee
             throw new NotImplementedException();
         }
 
+        protected override Task<RepositoryHolder<K, Tuple<K, string>>> DeleteInternal(K key, RepositorySettings options, Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<RepositoryHolder<SearchRequest, SearchResponse<E>>> SearchEntity(SearchRequest rq, RepositorySettings options = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<RepositoryHolder<HistoryRequest<K>, HistoryResponse<E>>> History(HistoryRequest<K> key, RepositorySettings options = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest rq, RepositorySettings options = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRefInternal(string refKey, string refValue, RepositorySettings options = null, Action<RepositoryHolder<K, Tuple<K, string>>> holderAction = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override Task<RepositoryHolder<K, E>> ReadByRefInternal(string refKey, string refValue, RepositorySettings options, Action<RepositoryHolder<K, E>> holderAction)
+        {
+            throw new NotImplementedException();
+        }
+
+
         protected override Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRefInternal(string refKey, string refValue, RepositorySettings options, Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
         {
             throw new NotImplementedException();
@@ -328,5 +330,260 @@ namespace Xigadee
         {
             throw new NotImplementedException();
         }
+
+        #region Blob methods
+        #region Create...
+        protected virtual async Task<StorageResponseHolder> BlobCreate(string key
+            , byte[] body
+            , string contentType = null
+            , string contentEncoding = null
+            , string version = null
+            , string directory = null
+            , IEnumerable<KeyValuePair<string, string>> metadata = null
+            , CancellationToken? cancel = null
+            , bool useEncryption = true)
+        {
+            var request = new StorageRequestHolder(key, cancel, directory);
+
+            return await CallCloudBlockBlob(request,
+                async (rq, rs, exists) =>
+                {
+                    if (!exists)
+                    {
+                        //Check for a soft delete condition.
+                        var access = rq.ETag != null ? AccessCondition.GenerateIfMatchCondition(rq.ETag) : AccessCondition.GenerateIfNotExistsCondition();
+
+                        rq.ContentType = contentType;
+                        rq.ContentEncoding = contentEncoding;
+                        rq.VersionId = version;
+                        if (metadata != null)
+                            rq.Fields = metadata.ToDictionary((k) => k.Key, (k) => k.Value);
+                        MetadataSet(rq.Blob, rq);
+
+                        // If encryption provided encrypt the body
+                        var uploadBody = body;
+                        if (useEncryption && mEncryption != null)
+                            uploadBody = mEncryption.Encrypt(body);
+
+                        await rq.Blob.UploadFromByteArrayAsync(uploadBody, 0, uploadBody.Length,
+                            access, mOptions, mContext, rq.CancelSet);
+
+                        MetadataGet(rq.Blob, rs);
+                        rs.Data = body;
+                    }
+                    else
+                        rq.CopyTo(rs);
+
+                    rs.IsSuccess = !exists;
+                    rs.StatusCode = exists ? 409 : 201;
+                });
+        }
+        #endregion
+        #region Update...
+        protected virtual async Task<StorageResponseHolder> BlobUpdate(string key, byte[] body,
+            string contentType = null, string contentEncoding = null,
+            string version = null, string oldVersion = null,
+            string directory = null, IEnumerable<KeyValuePair<string, string>> metadata = null,
+            CancellationToken? cancel = null, bool createSnapshot = false, bool useEncryption = true)
+        {
+            var request = new StorageRequestHolder(key, cancel, directory);
+            return await CallCloudBlockBlob(request,
+                async (rq, rs, exists) =>
+                {
+                    if (!exists)
+                    {
+                        rq.CopyTo(rs);
+                        rs.StatusCode = 404;
+                        rs.IsSuccess = false;
+                        return;
+                    }
+
+                    if (oldVersion != null && oldVersion != rq.VersionId)
+                    {
+                        MetadataGet(rq.Blob, rs);
+                        rs.StatusCode = 409;
+                        rs.IsSuccess = false;
+                        return;
+                    }
+
+                    if (createSnapshot)
+                    {
+                        await rq.Blob.CreateSnapshotAsync(rq.Fields,
+                            AccessCondition.GenerateIfMatchCondition(rq.ETag), mOptions, mContext, rq.CancelSet);
+                        MetadataGet(rq.Blob, rq);
+                    }
+
+                    rq.ContentType = contentType ?? rs.ContentType;
+                    rq.ContentEncoding = contentEncoding ?? rs.ContentEncoding;
+                    rq.VersionId = version;
+                    MetadataSet(rq.Blob, rq);
+
+                    // If encryption provided encrypt the body
+                    var uploadBody = body;
+                    if (useEncryption && mEncryption != null)
+                        uploadBody = mEncryption.Encrypt(body);
+
+                    await rq.Blob.UploadFromByteArrayAsync(uploadBody, 0, uploadBody.Length,
+                        AccessCondition.GenerateIfMatchCondition(rq.ETag), mOptions, mContext, rq.CancelSet);
+
+                    MetadataGet(rq.Blob, rs);
+                    rs.Data = body;
+                    rs.IsSuccess = true;
+                    rs.StatusCode = 200;
+                });
+        }
+        #endregion
+        #region CreateOrUpdate...
+        protected virtual async Task<StorageResponseHolder> BlobCreateOrUpdate(string key, byte[] body,
+            string contentType = null, string contentEncoding = null,
+            string version = null, string oldVersion = null,
+            string directory = null, IEnumerable<KeyValuePair<string, string>> metadata = null,
+            CancellationToken? cancel = null, bool createSnapshot = false, bool useEncryption = true)
+        {
+            var request = new StorageRequestHolder(key, cancel, directory);
+            var response = await CallCloudBlockBlob(request,
+                async (rq, rs, exists) =>
+                {
+                    if (oldVersion != null && oldVersion != rq.VersionId)
+                    {
+                        MetadataGet(rq.Blob, rs);
+                        rs.StatusCode = 409;
+                        rs.IsSuccess = false;
+                        return;
+                    }
+
+                    if (exists && createSnapshot)
+                    {
+                        await rq.Blob.CreateSnapshotAsync(rq.Fields,
+                            AccessCondition.GenerateIfMatchCondition(rq.ETag), mOptions, mContext, rq.CancelSet);
+                        MetadataGet(rq.Blob, rq);
+                    }
+
+                    rq.ContentType = contentType ?? rs.ContentType;
+                    rq.ContentEncoding = contentEncoding ?? rs.ContentEncoding;
+                    rq.VersionId = version;
+                    MetadataSet(rq.Blob, rq);
+
+                    // If encryption provided encrypt the body
+                    var uploadBody = body;
+                    if (useEncryption && mEncryption != null)
+                        uploadBody = mEncryption.Encrypt(body);
+
+                    await rq.Blob.UploadFromByteArrayAsync(uploadBody, 0, uploadBody.Length,
+                        AccessCondition.GenerateIfMatchCondition(rq.ETag), mOptions, mContext, rq.CancelSet);
+
+                    MetadataGet(rq.Blob, rs);
+                    rs.Data = body;
+
+                    rs.IsSuccess = true;
+                    rs.StatusCode = 200;
+                });
+
+            if (!response.IsSuccess && response.IsTimeout)
+                throw new StorageThrottlingException(string.Format("Storage has been throttled for {0}-{1}", directory, key));
+
+            return response;
+        }
+        #endregion
+        #region Read...
+        protected virtual async Task<StorageResponseHolder> BlobRead(string key
+            , string directory = null
+            , CancellationToken? cancel = null
+            , bool useEncryption = true)
+        {
+            var request = new StorageRequestHolder(key, cancel, directory);
+            return await CallCloudBlockBlob(request,
+                async (rq, rs, exists) =>
+                {
+                    if (exists)
+                    {
+                        var sData = new MemoryStream();
+
+                        await rq.Blob.DownloadToStreamAsync(sData);//, rq.CancelSet); //TODO: work out why this is.
+
+                        rs.Data = new byte[sData.Length];
+                        sData.Position = 0;
+                        sData.Read(rs.Data, 0, rs.Data.Length);
+
+                        // If encryption provided decrypt the blob
+                        if (useEncryption && mEncryption != null)
+                            rs.Data = mEncryption.Decrypt(rs.Data);
+
+                        MetadataGet(rq.Blob, rs);
+                    }
+                    else
+                        rq.CopyTo(rs);
+
+                    rs.IsSuccess = exists;
+                    rs.StatusCode = exists ? 200 : 404;
+                });
+        }
+        #endregion
+        #region Version...
+        protected virtual async Task<StorageResponseHolder> BlobVersion(string key, string directory = null, CancellationToken? cancel = null)
+        {
+            var request = new StorageRequestHolder(key, cancel, directory);
+            return await CallCloudBlockBlob(request,
+                async (rq, rs, exists) =>
+                {
+                    if (exists)
+                        MetadataGet(rq.Blob, rs);
+                    else
+                        rq.CopyTo(rs);
+                    rs.IsSuccess = exists;
+                    rs.StatusCode = exists ? 200 : 404;
+                });
+        }
+        #endregion
+        #region Delete...
+        protected virtual async Task<StorageResponseHolder> BlobDelete(string key, string directory = null, string version = null
+            , CancellationToken? cancel = null
+            , bool createSnapshotBeforeDelete = true, bool hardDelete = false)
+        {
+            var request = new StorageRequestHolder(key, cancel, directory);
+            return await CallCloudBlockBlob(request,
+                async (rq, rs, exists) =>
+                {
+                    //Does the entity currently exist?
+                    if (!exists)
+                    {
+                        rq.CopyTo(rs);
+                        rs.IsSuccess = false;
+                        rs.StatusCode = 404;
+                        return;
+                    }
+                    //OK, do the version match?
+                    if (version != null && rq.VersionId != version)
+                    {
+                        MetadataGet(rq.Blob, rs);
+                        rs.IsSuccess = false;
+                        rs.StatusCode = 409;
+                        return;
+                    }
+
+                    if (hardDelete)
+                    {
+                        //OK, we hard delete the entity and remove any snapshots that may be there.
+                        await rq.Blob.DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots, AccessCondition.GenerateIfMatchCondition(rq.ETag), mOptions, mContext, rq.CancelSet);
+                    }
+                    else
+                    {
+                        if (createSnapshotBeforeDelete)
+                        {
+                            await rq.Blob.CreateSnapshotAsync(rq.Fields,
+                                AccessCondition.GenerateIfMatchCondition(rq.ETag), mOptions, mContext, rq.CancelSet);
+                        }
+                        //Ok, we are going to soft delete the entity.
+                        MetadataSet(rq.Blob, rq, deleted: true);
+                        await rq.Blob.SetMetadataAsync(AccessCondition.GenerateIfMatchCondition(rq.ETag), mOptions, mContext, rq.CancelSet);
+                    }
+
+                    MetadataGet(rq.Blob, rs);
+                    rs.IsSuccess = true;
+                    rs.StatusCode = 200;
+                });
+        }
+        #endregion
+        #endregion    
     }
 }
