@@ -111,7 +111,7 @@ namespace Xigadee
 
         #region SignatureCreate(E entity)
         /// <summary>
-        /// TODO: Creates the signature. 
+        /// TODO: Creates the signature hash for the entity. 
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <returns>Returns the string signature.</returns>
@@ -122,7 +122,7 @@ namespace Xigadee
         #endregion
         #region SignatureValidate(E entity, string signature)
         /// <summary>
-        /// TODO: Creates the signature. 
+        /// TODO: Validates the signature hash and confirms that the key fields have not been altered in the database. 
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <param name="signature">The signature.</param>

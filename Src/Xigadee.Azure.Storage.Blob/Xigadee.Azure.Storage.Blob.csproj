@@ -3,34 +3,28 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <PackageId>Xigadee.Azure.Storage</PackageId>
+    <PackageId>Xigadee.Azure.Storage.Blob</PackageId>
     <RootNamespace>Xigadee</RootNamespace>
-    <AssemblyName>Xigadee.Azure.Storage</AssemblyName>
+    <AssemblyName>Xigadee.Azure.Storage.Blob</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Xigadee.Azure.Storage.xml</DocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Xigadee.Azure.Storage.Blob.xml</DocumentationFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Helper\BinaryContainer.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
-    <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
+    <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="11.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Xigadee.Abstractions\Xigadee.Abstractions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Repository\" />
   </ItemGroup>
 
 </Project>

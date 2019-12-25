@@ -144,7 +144,7 @@ namespace Xigadee
         /// This method gets the metadata for the entity.
         /// </summary>
         /// <param name="blob">The blob.</param>
-        /// <param name="response">The response to set the necessary parameters.</param>
+        /// <param name="holder">The response to set the necessary parameters.</param>
         protected virtual void MetadataGet(CloudBlockBlob blob, StorageHolderBase holder)
         {
             holder.Fields = blob.Metadata.ToDictionary((k) => k.Key, (k) => k.Value);
@@ -170,6 +170,7 @@ namespace Xigadee
         /// <summary>
         /// This method sets the appropriate metadata for an entity.
         /// </summary>
+        /// <param name="blob">The blob.</param>
         /// <param name="holder">The storage request holder.</param>
         /// <param name="deleted">A property indicating whether the entity has been deleted.</param>
         protected virtual void MetadataSet(CloudBlockBlob blob

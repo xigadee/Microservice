@@ -558,7 +558,6 @@ namespace Xigadee
         /// </returns>
         public abstract Task<RepositoryHolder<HistoryRequest<K>, HistoryResponse<E>>> History(HistoryRequest<K> key, RepositorySettings options = null);
         #endregion
-
     }
 
     /// <summary>

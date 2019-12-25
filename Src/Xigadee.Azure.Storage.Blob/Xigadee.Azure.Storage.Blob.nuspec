@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Xigadee.Azure.Sql</id>
+    <version>{UpdateVersion.ps1.replace}</version>
+    <title>Xigadee Azure Blob Storage Library</title>
+    <authors>Paul Stancer</authors>
+    <owners>Xigadee</owners>
+    <iconUrl>https://raw.githubusercontent.com/xigadee/Microservice/master/docs/Logo.png</iconUrl>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>http://xigadee.org</projectUrl>
+    <description>This library contains the Xigadee connectors for Microsoft SQL Server.</description>
+    <releaseNotes>First update for 2.0.</releaseNotes>
+    <copyright>Copyright © Xigadee 2017-2020 incorporates copyright of Hitachi Consulting 2012-2017</copyright>
+    <tags>Xigadee Microservice Azure Blob Storage .NET</tags>
+    <dependencies>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="Xigadee.Abstractions" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Azure.Storage.Blob" version="11.1.1" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="12.0.1" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Logging.Abstractions" version="2.2.0" />
+        <dependency id="Microsoft.Extensions.Http.Polly" version="2.2.0" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\netstandard2.0\Xigadee.Azure.Storage.Blob.dll" target="lib\netstandard2.0\" />
+    <file src="bin\Release\netstandard2.0\Xigadee.Azure.Storage.Blob.pdb" target="lib\netstandard2.0\" />
+    <file src="bin\Release\netstandard2.0\Xigadee.Azure.Storage.Blob.xml" target="lib\netstandard2.0\" />
+  </files>
+</package>

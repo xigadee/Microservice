@@ -442,7 +442,6 @@ namespace Xigadee
         }
         #endregion
 
-
         #region SearchInternal<S> ...
         /// <summary>
         /// This method provides the generic search method.
