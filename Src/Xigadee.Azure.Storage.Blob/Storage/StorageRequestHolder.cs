@@ -53,5 +53,4 @@ namespace Xigadee
         /// </summary>
         public CloudBlockBlob Blob { get; set; }
     }
-
 }
