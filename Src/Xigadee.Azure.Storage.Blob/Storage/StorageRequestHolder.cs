@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.Storage.Blob;
+using Microsoft.Azure.Storage;
 using System.Threading;
 
 namespace Xigadee
@@ -32,6 +33,7 @@ namespace Xigadee
             //var uriSafekey = WebUtility.UrlEncode(key);
             //if (string.IsNullOrEmpty(uriSafekey))
             //    return null;
+            //NameValidator.ValidateBlobName()
 
             return key;
         }

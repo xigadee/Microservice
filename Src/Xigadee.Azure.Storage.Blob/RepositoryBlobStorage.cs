@@ -23,11 +23,12 @@ namespace Xigadee
         protected CloudStorageAccount mStorageAccount;
         protected CloudBlobClient mStorageClient;
         protected CloudBlobContainer mEntityContainer;
+        protected StorageCredentials mCredentails;
+
         protected readonly string mContainerName;
         protected readonly BlobContainerPublicAccessType mAccessType;
         protected readonly BlobRequestOptions mOptions;
         protected readonly OperationContext mContext;
-        protected StorageCredentials mCredentails;
 
         protected TimeSpan? mDefaultTimeout;
 
@@ -94,19 +95,65 @@ namespace Xigadee
         }
         #endregion
 
+        protected virtual void ContextEncodeRequest(BlobStorageEntityContext<K, E> ctx)
+        {
+
+        }
+
+        protected virtual void ContextDecodeResponse(BlobStorageEntityContext<K, E> ctx)
+        {
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="entity"></param>
+        /// <param name="options"></param>
+        /// <param name="holderAction"></param>
+        /// <returns></returns>
         protected override async Task<RepositoryHolder<K, E>> CreateInternal(K key, E entity, RepositorySettings options, Action<RepositoryHolder<K, E>> holderAction)
         {
             var ctx = new BlobStorageEntityContext<K, E>(options, key, entity);
 
             VersionPolicySet(ctx, false);
 
-            //await ExecuteSqlCommand(ctx
-            //    , DbSerializeEntity
-            //    , DbDeserializeEntity
-            //    );
+            ContextEncodeRequest(ctx);
+
+            await CloudBlockBlobOperation(ctx,
+                async (rq, exists) =>
+                {
+                    if (!exists)
+                    {
+                        //Check for a soft delete condition.
+                        var access = rq.ETag != null ? AccessCondition.GenerateIfMatchCondition(rq.ETag) : AccessCondition.GenerateIfNotExistsCondition();
+
+                        MetadataSet(rq.Blob, rq);
+
+                        // If encryption provided encrypt the body
+                        var uploadBody = rq.Data;
+                        if (mEncryption != null)
+                            uploadBody = mEncryption.Encrypt(uploadBody);
+
+                        await rq.Blob.UploadFromByteArrayAsync(uploadBody, 0, uploadBody.Length,
+                            access, mOptions, mContext, rq.CancelSet);
+
+                        MetadataGet(rq.Blob, rq);
+                    }
+                    //else
+                    //    rq.CopyTo(rs);
+
+                    rq.IsSuccess = !exists;
+                    rq.StatusCode = exists ? 409 : 201;
+                });
+
 
             if (ctx.IsSuccessResponse)
+            {
+                ContextDecodeResponse(ctx);
                 ctx.ResponseEntities.Add(ctx.EntityOutgoing);
+            }
 
             ContextLogger(ctx, "Create", key);
 
@@ -122,6 +169,12 @@ namespace Xigadee
             //    , DbDeserializeEntity
             //    );
 
+            if (ctx.IsSuccessResponse)
+            {
+                ContextDecodeResponse(ctx);
+                ctx.ResponseEntities.Add(ctx.EntityOutgoing);
+            }
+
             ContextLogger(ctx, "Read", key);
 
             return ProcessOutputEntity(ctx, holderAction);
@@ -133,13 +186,18 @@ namespace Xigadee
 
             VersionPolicySet(ctx, true);
 
+            ContextEncodeRequest(ctx);
+
             //await ExecuteSqlCommand(ctx
             //    , DbSerializeEntity
             //    , DbDeserializeEntity
             //    );
 
             if (ctx.IsSuccessResponse)
+            {
+                ContextDecodeResponse(ctx);
                 ctx.ResponseEntities.Add(ctx.EntityOutgoing);
+            }
 
             ContextLogger(ctx, "Update", key);
 
@@ -223,8 +281,6 @@ namespace Xigadee
             throw new NotSupportedException();
         }
 
-
-
         #region BlobRequestOptionsDefault
         /// <summary>
         /// This method returns the default blob request options.
@@ -294,16 +350,42 @@ namespace Xigadee
             holder.ContentEncoding = blob.Properties.ContentEncoding;
         }
         #endregion
-        #region MetadataSet...
+        #region MetadataGet(CloudBlockBlob blob, BlobStorageEntityContext holder)
+        /// <summary>
+        /// This method gets the metadata for the entity.
+        /// </summary>
+        /// <param name="blob">The blob.</param>
+        /// <param name="holder">The response to set the necessary parameters.</param>
+        protected virtual void MetadataGet(CloudBlockBlob blob, BlobStorageEntityContext holder)
+        {
+            holder.Fields = blob.Metadata.ToDictionary((k) => k.Key, (k) => k.Value);
+
+            if (holder.Fields.ContainsKey(cnMetaContentId))
+                holder.Id = holder.Fields[cnMetaContentId];
+
+            if (holder.Fields.ContainsKey(cnMetaVersionId))
+                holder.VersionId = holder.Fields[cnMetaVersionId];
+
+            if (blob.Properties.LastModified.HasValue)
+                holder.LastUpdated = blob.Properties.LastModified.Value.UtcDateTime;
+
+            if (holder.Fields.ContainsKey(cnMetaDeleted))
+                holder.IsDeleted = holder.Fields[cnMetaDeleted] == "true";
+
+            holder.ETag = blob.Properties.ETag;
+            holder.ContentType = blob.Properties.ContentType;
+            holder.ContentEncoding = blob.Properties.ContentEncoding;
+        }
+        #endregion
+
+        #region MetadataSet(CloudBlockBlob blob, StorageHolderBase holder, bool deleted = false)
         /// <summary>
         /// This method sets the appropriate metadata for an entity.
         /// </summary>
         /// <param name="blob">The blob.</param>
         /// <param name="holder">The storage request holder.</param>
         /// <param name="deleted">A property indicating whether the entity has been deleted.</param>
-        protected virtual void MetadataSet(CloudBlockBlob blob
-            , StorageHolderBase holder
-            , bool deleted = false)
+        protected virtual void MetadataSet(CloudBlockBlob blob, StorageHolderBase holder, bool deleted = false)
         {
             blob.Metadata.Clear();
 
@@ -325,6 +407,36 @@ namespace Xigadee
                 MetadataSetItemOrCreate(blob, cnMetaDeleted, "true");
         }
         #endregion
+        #region MetadataSet(CloudBlockBlob blob, BlobStorageEntityContext holder, bool deleted = false)
+        /// <summary>
+        /// This method sets the appropriate metadata for an entity.
+        /// </summary>
+        /// <param name="blob">The blob.</param>
+        /// <param name="holder">The storage request holder.</param>
+        /// <param name="deleted">A property indicating whether the entity has been deleted.</param>
+        protected virtual void MetadataSet(CloudBlockBlob blob, BlobStorageEntityContext holder, bool deleted = false)
+        {
+            blob.Metadata.Clear();
+
+            if (holder.Fields != null)
+                holder.Fields
+                    .Where((k) => !(new[] { cnMetaContentId, cnMetaDeleted }).Contains(k.Key))
+                    .ForEach((k) => MetadataSetItemOrCreate(blob, k.Key, k.Value));
+
+            MetadataSetItemOrCreate(blob, cnMetaContentId, holder.Id);
+
+            if (holder.VersionId != null)
+                MetadataSetItemOrCreate(blob, cnMetaVersionId, holder.VersionId);
+
+            blob.Properties.ContentType = holder.ContentType ?? cnDefaultContentType;
+
+            blob.Properties.ContentEncoding = holder.ContentEncoding;
+
+            if (deleted)
+                MetadataSetItemOrCreate(blob, cnMetaDeleted, "true");
+        }
+        #endregion
+
         #region MetadataSetItemOrCreate(CloudBlockBlob blob, string key, string value)
         /// <summary>
         /// This method overwrites or creates a new metadata value for a blob.
@@ -350,6 +462,7 @@ namespace Xigadee
         #endregion
 
         #region Blob methods
+
         #region Create...
         protected virtual Task<StorageResponseHolder> BlobCreate(string key
             , byte[] body
@@ -359,7 +472,8 @@ namespace Xigadee
             , string directory = null
             , IEnumerable<KeyValuePair<string, string>> metadata = null
             , CancellationToken? cancel = null
-            , bool useEncryption = true)
+            , bool useEncryption = true
+            )
         {
             var request = new StorageRequestHolder(key, cancel, directory);
 
@@ -376,6 +490,7 @@ namespace Xigadee
                         rq.VersionId = version;
                         if (metadata != null)
                             rq.Fields = metadata.ToDictionary((k) => k.Key, (k) => k.Value);
+
                         MetadataSet(rq.Blob, rq);
 
                         // If encryption provided encrypt the body
@@ -387,6 +502,7 @@ namespace Xigadee
                             access, mOptions, mContext, rq.CancelSet);
 
                         MetadataGet(rq.Blob, rs);
+
                         rs.Data = body;
                     }
                     else
@@ -627,13 +743,14 @@ namespace Xigadee
             , Func<StorageRequestHolder, StorageResponseHolder, bool, Task> action)
         {
             int start = Statistics.ActiveIncrement();
+
             var rs = new StorageResponseHolder();
             try
             {
                 var refEntityDirectory = mEntityContainer.GetDirectoryReference(rq.Directory);
                 rq.Blob = refEntityDirectory.GetBlockBlobReference(rq.SafeKey);
 
-                bool exists = await rq.Blob.ExistsAsync();// TODO: Work out why we can't pass the cancellation token: rq.CancelSet);
+                bool exists = await rq.Blob.ExistsAsync(rq.CancelSet);
                 if (exists)
                 {
                     MetadataGet(rq.Blob, rq);
@@ -672,6 +789,61 @@ namespace Xigadee
             return rs;
         }
         #endregion
+        #region CloudBlockBlobOperation...
+        /// <summary>
+        /// This is wrapper class that provides generic exception handling support
+        /// and retrieves the standard metadata for each request.
+        /// </summary>
+        /// <param name="rq">The request.</param>
+        /// <param name="action">The async action task.</param>
+        /// <returns>Returns a task with the response.</returns>
+        protected async Task CloudBlockBlobOperation(BlobStorageEntityContext rq, Func<BlobStorageEntityContext, bool, Task> action)
+        {
+            int start = Statistics.ActiveIncrement();
+
+            try
+            {
+                var refEntityDirectory = mEntityContainer.GetDirectoryReference(rq.Directory);
+                rq.Blob = refEntityDirectory.GetBlockBlobReference(rq.SafeKey);
+
+                bool exists = await rq.Blob.ExistsAsync(rq.CancelSet);
+                if (exists)
+                {
+                    MetadataGet(rq.Blob, rq);
+                    exists ^= rq.IsDeleted;
+                }
+
+                await action(rq, exists);
+            }
+            catch (StorageException sex)
+            {
+                rq.Ex = sex;
+                rq.IsSuccess = false;
+                rq.StatusCode = sex.RequestInformation.HttpStatusCode;
+                rq.IsTimeout = rq.StatusCode == 500 || rq.StatusCode == 503;
+            }
+            catch (TaskCanceledException tcex)
+            {
+                rq.Ex = tcex;
+                rq.IsTimeout = true;
+                rq.IsSuccess = false;
+                rq.StatusCode = 502;
+            }
+            catch (Exception ex)
+            {
+                rq.Ex = ex;
+                rq.IsSuccess = false;
+                rq.StatusCode = 500;
+            }
+            finally
+            {
+                if (!rq.IsSuccess)
+                    Statistics.ErrorIncrement();
+                Statistics.ActiveDecrement(start);
+            }
+        }
+        #endregion
+
         #endregion    
     }
 }

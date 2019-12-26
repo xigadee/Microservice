@@ -48,10 +48,7 @@ namespace Xigadee
             }
         }
 
-        public Exception Ex
-        {
-            get; set;
-        }
+        public Exception Ex { get; set; }
 
         public bool IsSuccess { get; set; }
 
