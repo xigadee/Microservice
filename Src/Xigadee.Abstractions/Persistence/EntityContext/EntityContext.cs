@@ -1,37 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using System.Text;
 
 namespace Xigadee
 {
-    #region SqlEntityContext
+    #region EntityContext
     /// <summary>
     /// This class holds the Sql context.
     /// </summary>
-    public class SqlEntityContext : IEntityContext, ISqlEntityContext
+    public class EntityContext : IEntityContext
     {
         /// <summary>
         /// This is the context constructor.
         /// </summary>
-        /// <param name="spName">The stored procedure name.</param>
         /// <param name="options">The repository settings.</param>
-        public SqlEntityContext(string spName, RepositorySettings options)
+        public EntityContext(RepositorySettings options)
         {
-            SpName = spName;
             Options = options;
         }
         /// <summary>
         /// The repository options.
         /// </summary>
         public RepositorySettings Options { get; }
-        /// <summary>
-        /// This is the stored procedure name.
-        /// </summary>
-        public string SpName { get; }
-        /// <summary>
-        /// This is the sql command to be executed.
-        /// </summary>
-        public SqlCommand Command { get; set; }
         /// <summary>
         /// Gets or sets the version identifier.
         /// </summary>
@@ -61,20 +51,19 @@ namespace Xigadee
         public string ResponseMessage { get; set; }
     }
     #endregion
-    #region SqlEntityContext<E> 
+    #region EntityContext<E> 
     /// <summary>
     /// This class holds the sql context.
     /// </summary>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class SqlEntityContext<E> : SqlEntityContext, IEntityContext<E>
+    public class EntityContext<E> : EntityContext, IEntityContext<E>
     {
         /// <summary>
         /// This is the context constructor.
         /// </summary>
-        /// <param name="spName">The stored procedure name.</param>
         /// <param name="options">The repository settings.</param>
         /// <param name="entity">The optional incoming entity.</param>
-        public SqlEntityContext(string spName, RepositorySettings options, E entity = default(E)) : base(spName, options)
+        public EntityContext(RepositorySettings options, E entity = default(E)) : base(options)
         {
             EntityIncoming = entity;
         }
@@ -95,25 +84,24 @@ namespace Xigadee
         public E EntityOutgoing { get; set; }
     }
     #endregion
-    #region SqlEntityContext<K, E>
+    #region EntityContext<K, E>
     /// <summary>
     /// This class holds the sql context.
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class SqlEntityContext<K, E> : SqlEntityContext<E>, ISqlEntityContextKey<K>, IEntityContext<K,E> 
+    public class EntityContext<K, E> : EntityContext<E>, IEntityContext<K, E> 
         where K : IEquatable<K>
     {
         /// <summary>
         /// This is the context constructor.
         /// </summary>
-        /// <param name="spName">The stored procedure name.</param>
         /// <param name="options">The repository settings.</param>
         /// <param name="key">The optional key value.</param>
         /// <param name="entity">The optional entity value.</param>
-        public SqlEntityContext(string spName, RepositorySettings options
+        public EntityContext(RepositorySettings options
             , K key = default(K)
-            , E entity = default(E)) : base(spName, options, entity)
+            , E entity = default(E)) : base(options, entity)
         {
             Key = key;
         }
@@ -124,4 +112,5 @@ namespace Xigadee
         public K Key { get; }
     }
     #endregion
+
 }

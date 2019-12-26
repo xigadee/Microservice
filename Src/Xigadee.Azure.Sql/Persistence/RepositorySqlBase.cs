@@ -53,34 +53,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region ContextLogger
-        /// <summary>
-        /// This method logs the response to the request.
-        /// </summary>
-        /// <param name="ctx">The SQL context.</param>
-        /// <param name="action">The repository action.</param>
-        /// <param name="key">The entity key.</param>
-        protected void ContextLogger<X>(SqlEntityContext ctx, string action, X key) => ContextLoggerInternal(ctx, action, key.ToString());
-        /// <summary>
-        /// This method logs the response to the request.
-        /// </summary>
-        /// <param name="ctx">The SQL context.</param>
-        /// <param name="action">The repository action.</param>
-        /// <param name="keyValue">The key type.</param>
-        /// <param name="keyReference">The key value.</param>
-        protected void ContextLogger(SqlEntityContext ctx, string action, string keyValue, string keyReference) => ContextLoggerInternal(ctx, action, $"{keyValue}|{keyReference}"); 
-
-        private void ContextLoggerInternal(SqlEntityContext ctx, string action, string data)
-        {
-            if (ctx.IsSuccessResponse)
-                Collector?.LogMessage($"{action}@{typeof(E).Name}/{data} success: {ctx.ResponseCode}");
-            else if (ctx.IsNotFoundResponse)
-                Collector?.LogMessage($"{action}@{typeof(E).Name}/{data} not found: {ctx.ResponseCode}: {ctx.ResponseMessage}");
-            else
-                Collector?.LogWarning($"{action}@{typeof(E).Name}/{data} failed: {ctx.ResponseCode}: {ctx.ResponseMessage}");
-        }
-        #endregion
-
         #region Create
         /// <summary>
         /// Implements the internal SQL create logic.
@@ -557,67 +529,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region ProcessOutputEntity/ProcessOutputVersion
-        /// <summary>
-        /// Converts the SQL output to a repository holder format..
-        /// </summary>
-        /// <param name="sqlResponse">The SQL response.</param>
-        /// <param name="onEvent">The event to fire.</param>
-        /// <returns>The repository response.</returns>
-        protected virtual RepositoryHolder<K, E> ProcessOutputEntity(SqlEntityContext<E> sqlResponse
-            , Action<RepositoryHolder<K, E>> onEvent = null)
-        {
-            E entity = sqlResponse.ResponseEntities.FirstOrDefault();
-            K key = entity != null ? KeyMaker(entity) : default(K);
 
-            var rs = new RepositoryHolder<K, E>(key, null, entity, sqlResponse.ResponseCode, sqlResponse.ResponseMessage);
-
-            onEvent?.Invoke(rs);
-
-            return rs;
-        }
-
-        /// <summary>
-        /// Converts the SQL output to a repository holder format..
-        /// </summary>
-        /// <param name="sqlResponse">The SQL response.</param>
-        /// <param name="key">The optional key.</param>
-        /// <returns>The repository response.</returns>
-        protected virtual RepositoryHolder<K, Tuple<K, string>> ProcessOutputVersion(
-            SqlEntityContext<Tuple<K, string>> sqlResponse, K key = default(K)
-            , Action<RepositoryHolder<K, Tuple<K, string>>> onEvent = null)
-
-        {
-            var entity = sqlResponse.ResponseEntities.FirstOrDefault();
-            var rs = (entity == null) ? new RepositoryHolder<K, Tuple<K, string>>(key, null, null, 404)
-                : new RepositoryHolder<K, Tuple<K, string>>(entity.Item1, null, new Tuple<K, string>(entity.Item1, entity.Item2), sqlResponse.ResponseCode, sqlResponse.ResponseMessage);
-
-            onEvent?.Invoke(rs);
-
-            return rs;
-        }
-        #endregion
-
-        #region VersionPolicySet(SqlEntityContext<K, E> ctx, bool isUpdate)
-        /// <summary>
-        /// This method sets the version policy for the specific entity.
-        /// </summary>
-        /// <param name="ctx">The context.</param>
-        /// <param name="isUpdate">Specifies whether this is an update/</param>
-        protected virtual void VersionPolicySet(SqlEntityContext<K, E> ctx, bool isUpdate)
-        {
-            var entity = ctx.EntityIncoming;
-
-            ctx.EntityOutgoing = JsonHelper.Clone(entity);
-
-            //OK, do we have to update the version id?
-            if (isUpdate && (VersionPolicy?.SupportsOptimisticLocking ?? false))
-            {
-                var incomingVersionId = VersionPolicy.EntityVersionAsString(entity);
-                string newVersion = VersionPolicy.EntityVersionUpdate(ctx.EntityOutgoing);
-            }
-        }
-        #endregion
 
         #region DbSerializeEntity
         /// <summary>

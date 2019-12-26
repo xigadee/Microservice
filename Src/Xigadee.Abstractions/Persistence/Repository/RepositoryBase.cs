@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 namespace Xigadee
 {
@@ -558,6 +559,128 @@ namespace Xigadee
         /// </returns>
         public abstract Task<RepositoryHolder<HistoryRequest<K>, HistoryResponse<E>>> History(HistoryRequest<K> key, RepositorySettings options = null);
         #endregion
+
+        #region SignatureCreate(E entity)
+        /// <summary>
+        /// TODO: Creates the signature hash for the entity. 
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        /// <returns>Returns the string signature.</returns>
+        protected virtual string SignatureCreate(E entity)
+        {
+            return "";
+        }
+        #endregion
+        #region SignatureValidate(E entity, string signature)
+        /// <summary>
+        /// TODO: Validates the signature hash and confirms that the key fields have not been altered in the database. 
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        /// <param name="signature">The signature.</param>
+        /// <returns>Returns the string signature.</returns>
+        protected virtual void SignatureValidate(E entity, string signature)
+        {
+        }
+        #endregion
+
+        #region VersionPolicySet(IEntityContext<K, E> ctx, bool isUpdate)
+        /// <summary>
+        /// This method sets the version policy for the specific entity.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        /// <param name="isUpdate">Specifies whether this is an update/</param>
+        protected virtual void VersionPolicySet(IEntityContext<E> ctx, bool isUpdate)
+        {
+            var entity = ctx.EntityIncoming;
+
+            ctx.EntityOutgoing = JsonHelper.Clone(entity);
+
+            //OK, do we have to update the version id?
+            if (isUpdate && (VersionPolicy?.SupportsOptimisticLocking ?? false))
+            {
+                var incomingVersionId = VersionPolicy.EntityVersionAsString(entity);
+                string newVersion = VersionPolicy.EntityVersionUpdate(ctx.EntityOutgoing);
+            }
+        }
+        #endregion
+        #region ContextLogger
+        /// <summary>
+        /// This method logs the response to the request.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        /// <param name="action">The repository action.</param>
+        /// <param name="key">The entity key.</param>
+        protected void ContextLogger<X>(IEntityContext ctx, string action, X key)
+            => ContextLoggerInternal(ctx, action, key.ToString());
+        /// <summary>
+        /// This method logs the response to the request.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        /// <param name="action">The repository action.</param>
+        /// <param name="keyValue">The key type.</param>
+        /// <param name="keyReference">The key value.</param>
+        protected virtual void ContextLogger(IEntityContext ctx, string action, string keyValue, string keyReference)
+            => ContextLoggerInternal(ctx, action, $"{keyValue}|{keyReference}");
+
+        /// <summary>
+        /// This method logs the response to the request.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        /// <param name="action">The repository action.</param>
+        /// <param name="data">The data.</param>
+        protected virtual void ContextLoggerInternal(IEntityContext ctx, string action, string data)
+        {
+            if (ctx.IsSuccessResponse)
+                Collector?.LogMessage($"{action}@{typeof(E).Name}/{data} success: {ctx.ResponseCode}");
+            else if (ctx.IsNotFoundResponse)
+                Collector?.LogMessage($"{action}@{typeof(E).Name}/{data} not found: {ctx.ResponseCode}: {ctx.ResponseMessage}");
+            else
+                Collector?.LogWarning($"{action}@{typeof(E).Name}/{data} failed: {ctx.ResponseCode}: {ctx.ResponseMessage}");
+        }
+        #endregion
+
+        #region ProcessOutputEntity/ProcessOutputVersion
+        /// <summary>
+        /// Converts the SQL output to a repository holder format..
+        /// </summary>
+        /// <param name="context">The context response.</param>
+        /// <param name="onEvent">The event to fire.</param>
+        /// <returns>The repository response.</returns>
+        protected virtual RepositoryHolder<K, E> ProcessOutputEntity(IEntityContext<E> context
+            , Action<RepositoryHolder<K, E>> onEvent = null)
+        {
+            E entity = context.ResponseEntities.FirstOrDefault();
+            K key = entity != null ? KeyMaker(entity) : default(K);
+
+            var rs = new RepositoryHolder<K, E>(key, null, entity, context.ResponseCode, context.ResponseMessage);
+
+            onEvent?.Invoke(rs);
+
+            return rs;
+        }
+
+        /// <summary>
+        /// Converts the SQL output to a repository holder format..
+        /// </summary>
+        /// <param name="context">The SQL response.</param>
+        /// <param name="key">The optional key.</param>
+        /// <param name="onEvent">The event to fire.</param>
+        /// <returns>The repository response.</returns>
+        protected virtual RepositoryHolder<K, Tuple<K, string>> ProcessOutputVersion(
+            IEntityContext<Tuple<K, string>> context, K key = default(K)
+            , Action<RepositoryHolder<K, Tuple<K, string>>> onEvent = null)
+
+        {
+            var entity = context.ResponseEntities.FirstOrDefault();
+            var rs = (entity == null) ? new RepositoryHolder<K, Tuple<K, string>>(key, null, null, 404)
+                : new RepositoryHolder<K, Tuple<K, string>>(entity.Item1, null, new Tuple<K, string>(entity.Item1, entity.Item2), context.ResponseCode, context.ResponseMessage);
+
+            onEvent?.Invoke(rs);
+
+            return rs;
+        }
+        #endregion
+
     }
 
     /// <summary>
@@ -684,5 +807,7 @@ namespace Xigadee
         /// This is the entity type.
         /// </summary>
         public Type TypeEntity { get; }
+
+
     }
 }

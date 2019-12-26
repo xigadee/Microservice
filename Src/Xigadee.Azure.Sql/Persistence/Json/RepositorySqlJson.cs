@@ -109,29 +109,6 @@ namespace Xigadee
         }
         #endregion
 
-        #region SignatureCreate(E entity)
-        /// <summary>
-        /// TODO: Creates the signature hash for the entity. 
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <returns>Returns the string signature.</returns>
-        protected virtual string SignatureCreate(E entity)
-        {
-            return "";
-        }
-        #endregion
-        #region SignatureValidate(E entity, string signature)
-        /// <summary>
-        /// TODO: Validates the signature hash and confirms that the key fields have not been altered in the database. 
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <param name="signature">The signature.</param>
-        /// <returns>Returns the string signature.</returns>
-        protected virtual void SignatureValidate(E entity, string signature)
-        {
-        }
-        #endregion
-
         #region CreateEntity(string json)
         /// <summary>
         /// This method deserializes the entity from the json string.
@@ -247,6 +224,7 @@ namespace Xigadee
             res.PropertyNames.ForIndex((i, s) => rs.Fields[i + 1] = new FieldMetadata { Name = s });
         }
 
+        #region DbDeserializeSearchResponse(SqlDataReader dataReader, SqlEntityContext<SearchRequest, SearchResponse> ctx)
         /// <summary>
         /// THis method deserializes the field search response.
         /// </summary>
@@ -279,7 +257,9 @@ namespace Xigadee
 
             rs.Data.Add(values);
         }
+        #endregion
 
+        #region DbDeserializeSearchResponseEntity(SqlDataReader dataReader, SqlEntityContext<SearchRequest, SearchResponse<E>> ctx)
         /// <summary>
         /// This method resolves the reader in to the search response.
         /// </summary>
@@ -299,16 +279,27 @@ namespace Xigadee
             rs.TotalRecordCount = entityHolder.TotalRecordCount;
             rs.CacheHit = entityHolder.CacheHit;
         }
+        #endregion
 
+        #region History ...
+        /// <summary>
+        /// Tis methof serializes the history request.
+        /// </summary>
+        /// <param name="ctx"></param>
         protected override void DbSerializeHistoryRequest(SqlEntityContext<HistoryRequest<K>, HistoryResponse<E>> ctx)
         {
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// This method deserializes the history request.
+        /// </summary>
+        /// <param name="dataReader"></param>
+        /// <param name="ctx"></param>
         protected override void DbDeserializeHistoryResponse(SqlDataReader dataReader, SqlEntityContext<HistoryRequest<K>, HistoryResponse<E>> ctx)
         {
             throw new NotImplementedException();
-        }
+        } 
+        #endregion
 
         #region Helper classes
 
