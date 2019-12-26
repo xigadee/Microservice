@@ -8,22 +8,18 @@ namespace Xigadee
     /// <summary>
     /// This class holds the Sql context.
     /// </summary>
-    public class SqlEntityContext : IEntityContext, ISqlEntityContext
+    public class SqlEntityContext : EntityContext, ISqlEntityContext
     {
         /// <summary>
         /// This is the context constructor.
         /// </summary>
         /// <param name="spName">The stored procedure name.</param>
         /// <param name="options">The repository settings.</param>
-        public SqlEntityContext(string spName, RepositorySettings options)
+        public SqlEntityContext(string spName, RepositorySettings options):base(options)
         {
             SpName = spName;
-            Options = options;
         }
-        /// <summary>
-        /// The repository options.
-        /// </summary>
-        public RepositorySettings Options { get; }
+
         /// <summary>
         /// This is the stored procedure name.
         /// </summary>
@@ -32,33 +28,7 @@ namespace Xigadee
         /// This is the sql command to be executed.
         /// </summary>
         public SqlCommand Command { get; set; }
-        /// <summary>
-        /// Gets or sets the version identifier.
-        /// </summary>
-        public string VersionId { get; set; }
-        /// <summary>
-        /// This is the reference
-        /// </summary>
-        public (string type, string value) Reference { get; set; }
 
-        /// <summary>
-        /// Specifies that the response code is a success.
-        /// </summary>
-        public bool IsSuccessResponse => ResponseCode >= 200 && ResponseCode <= 299;
-
-        /// <summary>
-        /// The response is a not found response.
-        /// </summary>
-        public bool IsNotFoundResponse => ResponseCode == 404;
-
-        /// <summary>
-        /// Gets or sets the response code.
-        /// </summary>
-        public int ResponseCode { get; set; }
-        /// <summary>
-        /// Gets or sets the optional response message.
-        /// </summary>
-        public string ResponseMessage { get; set; }
     }
     #endregion
     #region SqlEntityContext<E> 
