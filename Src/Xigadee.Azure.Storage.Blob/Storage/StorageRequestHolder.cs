@@ -1,7 +1,4 @@
 ﻿using Microsoft.Azure.Storage.Blob;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 
 namespace Xigadee
@@ -32,6 +29,10 @@ namespace Xigadee
         /// <returns></returns>
         public static string AzureSafeKey(string key)
         {
+            //var uriSafekey = WebUtility.UrlEncode(key);
+            //if (string.IsNullOrEmpty(uriSafekey))
+            //    return null;
+
             return key;
         }
 
