@@ -16,7 +16,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class RepositoryBlobStorage<K, E> : RepositoryBase<K, E>
+    public abstract class RepositoryBlobStorage<K, E> : RepositoryBase<K, E>
         where K : IEquatable<K>
     {
         #region Declarations
@@ -32,6 +32,7 @@ namespace Xigadee
 
         protected TimeSpan? mDefaultTimeout;
 
+        protected readonly IServiceHandlerCompression mCompression;
         protected readonly IServiceHandlerEncryption mEncryption;
 
         public const string cnMetaDeleted = "Deleted";
@@ -54,6 +55,7 @@ namespace Xigadee
         /// <param name="options">The blob request options.</param>
         /// <param name="context">The operation context.</param>
         /// <param name="defaultTimeout">The default timeout for the operations.</param>
+        /// <param name="compression">This is the compression handler.</param>
         /// <param name="encryption">Encryption to be used when storing the blob</param>
         /// <exception cref="ArgumentNullException">The sqlConnection cannot be null.</exception>
         public RepositoryBlobStorage(StorageCredentials credentials
@@ -67,6 +69,7 @@ namespace Xigadee
             , BlobRequestOptions options = null
             , OperationContext context = null
             , TimeSpan? defaultTimeout = null
+            , IServiceHandlerCompression compression = null
             , IServiceHandlerEncryption encryption = null
             )
             : base(keyMaker, referenceMaker, propertiesMaker, versionPolicy, keyManager)
@@ -83,7 +86,9 @@ namespace Xigadee
             mOptions = options ?? BlobRequestOptionsDefault;
             mContext = context;
             mDefaultTimeout = defaultTimeout;
+
             mEncryption = encryption;
+            mCompression = compression;
 
             mStorageAccount = new CloudStorageAccount(mCredentails, true);
             mStorageClient = mStorageAccount.CreateCloudBlobClient();
@@ -95,15 +100,10 @@ namespace Xigadee
         }
         #endregion
 
-        protected virtual void ContextEncodeRequest(BlobStorageEntityContext<K, E> ctx)
-        {
+        protected abstract void ContextEncodeRequest(BlobStorageEntityContext<K, E> ctx);
 
-        }
 
-        protected virtual void ContextDecodeResponse(BlobStorageEntityContext<K, E> ctx)
-        {
-
-        }
+        protected abstract void ContextDecodeResponse(BlobStorageEntityContext<K, E> ctx);
 
         /// <summary>
         /// 
@@ -141,8 +141,6 @@ namespace Xigadee
 
                         MetadataGet(rq.Blob, rq);
                     }
-                    //else
-                    //    rq.CopyTo(rs);
 
                     rq.IsSuccess = !exists;
                     rq.StatusCode = exists ? 409 : 201;
@@ -164,10 +162,29 @@ namespace Xigadee
         {
             var ctx = new BlobStorageEntityContext<K, E>(options, key);
 
-            //await ExecuteSqlCommand(ctx
-            //    , DbSerializeKey
-            //    , DbDeserializeEntity
-            //    );
+            await CloudBlockBlobOperation(ctx,
+                async (rq, exists) =>
+                {
+                    if (exists)
+                    {
+                        var sData = new MemoryStream();
+
+                        await rq.Blob.DownloadToStreamAsync(sData);//, rq.CancelSet); //TODO: work out why this is.
+
+                        rq.Data = new byte[sData.Length];
+                        sData.Position = 0;
+                        sData.Read(rq.Data, 0, rq.Data.Length);
+
+                        // If encryption provided decrypt the blob
+                        if (mEncryption != null)
+                            rq.Data = mEncryption.Decrypt(rq.Data);
+
+                        MetadataGet(rq.Blob, rq);
+                    }
+
+                    rq.IsSuccess = exists;
+                    rq.StatusCode = exists ? 200 : 404;
+                });
 
             if (ctx.IsSuccessResponse)
             {
@@ -188,10 +205,8 @@ namespace Xigadee
 
             ContextEncodeRequest(ctx);
 
-            //await ExecuteSqlCommand(ctx
-            //    , DbSerializeEntity
-            //    , DbDeserializeEntity
-            //    );
+            ///
+ 
 
             if (ctx.IsSuccessResponse)
             {
