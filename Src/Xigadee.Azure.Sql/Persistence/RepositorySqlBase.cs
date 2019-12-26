@@ -326,7 +326,6 @@ namespace Xigadee
         /// <returns>Returns the stored procedure name.</returns>
         protected virtual string SearchEntitySpName(string id) => SpNamer.StoredProcedureSearchEntity(id ?? "Default");
 
-
         /// <summary>
         /// This method serializes the entity in to the SqlCommand.
         /// </summary>
@@ -370,55 +369,6 @@ namespace Xigadee
         /// <param name="dataReader">The data reader.</param>
         /// <param name="ctx">The context</param>
         protected abstract void DbDeserializeSearchResponseEntity(SqlDataReader dataReader, SqlEntityContext<SearchRequest, SearchResponse<E>> ctx);
-
-        #region DbSerializeKey(ISqlEntityContextKey<K> ctx)
-        /// <summary>
-        /// This method serializes the entity key in to the SQL command.
-        /// </summary>
-        /// <param name="ctx">The context.</param>
-        protected virtual void DbSerializeKey(ISqlEntityContextKey<K> ctx)
-        {
-            if (typeof(K) == typeof(Guid))
-                ctx.Command.Parameters.Add("@ExternalId", SqlDbType.UniqueIdentifier).Value = ctx.Key;
-            else if (typeof(K) == typeof(string))
-                ctx.Command.Parameters.Add("@ExternalId", SqlDbType.NVarChar, 255).Value = ctx.Key;
-            else if (typeof(K) == typeof(long))
-                ctx.Command.Parameters.Add("@ExternalId", SqlDbType.BigInt).Value = ctx.Key;
-            else if (typeof(K) == typeof(int))
-                ctx.Command.Parameters.Add("@ExternalId", SqlDbType.Int).Value = ctx.Key;
-            else
-                throw new NotSupportedException($"Key type '{typeof(K).Name}' is not supported automatically. Override DbSerializeKey");
-        }
-        #endregion
-        #region DbSerializeKeyReference(SqlEntityContext ctx)
-        /// <summary>
-        /// This method serializes the entity key in to the SQL command.
-        /// </summary>
-        /// <param name="ctx">The context.</param>
-        protected virtual void DbSerializeKeyReference(SqlEntityContext ctx)
-        {
-            ctx.Command.Parameters.Add("@RefType", SqlDbType.NVarChar, 50).Value = ctx.Reference.type;
-            ctx.Command.Parameters.Add("@RefValue", SqlDbType.NVarChar, 255).Value = ctx.Reference.value;
-        }
-        #endregion
-
-        #region DbDeserializeVersion(SqlDataReader dataReader)
-        /// <summary>
-        /// This method deserializes a data reader record into a version tuple.
-        /// </summary>
-        /// <param name="dataReader">The incoming data reader class.</param>
-        /// <param name="ctx">The context.</param>
-        protected virtual void DbDeserializeVersion(SqlDataReader dataReader, SqlEntityContext<Tuple<K, string>> ctx)
-        {
-            var key = KeyManager.Deserialize(dataReader["ExternalId"].ToString());
-            var versionId = dataReader["VersionId"].ToString();
-
-            //DataTable schema = dataReader.GetSchemaTable();
-            //string versionId = schema?.Columns.Contains("VersionId") ?? false ? dataReader["VersionId"].ToString() : null;
-
-            ctx.ResponseEntities.Add(new Tuple<K, string>(key, versionId));
-        }
-        #endregion
 
         #region ExecuteSqlCommand<ET> ...
         /// <summary>
@@ -529,7 +479,54 @@ namespace Xigadee
         }
         #endregion
 
+        #region DbSerializeKey(ISqlEntityContextKey<K> ctx)
+        /// <summary>
+        /// This method serializes the entity key in to the SQL command.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        protected virtual void DbSerializeKey(ISqlEntityContextKey<K> ctx)
+        {
+            if (typeof(K) == typeof(Guid))
+                ctx.Command.Parameters.Add("@ExternalId", SqlDbType.UniqueIdentifier).Value = ctx.Key;
+            else if (typeof(K) == typeof(string))
+                ctx.Command.Parameters.Add("@ExternalId", SqlDbType.NVarChar, 255).Value = ctx.Key;
+            else if (typeof(K) == typeof(long))
+                ctx.Command.Parameters.Add("@ExternalId", SqlDbType.BigInt).Value = ctx.Key;
+            else if (typeof(K) == typeof(int))
+                ctx.Command.Parameters.Add("@ExternalId", SqlDbType.Int).Value = ctx.Key;
+            else
+                throw new NotSupportedException($"Key type '{typeof(K).Name}' is not supported automatically. Override DbSerializeKey");
+        }
+        #endregion
+        #region DbSerializeKeyReference(SqlEntityContext ctx)
+        /// <summary>
+        /// This method serializes the entity key in to the SQL command.
+        /// </summary>
+        /// <param name="ctx">The context.</param>
+        protected virtual void DbSerializeKeyReference(SqlEntityContext ctx)
+        {
+            ctx.Command.Parameters.Add("@RefType", SqlDbType.NVarChar, 50).Value = ctx.Reference.type;
+            ctx.Command.Parameters.Add("@RefValue", SqlDbType.NVarChar, 255).Value = ctx.Reference.value;
+        }
+        #endregion
 
+        #region DbDeserializeVersion(SqlDataReader dataReader)
+        /// <summary>
+        /// This method deserializes a data reader record into a version tuple.
+        /// </summary>
+        /// <param name="dataReader">The incoming data reader class.</param>
+        /// <param name="ctx">The context.</param>
+        protected virtual void DbDeserializeVersion(SqlDataReader dataReader, SqlEntityContext<Tuple<K, string>> ctx)
+        {
+            var key = KeyManager.Deserialize(dataReader["ExternalId"].ToString());
+            var versionId = dataReader["VersionId"].ToString();
+
+            //DataTable schema = dataReader.GetSchemaTable();
+            //string versionId = schema?.Columns.Contains("VersionId") ?? false ? dataReader["VersionId"].ToString() : null;
+
+            ctx.ResponseEntities.Add(new Tuple<K, string>(key, versionId));
+        }
+        #endregion
 
         #region DbSerializeEntity
         /// <summary>
@@ -546,5 +543,6 @@ namespace Xigadee
         /// <param name="ctx">The context</param>
         protected abstract void DbDeserializeEntity(SqlDataReader dataReader, SqlEntityContext<E> ctx); 
         #endregion
+
     }
 }

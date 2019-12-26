@@ -28,7 +28,9 @@ namespace Xigadee
         protected readonly BlobRequestOptions mOptions;
         protected readonly OperationContext mContext;
         protected StorageCredentials mCredentails;
+
         protected TimeSpan? mDefaultTimeout;
+
         protected readonly IServiceHandlerEncryption mEncryption;
 
         public const string cnMetaDeleted = "Deleted";
@@ -91,6 +93,137 @@ namespace Xigadee
             mEntityContainer.CreateIfNotExistsAsync(mAccessType, mOptions, mContext).Wait();
         }
         #endregion
+
+        protected override async Task<RepositoryHolder<K, E>> CreateInternal(K key, E entity, RepositorySettings options, Action<RepositoryHolder<K, E>> holderAction)
+        {
+            var ctx = new BlobStorageEntityContext<K, E>(options, key, entity);
+
+            VersionPolicySet(ctx, false);
+
+            //await ExecuteSqlCommand(ctx
+            //    , DbSerializeEntity
+            //    , DbDeserializeEntity
+            //    );
+
+            if (ctx.IsSuccessResponse)
+                ctx.ResponseEntities.Add(ctx.EntityOutgoing);
+
+            ContextLogger(ctx, "Create", key);
+
+            return ProcessOutputEntity(ctx, holderAction);
+        }
+
+        protected override async Task<RepositoryHolder<K, E>> ReadInternal(K key, RepositorySettings options, Action<RepositoryHolder<K, E>> holderAction)
+        {
+            var ctx = new BlobStorageEntityContext<K, E>(options, key);
+
+            //await ExecuteSqlCommand(ctx
+            //    , DbSerializeKey
+            //    , DbDeserializeEntity
+            //    );
+
+            ContextLogger(ctx, "Read", key);
+
+            return ProcessOutputEntity(ctx, holderAction);
+        }
+
+        protected override async Task<RepositoryHolder<K, E>> UpdateInternal(K key, E entity, RepositorySettings options, Action<RepositoryHolder<K, E>> holderAction)
+        {
+            var ctx = new BlobStorageEntityContext<K, E>(options, key, entity);
+
+            VersionPolicySet(ctx, true);
+
+            //await ExecuteSqlCommand(ctx
+            //    , DbSerializeEntity
+            //    , DbDeserializeEntity
+            //    );
+
+            if (ctx.IsSuccessResponse)
+                ctx.ResponseEntities.Add(ctx.EntityOutgoing);
+
+            ContextLogger(ctx, "Update", key);
+
+            return ProcessOutputEntity(ctx, holderAction);
+        }
+
+        protected override async Task<RepositoryHolder<K, Tuple<K, string>>> DeleteInternal(K key, RepositorySettings options, Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
+        {
+            var ctx = new BlobStorageEntityContext<K, Tuple<K, string>>(options, key);
+
+            //await ExecuteSqlCommand(ctx
+            //    , DbSerializeKey
+            //    , DbDeserializeVersion
+            //    );
+
+            ContextLogger(ctx, "Delete", key);
+
+            return ProcessOutputVersion(ctx, key, holderAction);
+        }
+
+        protected override async Task<RepositoryHolder<K, Tuple<K, string>>> VersionInternal(K key, RepositorySettings options, Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
+        {
+            var ctx = new BlobStorageEntityContext<K, Tuple<K, string>>(options, key);
+
+            //await ExecuteSqlCommand(ctx
+            //    , DbSerializeKey
+            //    , DbDeserializeVersion
+            //    );
+
+            ContextLogger(ctx, "Version", key);
+
+            return ProcessOutputVersion(ctx, key, holderAction);
+        }
+
+        public override async Task<RepositoryHolder<SearchRequest, SearchResponse<E>>> SearchEntity(SearchRequest rq, RepositorySettings options = null)
+        {
+            OnBeforeSearchEvent(rq);
+
+            var response = new SearchResponse<E>();
+            response.PopulateSearchRequest(rq);
+
+            var ctx = new BlobStorageEntityContext<SearchRequest, SearchResponse<E>>(options, rq);
+            ctx.EntityOutgoing = response;
+
+            //await ExecuteSqlCommand(ctx
+            //    , DbSerializeSearchRequestEntity
+            //    , DbDeserializeSearchResponseEntity
+            //    );
+
+            ContextLogger(ctx, "SearchEntity", rq);
+
+            var rs = new RepositoryHolder<SearchRequest, SearchResponse<E>>(rq, null, ctx.EntityOutgoing, ctx.ResponseCode, ctx.ResponseMessage);
+
+            OnAfterSearchEntityEvent(rs);
+
+            return rs;
+        }
+
+        public override Task<RepositoryHolder<HistoryRequest<K>, HistoryResponse<E>>> History(HistoryRequest<K> key, RepositorySettings options = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest rq, RepositorySettings options = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRefInternal(string refKey, string refValue, RepositorySettings options = null, Action<RepositoryHolder<K, Tuple<K, string>>> holderAction = null)
+        {
+            throw new NotSupportedException();
+        }
+
+        protected override Task<RepositoryHolder<K, E>> ReadByRefInternal(string refKey, string refValue, RepositorySettings options, Action<RepositoryHolder<K, E>> holderAction)
+        {
+            throw new NotSupportedException();
+        }
+
+        protected override Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRefInternal(string refKey, string refValue, RepositorySettings options, Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
+        {
+            throw new NotSupportedException();
+        }
+
+
 
         #region BlobRequestOptionsDefault
         /// <summary>
@@ -216,123 +349,7 @@ namespace Xigadee
 
         #endregion
 
-
-        protected override Task<RepositoryHolder<K, E>> CreateInternal(K key, E entity, RepositorySettings options, Action<RepositoryHolder<K, E>> holderAction)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task<RepositoryHolder<K, E>> ReadInternal(K key, RepositorySettings options, Action<RepositoryHolder<K, E>> holderAction)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task<RepositoryHolder<K, E>> UpdateInternal(K key, E entity, RepositorySettings options, Action<RepositoryHolder<K, E>> holderAction)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task<RepositoryHolder<K, Tuple<K, string>>> DeleteInternal(K key, RepositorySettings options, Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<RepositoryHolder<SearchRequest, SearchResponse<E>>> SearchEntity(SearchRequest rq, RepositorySettings options = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<RepositoryHolder<HistoryRequest<K>, HistoryResponse<E>>> History(HistoryRequest<K> key, RepositorySettings options = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<RepositoryHolder<SearchRequest, SearchResponse>> Search(SearchRequest rq, RepositorySettings options = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task<RepositoryHolder<K, Tuple<K, string>>> DeleteByRefInternal(string refKey, string refValue, RepositorySettings options = null, Action<RepositoryHolder<K, Tuple<K, string>>> holderAction = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task<RepositoryHolder<K, E>> ReadByRefInternal(string refKey, string refValue, RepositorySettings options, Action<RepositoryHolder<K, E>> holderAction)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        protected override Task<RepositoryHolder<K, Tuple<K, string>>> VersionByRefInternal(string refKey, string refValue, RepositorySettings options, Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task<RepositoryHolder<K, Tuple<K, string>>> VersionInternal(K key, RepositorySettings options, Action<RepositoryHolder<K, Tuple<K, string>>> holderAction)
-        {
-            throw new NotImplementedException();
-        }
-
         #region Blob methods
-        #region CallCloudBlockBlob...
-        /// <summary>
-        /// This is wrapper class that provides generic exception handling support
-        /// and retrieves the standard metadata for each request.
-        /// </summary>
-        /// <param name="rq">The request.</param>
-        /// <param name="rs">The response.</param>
-        /// <param name="action">The async action task.</param>
-        /// <returns>Returns a task with the response.</returns>
-        protected async Task<StorageResponseHolder> CloudBlockBlobOperation(StorageRequestHolder rq
-            , Func<StorageRequestHolder, StorageResponseHolder, bool, Task> action)
-        {
-            int start = Statistics.ActiveIncrement();
-            var rs = new StorageResponseHolder();
-            try
-            {
-                var refEntityDirectory = mEntityContainer.GetDirectoryReference(rq.Directory);
-                rq.Blob = refEntityDirectory.GetBlockBlobReference(rq.SafeKey);
-
-                bool exists = await rq.Blob.ExistsAsync();// TODO: Work out why we can't pass the cancellation token: rq.CancelSet);
-                if (exists)
-                {
-                    MetadataGet(rq.Blob, rq);
-                    exists ^= rq.IsDeleted;
-                }
-
-                await action(rq, rs, exists);
-            }
-            catch (StorageException sex)
-            {
-                rs.Ex = sex;
-                rs.IsSuccess = false;
-                rs.StatusCode = sex.RequestInformation.HttpStatusCode;
-                rs.IsTimeout = rs.StatusCode == 500 || rs.StatusCode == 503;
-            }
-            catch (TaskCanceledException tcex)
-            {
-                rs.Ex = tcex;
-                rs.IsTimeout = true;
-                rs.IsSuccess = false;
-                rs.StatusCode = 502;
-            }
-            catch (Exception ex)
-            {
-                rs.Ex = ex;
-                rs.IsSuccess = false;
-                rs.StatusCode = 500;
-            }
-            finally
-            {
-                if (!rs.IsSuccess)
-                    Statistics.ErrorIncrement();
-                Statistics.ActiveDecrement(start);
-            }
-
-            return rs;
-        }
-        #endregion
-
         #region Create...
         protected virtual Task<StorageResponseHolder> BlobCreate(string key
             , byte[] body
@@ -381,11 +398,17 @@ namespace Xigadee
         }
         #endregion
         #region Update...
-        protected virtual Task<StorageResponseHolder> BlobUpdate(string key, byte[] body,
-            string contentType = null, string contentEncoding = null,
-            string version = null, string oldVersion = null,
-            string directory = null, IEnumerable<KeyValuePair<string, string>> metadata = null,
-            CancellationToken? cancel = null, bool createSnapshot = false, bool useEncryption = true)
+        protected virtual Task<StorageResponseHolder> BlobUpdate(string key
+            , byte[] body
+            , string contentType = null
+            , string contentEncoding = null
+            , string version = null
+            , string oldVersion = null
+            , string directory = null
+            , IEnumerable<KeyValuePair<string, string>> metadata = null
+            , CancellationToken? cancel = null
+            , bool createSnapshot = false
+            , bool useEncryption = true)
         {
             var request = new StorageRequestHolder(key, cancel, directory);
             return CloudBlockBlobOperation(request,
@@ -588,6 +611,65 @@ namespace Xigadee
                     rs.IsSuccess = true;
                     rs.StatusCode = 200;
                 });
+        }
+        #endregion
+
+        #region CallCloudBlockBlob...
+        /// <summary>
+        /// This is wrapper class that provides generic exception handling support
+        /// and retrieves the standard metadata for each request.
+        /// </summary>
+        /// <param name="rq">The request.</param>
+        /// <param name="rs">The response.</param>
+        /// <param name="action">The async action task.</param>
+        /// <returns>Returns a task with the response.</returns>
+        protected async Task<StorageResponseHolder> CloudBlockBlobOperation(StorageRequestHolder rq
+            , Func<StorageRequestHolder, StorageResponseHolder, bool, Task> action)
+        {
+            int start = Statistics.ActiveIncrement();
+            var rs = new StorageResponseHolder();
+            try
+            {
+                var refEntityDirectory = mEntityContainer.GetDirectoryReference(rq.Directory);
+                rq.Blob = refEntityDirectory.GetBlockBlobReference(rq.SafeKey);
+
+                bool exists = await rq.Blob.ExistsAsync();// TODO: Work out why we can't pass the cancellation token: rq.CancelSet);
+                if (exists)
+                {
+                    MetadataGet(rq.Blob, rq);
+                    exists ^= rq.IsDeleted;
+                }
+
+                await action(rq, rs, exists);
+            }
+            catch (StorageException sex)
+            {
+                rs.Ex = sex;
+                rs.IsSuccess = false;
+                rs.StatusCode = sex.RequestInformation.HttpStatusCode;
+                rs.IsTimeout = rs.StatusCode == 500 || rs.StatusCode == 503;
+            }
+            catch (TaskCanceledException tcex)
+            {
+                rs.Ex = tcex;
+                rs.IsTimeout = true;
+                rs.IsSuccess = false;
+                rs.StatusCode = 502;
+            }
+            catch (Exception ex)
+            {
+                rs.Ex = ex;
+                rs.IsSuccess = false;
+                rs.StatusCode = 500;
+            }
+            finally
+            {
+                if (!rs.IsSuccess)
+                    Statistics.ErrorIncrement();
+                Statistics.ActiveDecrement(start);
+            }
+
+            return rs;
         }
         #endregion
         #endregion    
