@@ -218,14 +218,18 @@ namespace Xigadee
         /// <param name="referenceMaker">The reference maker.</param>
         /// <param name="propertiesMaker">The properties maker.</param>
         /// <param name="versionPolicy">The version policy.</param>
-        /// <param name="keyManager">The key serialization manager. if this is not passed, then a default serializer will be passed using the component model.</param>
+        /// <param name="keyManager">The key serialization manager. if this is not passed, then a default serializer 
+        /// will be passed using the component model.</param>
+        /// <param name="signaturePolicy">This is the manual signature policy for the entity. 
+        /// If this is null, the repository attempts to set the policy using the EntitySignaturePolicyAttribute</param>
         /// <exception cref="ArgumentNullException">keyMaker</exception>
         protected RepositoryBase(Func<E, K> keyMaker = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<E, IEnumerable<Tuple<string, string>>> propertiesMaker = null
             , VersionPolicy<E> versionPolicy = null
             , RepositoryKeyManager<K> keyManager = null
-            ):base(typeof(IRepositoryAsyncServer<K, E>))
+            , SignaturePolicy<E> signaturePolicy = null
+           ) : base(typeof(IRepositoryAsyncServer<K, E>))
         {
             var res = EntityHintHelper.Resolve<E>();
 
@@ -258,11 +262,22 @@ namespace Xigadee
             if (VersionPolicy == null && (res?.SupportsVersion ?? false))
                     VersionPolicy = res.VersionPolicyGet<E>();
 
+            //Signature maker
+            SignaturePolicy = signaturePolicy;
+            if (SignaturePolicy == null && (res?.SupportsSignature ?? false))
+                SignaturePolicy = res.SignaturePolicyGet<E>();
+
             //Key Manager
             KeyManager = keyManager ?? RepositoryKeyManager.Resolve<K>();
         }
         #endregion
 
+        #region SignaturePolicy
+        /// <summary>
+        /// Holds the policy concerning whether the repository implements an entity signature when creating and reading an entity.
+        /// </summary>
+        public SignaturePolicy<E> SignaturePolicy { get; }
+        #endregion
         #region VersionPolicy
         /// <summary>
         /// Holds the policy concerning whether the repository implements optimistic locking 

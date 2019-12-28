@@ -91,9 +91,12 @@ namespace Xigadee
                 .Union(EntityType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                         .SelectMany((m) => m.GetCustomAttributes<EntityVersionHintAttribute>(), (mt, a) => (a,mt.SetMethod))
                 ).FirstOrDefault();
+
+            EntitySignatureHint = EntityType.GetCustomAttributes<EntitySignatureHintAttribute>(false)
+                .FirstOrDefault();
         }
         #endregion
-        
+
         #region EntityType
         /// <summary>
         /// Gets the type of the entity.
@@ -138,6 +141,10 @@ namespace Xigadee
         /// </summary>
         public (EntityVersionHintAttribute, MethodInfo)? MethodInfoVersionSet { get; protected set; }
 
+        /// <summary>
+        /// This is the specified entity hint attribute set for the entity.
+        /// </summary>
+        public EntitySignatureHintAttribute EntitySignatureHint { get; protected set; }
         /// <summary>
         /// Versions the specified entity.
         /// </summary>
@@ -234,6 +241,13 @@ namespace Xigadee
         public IEnumerable<string> PropertyNames => MethodInfoProperties.Select(i => i.Item1.Key);
 
         #endregion
+        #region Signature
+        /// <summary>
+        /// Specifies whether the entity has a signature handler.
+        /// </summary>
+        public bool SupportsSignature => EntitySignatureHint != null;
+
+        #endregion
 
         #region EmptyObjects
         /// <summary>
@@ -289,7 +303,23 @@ namespace Xigadee
             var p = new VersionPolicy<P>((e) => VersionGet(e), (e) => VersionSet(e), supportsArchiving);
 
             return p;
-        } 
+        }
+        #endregion
+        #region SignaturePolicy<P>()
+        /// <summary>
+        /// Get the version policy for the entity.
+        /// </summary>
+        /// <typeparam name="P"></typeparam>
+        /// <returns></returns>
+        public SignaturePolicy<P> SignaturePolicyGet<P>()
+        {
+            if (!SupportsSignature)
+                return null;
+
+            var p = new SignaturePolicy<P>(EntitySignatureHint.SignatureClass);
+
+            return p;
+        }
         #endregion
     }
 }
