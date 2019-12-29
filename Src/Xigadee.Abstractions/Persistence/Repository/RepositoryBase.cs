@@ -581,10 +581,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <returns>Returns the string signature.</returns>
-        protected virtual string SignatureCreate(E entity)
-        {
-            return "";
-        }
+        protected virtual string SignatureCreate(E entity) => SignaturePolicy?.Calculate(entity);
         #endregion
         #region SignatureValidate(E entity, string signature)
         /// <summary>
@@ -593,9 +590,7 @@ namespace Xigadee
         /// <param name="entity">The entity.</param>
         /// <param name="signature">The signature.</param>
         /// <returns>Returns the string signature.</returns>
-        protected virtual void SignatureValidate(E entity, string signature)
-        {
-        }
+        protected virtual void SignatureValidate(E entity, string signature) => SignaturePolicy?.Verify(entity, signature);
         #endregion
 
         #region VersionPolicySet(IEntityContext<K, E> ctx, bool isUpdate)
@@ -695,7 +690,6 @@ namespace Xigadee
             return rs;
         }
         #endregion
-
     }
 
     /// <summary>

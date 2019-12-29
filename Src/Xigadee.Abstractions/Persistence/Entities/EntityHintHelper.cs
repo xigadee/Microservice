@@ -304,6 +304,8 @@ namespace Xigadee
         }
         #endregion
         #region SignaturePolicy()
+
+        private ISignaturePolicy _cachedSignaturePolicy = null;
         /// <summary>
         /// Get the signature policy for the entity.
         /// </summary>
@@ -313,20 +315,26 @@ namespace Xigadee
             if (!SupportsSignature)
                 return null;
 
-            //Check that the class implements the ISignaturePolicy
-            if (!typeof(ISignaturePolicy).IsAssignableFrom(EntitySignatureHint.SignatureClass))
-                throw new SignaturePolicyException(EntityType, EntitySignatureHint.SignatureClass);
+            if (_cachedSignaturePolicy == null)
+            {
+                //Check that the class implements the ISignaturePolicy
+                if (!typeof(ISignaturePolicy).IsAssignableFrom(EntitySignatureHint.SignatureClass))
+                    throw new SignaturePolicyException(EntityType, EntitySignatureHint.SignatureClass);
 
-            //OK, let's create the new signature class with an empty constructor.
-            var e = EntitySignatureHint.SignatureClass.GetConstructor(new Type[] { });
-            var p = e.Invoke(new object[] { });
+                //OK, let's create the new signature class with an empty constructor.
+                var e = EntitySignatureHint.SignatureClass.GetConstructor(new Type[] { });
+                var p = e.Invoke(new object[] { });
 
-            //Let's just check again.
-            if (p is ISignaturePolicy)
-                return (ISignaturePolicy)p;
+                //Let's just check again.
+                if (!(p is ISignaturePolicy))
+                    throw new SignaturePolicyException(EntityType, EntitySignatureHint.SignatureClass);
 
-            throw new SignaturePolicyException(EntityType, EntitySignatureHint.SignatureClass);
+                _cachedSignaturePolicy = (ISignaturePolicy)p;
+            }
+
+            return _cachedSignaturePolicy;
         }
         #endregion
+
     }
 }
