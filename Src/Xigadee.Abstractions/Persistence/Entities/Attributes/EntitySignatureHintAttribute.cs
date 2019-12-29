@@ -14,7 +14,7 @@ namespace Xigadee
         /// <param name="signatureClass">The class used to calculate the signature.</param>
         public EntitySignatureHintAttribute(Type signatureClass)
         {
-            SignatureClass = signatureClass;
+            SignatureClass = signatureClass ?? throw new ArgumentNullException("signatureClass");
         }
 
         /// <summary>

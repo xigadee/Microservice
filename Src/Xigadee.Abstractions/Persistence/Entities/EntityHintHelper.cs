@@ -245,7 +245,6 @@ namespace Xigadee
         /// Specifies whether the entity has a signature handler.
         /// </summary>
         public bool SupportsSignature => EntitySignatureHint != null;
-
         #endregion
 
         #region EmptyObjects
@@ -306,18 +305,27 @@ namespace Xigadee
         #endregion
         #region SignaturePolicy()
         /// <summary>
-        /// Get the version policy for the entity.
+        /// Get the signature policy for the entity.
         /// </summary>
-        /// <typeparam name="P"></typeparam>
-        /// <returns></returns>
-        public SignaturePolicy SignaturePolicyGet()
+        /// <returns>Returns the signature policy for the entity class.</returns>
+        public ISignaturePolicy SignaturePolicyGet()
         {
             if (!SupportsSignature)
                 return null;
 
-            var p = new SignaturePolicy(EntitySignatureHint.SignatureClass);
+            //Check that the class implements the ISignaturePolicy
+            if (!typeof(ISignaturePolicy).IsAssignableFrom(EntitySignatureHint.SignatureClass))
+                throw new SignaturePolicyException(EntityType, EntitySignatureHint.SignatureClass);
 
-            return p;
+            //OK, let's create the new signature class with an empty constructor.
+            var e = EntitySignatureHint.SignatureClass.GetConstructor(new Type[] { });
+            var p = e.Invoke(new object[] { });
+
+            //Let's just check again.
+            if (p is ISignaturePolicy)
+                return (ISignaturePolicy)p;
+
+            throw new SignaturePolicyException(EntityType, EntitySignatureHint.SignatureClass);
         }
         #endregion
     }

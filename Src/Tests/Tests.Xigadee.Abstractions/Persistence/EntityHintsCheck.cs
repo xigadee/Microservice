@@ -9,7 +9,18 @@ using Xigadee;
 
 namespace Test.Xigadee
 {
-    public class SignMe { }
+    public class SignMe : ISignaturePolicy
+    {
+        public string Calculate(object entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Verify(object entity, string signature)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
     [TestClass]
     public class EntityHintsCheck
