@@ -52,6 +52,7 @@ namespace Test.Xigadee
 
             Guid id = resolver.Id<Guid>(t);
             var version = resolver.VersionGet(t);
+            var sigpol = resolver.SignaturePolicyGet();
 
             var r = resolver.References(t).ToList();
             var p = resolver.Properties(t).ToList();

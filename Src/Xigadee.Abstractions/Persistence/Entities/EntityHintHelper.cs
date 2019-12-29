@@ -182,7 +182,6 @@ namespace Xigadee
             var mi = MethodInfoVersionSet.Value.Item2;
             //TODO: We currently only support Guid as a version parameter, so let's hard code it for now
             mi.Invoke(entity, new object[] { Guid.NewGuid() });
-
         }
         #endregion
         #region References ...
@@ -305,18 +304,18 @@ namespace Xigadee
             return p;
         }
         #endregion
-        #region SignaturePolicy<P>()
+        #region SignaturePolicy()
         /// <summary>
         /// Get the version policy for the entity.
         /// </summary>
         /// <typeparam name="P"></typeparam>
         /// <returns></returns>
-        public SignaturePolicy<P> SignaturePolicyGet<P>()
+        public SignaturePolicy SignaturePolicyGet()
         {
             if (!SupportsSignature)
                 return null;
 
-            var p = new SignaturePolicy<P>(EntitySignatureHint.SignatureClass);
+            var p = new SignaturePolicy(EntitySignatureHint.SignatureClass);
 
             return p;
         }

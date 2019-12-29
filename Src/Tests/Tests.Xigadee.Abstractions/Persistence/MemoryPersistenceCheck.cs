@@ -13,6 +13,13 @@ namespace Test.Xigadee
     [TestClass]
     public class TestMemoryPersistenceCheck
     {
+        private class TestClassSignature
+        {
+
+
+        }
+
+        [EntitySignatureHint(typeof(TestClassSignature))]
         private class TestClass
         {
             public Guid Id { get; set; } = Guid.NewGuid();

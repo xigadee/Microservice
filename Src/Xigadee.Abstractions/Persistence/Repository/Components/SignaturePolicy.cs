@@ -9,17 +9,24 @@ namespace Xigadee
     /// </summary>
     public class SignaturePolicy
     {
-    }
+        Type _signatureMaker;
 
-    /// <summary>
-    /// This is the default signature policy class for a default entity..
-    /// </summary>
-    /// <typeparam name="E">The entity type E.</typeparam>
-    public class SignaturePolicy<E>
-    {
         public SignaturePolicy(Type signatureMaker)
         {
+            _signatureMaker = signatureMaker;
 
+            
+        }
+
+        public string Calculate(object entity)
+        {
+            return "";
+        }
+
+        public bool Verify(object entity, string signature)
+        {
+            return true;
         }
     }
+
 }

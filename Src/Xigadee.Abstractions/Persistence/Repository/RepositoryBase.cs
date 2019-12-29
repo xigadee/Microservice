@@ -228,7 +228,7 @@ namespace Xigadee
             , Func<E, IEnumerable<Tuple<string, string>>> propertiesMaker = null
             , VersionPolicy<E> versionPolicy = null
             , RepositoryKeyManager<K> keyManager = null
-            , SignaturePolicy<E> signaturePolicy = null
+            , SignaturePolicy signaturePolicy = null
            ) : base(typeof(IRepositoryAsyncServer<K, E>))
         {
             var res = EntityHintHelper.Resolve<E>();
@@ -265,7 +265,7 @@ namespace Xigadee
             //Signature maker
             SignaturePolicy = signaturePolicy;
             if (SignaturePolicy == null && (res?.SupportsSignature ?? false))
-                SignaturePolicy = res.SignaturePolicyGet<E>();
+                SignaturePolicy = res.SignaturePolicyGet();
 
             //Key Manager
             KeyManager = keyManager ?? RepositoryKeyManager.Resolve<K>();
@@ -276,7 +276,7 @@ namespace Xigadee
         /// <summary>
         /// Holds the policy concerning whether the repository implements an entity signature when creating and reading an entity.
         /// </summary>
-        public SignaturePolicy<E> SignaturePolicy { get; }
+        public SignaturePolicy SignaturePolicy { get; }
         #endregion
         #region VersionPolicy
         /// <summary>
