@@ -144,7 +144,10 @@ namespace Xigadee
             var result = Atomic(true, () =>
             {
                 var newContainer = CreateEntityContainer(
-                    key, entity, references, properties, VersionPolicy?.EntityVersionAsString(entity), KeyManager.Serialize(key));
+                    key, entity, references, properties, VersionPolicy?.EntityVersionAsString(entity)
+                    , KeyManager.Serialize(key)
+                    , SignatureCreate(entity)
+                    );
 
                 //OK, add the entity
                 if (!_container.Add(newContainer))
@@ -175,6 +178,8 @@ namespace Xigadee
 
             container?.ReadHitIncrement();
 
+            SignatureValidate(entity, container.Signature);
+
             return ResultFormat(result ? 200 : 404
                 , () => result ? container.Key : default(K)
                 , () => result ? entity : default(E)
@@ -199,6 +204,8 @@ namespace Xigadee
 
             container?.ReadHitIncrement();
 
+            SignatureValidate(entity, container.Signature);
+
             return ResultFormat(result ? 200 : 404
                 , () => result ? container.Key : default(K)
                 , () => result ? entity : default(E)
@@ -221,7 +228,10 @@ namespace Xigadee
             var newReferences = ReferencesMaker?.Invoke(entity).ToList();
             var newProperties = PropertiesMaker?.Invoke(entity).ToList();
 
-            EntityContainer<K,E> newContainer = CreateEntityContainer(key, entity, newReferences, newProperties, null, KeyManager.Serialize(key));
+            EntityContainer<K,E> newContainer = CreateEntityContainer(key, entity, newReferences, newProperties, null
+                , KeyManager.Serialize(key)
+                , SignatureCreate(entity)
+                );
 
             var newEntity = default(E);
             Tuple<string, string> t = null;
@@ -251,7 +261,10 @@ namespace Xigadee
                      string newVersion = VersionPolicy.EntityVersionUpdate(newEntity);
 
                      //We need to update the container as the version has changed.
-                     newContainer = CreateEntityContainer(key, newEntity, newReferences, newProperties, newVersion, KeyManager.Serialize(key));
+                     newContainer = CreateEntityContainer(key, newEntity, newReferences, newProperties, newVersion
+                         , KeyManager.Serialize(key)
+                         , SignatureCreate(entity)
+                         );
                  }
                  else
                      newEntity = newContainer.Entity;
@@ -526,15 +539,17 @@ namespace Xigadee
         /// <param name="newProperties">The new properties.</param>
         /// <param name="newVersionId">The new version identifier.</param>
         /// <param name="keyAsString">The key value as a string.</param>
+        /// <param name="signature">The entity signature.</param>
         /// <returns>Returns the new container with the serialized entity.</returns>
         protected virtual EntityContainer<K, E> CreateEntityContainer(K key, E newEntity
                 , IEnumerable<Tuple<string, string>> newReferences
                 , IEnumerable<Tuple<string, string>> newProperties
                 , string newVersionId
-                , string keyAsString)
+                , string keyAsString
+                , string signature)
         {
             return new EntityContainer<K, E>(
-                key, newEntity, newReferences, newProperties, newVersionId, EntityDeserialize, EntitySerialize, keyAsString);
+                key, newEntity, newReferences, newProperties, newVersionId, EntityDeserialize, EntitySerialize, keyAsString, signature);
         }
         #endregion
 

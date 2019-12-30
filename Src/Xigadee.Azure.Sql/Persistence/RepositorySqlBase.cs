@@ -435,6 +435,11 @@ namespace Xigadee
                         ctx.ResponseCode = (int)paramReturnValue.Value;
                 }
             }
+            //catch (SignatureEntityVerificationException sigex)
+            //{
+            //    Collector?.LogException($"{nameof(ExecuteSqlCommand)} Unhandled exception: {typeof(E).Name} - {ex.Message}");
+
+            //}
             catch (Exception ex)
             {
                 Collector?.LogException($"{nameof(ExecuteSqlCommand)} Unhandled exception: {typeof(E).Name} - {ex.Message}");

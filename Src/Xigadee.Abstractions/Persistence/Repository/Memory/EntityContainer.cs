@@ -26,6 +26,7 @@ namespace Xigadee
         /// <param name="deserializer">The deserializer that converts the body to an entity.</param>
         /// <param name="serializer">The serializer that turns the entity in to a blob.</param>
         /// <param name="keyAsString">The key as a serialized string.</param>
+        /// <param name="signature">The entity signature.</param>
         public EntityContainer(K key, E entity
             , IEnumerable<Tuple<string, string>> references
             , IEnumerable<Tuple<string, string>> properties
@@ -33,6 +34,7 @@ namespace Xigadee
             , Func<byte[], E> deserializer
             , Func<E, byte[]> serializer
             , string keyAsString
+            , string signature
             )
         {
             Key = key;
@@ -48,6 +50,8 @@ namespace Xigadee
             Properties = properties == null ? new List<Tuple<string, string>>() : properties.ToList();
 
             VersionId = versionId;
+
+            Signature = signature;
         } 
         #endregion
 
@@ -109,6 +113,11 @@ namespace Xigadee
         /// Gets the current hit count.
         /// </summary>
         public long ReadHitCount => _hitCount;
+
+        /// <summary>
+        /// This is the entity signature.
+        /// </summary>
+        public string Signature { get; }
 
     }
 

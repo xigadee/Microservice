@@ -590,7 +590,7 @@ namespace Xigadee
         /// <param name="entity">The entity.</param>
         /// <param name="signature">The signature.</param>
         /// <returns>Returns the string signature.</returns>
-        protected virtual void SignatureValidate(E entity, string signature) => SignaturePolicy?.Verify(entity, signature);
+        protected virtual bool SignatureValidate(E entity, string signature) => SignaturePolicy?.Verify(entity, signature) ?? true;
         #endregion
 
         #region VersionPolicySet(IEntityContext<K, E> ctx, bool isUpdate)

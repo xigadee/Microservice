@@ -12,14 +12,29 @@ namespace Test.Xigadee
 
     public class TestClassSignature : ISignaturePolicy
     {
+        readonly Guid Namespace = new Guid("{7F09C1CF-4CDB-45EB-BA3B-E9F3610635C0}");
+
         public string Calculate(object entity)
         {
-            return "";
+            if (entity is TestMemoryPersistenceCheck.TestClass)
+            {
+                return HashGenerate(entity as TestMemoryPersistenceCheck.TestClass);
+            }
+
+            return null;
         }
+
+        private string HashGenerate(TestMemoryPersistenceCheck.TestClass e) => 
+            GuidHelper.Create(Namespace, $"{e.Id.ToString("N")}:{e.VersionId.ToString("N")}:{e.Name}".ToLowerInvariant()).ToString("N").ToUpperInvariant();
 
         public bool Verify(object entity, string signature)
         {
-            return true;
+            if (entity is TestMemoryPersistenceCheck.TestClass)
+            {
+                return Calculate(entity) == signature;
+            }
+
+            return false;
         }
     }
 

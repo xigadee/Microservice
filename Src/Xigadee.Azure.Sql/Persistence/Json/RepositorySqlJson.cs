@@ -55,7 +55,8 @@ namespace Xigadee
                 var json = dataReader["Body"]?.ToString();
                 var entity = CreateEntity(json);
                 var sig = dataReader.GetFieldValue<string>(dataReader.GetOrdinal("Sig"));
-                SignatureValidate(entity, sig);
+                if (!SignatureValidate(entity, sig))
+                    throw new SignatureEntityVerificationException();
                 ctx.ResponseEntities.Add(entity);
             }
             catch (JsonException e)
