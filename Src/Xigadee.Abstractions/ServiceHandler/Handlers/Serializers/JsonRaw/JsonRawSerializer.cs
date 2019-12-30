@@ -2,8 +2,9 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Newtonsoft.Json;
-
+using System.Dynamic;
 namespace Xigadee
 {
     /// <summary>

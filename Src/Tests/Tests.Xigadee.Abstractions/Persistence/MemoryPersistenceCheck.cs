@@ -10,17 +10,26 @@ using Xigadee;
 namespace Test.Xigadee
 {
 
+    public class TestClassSignature : ISignaturePolicy
+    {
+        public string Calculate(object entity)
+        {
+            return "";
+        }
+
+        public bool Verify(object entity, string signature)
+        {
+            return true;
+        }
+    }
+
+
     [TestClass]
     public class TestMemoryPersistenceCheck
     {
-        private class TestClassSignature
-        {
-
-
-        }
 
         [EntitySignatureHint(typeof(TestClassSignature))]
-        private class TestClass
+        public class TestClass
         {
             public Guid Id { get; set; } = Guid.NewGuid();
 
