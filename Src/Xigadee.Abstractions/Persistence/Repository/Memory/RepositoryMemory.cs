@@ -178,7 +178,19 @@ namespace Xigadee
 
             container?.ReadHitIncrement();
 
-            SignatureValidate(entity, container.Signature);
+            //If we have found the entity, but the signature is not validated.
+            if (result && !SignatureValidate(entity, container.Signature))
+            {
+                Collector?.LogException($"{typeof(E).Name} Entity Read signature verification failed: {key}");
+
+                return ResultFormat(403 //Conflict - signature error.
+                , () => container.Key
+                , () => default(E)
+                , () => null
+                , options
+                , holderAction
+                );
+            }
 
             return ResultFormat(result ? 200 : 404
                 , () => result ? container.Key : default(K)
@@ -188,6 +200,7 @@ namespace Xigadee
                 , holderAction
                 );
         }
+
         /// <summary>
         /// Read by Reference
         /// </summary>
@@ -204,7 +217,19 @@ namespace Xigadee
 
             container?.ReadHitIncrement();
 
-            SignatureValidate(entity, container.Signature);
+            //If we have found the entity, but the signature is not validated.
+            if (result && !SignatureValidate(entity, container.Signature))
+            {
+                Collector?.LogException($"{typeof(E).Name} Entity Read signature verification failed: {container.Key}");
+
+                return ResultFormat(403 //Conflict - signature error.
+                , () => container.Key
+                , () => default(E)
+                , () => null
+                , options
+                , holderAction
+                );
+            }
 
             return ResultFormat(result ? 200 : 404
                 , () => result ? container.Key : default(K)
@@ -263,7 +288,7 @@ namespace Xigadee
                      //We need to update the container as the version has changed.
                      newContainer = CreateEntityContainer(key, newEntity, newReferences, newProperties, newVersion
                          , KeyManager.Serialize(key)
-                         , SignatureCreate(entity)
+                         , SignatureCreate(newEntity)
                          );
                  }
                  else

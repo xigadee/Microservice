@@ -31,7 +31,8 @@ namespace Test.Xigadee
         {
             if (entity is TestMemoryPersistenceCheck.TestClass)
             {
-                return Calculate(entity) == signature;
+                var hash = Calculate(entity);
+                return hash == signature;
             }
 
             return false;
@@ -130,6 +131,16 @@ namespace Test.Xigadee
 
             //var result = await _repo.Search();
             //Assert.IsTrue(result.Entity.Data.Count == 3);
+            var resRead2 = await _repo.Read(result2.Entity.Id);
+            var entity = resRead2.Entity;
+
+            entity.Name = Guid.NewGuid().ToString("N");
+
+            var rsUpdate = await _repo.Update(entity);
+
+            var resRead3 = await _repo.Read(entity.Id);
+
+
         }
 
 

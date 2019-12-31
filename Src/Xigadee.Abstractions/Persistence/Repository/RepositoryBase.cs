@@ -12,13 +12,6 @@ namespace Xigadee
     public abstract class RepositoryBase<K, E> : RepositoryBase, IRepositoryAsyncServer<K, E>
         where K : IEquatable<K>
     {
-        #region Collector
-        /// <summary>
-        /// This is the data collector used to collect logging and data information.
-        /// </summary>
-        public virtual IDataCollection Collector { get; set; } 
-        #endregion
-
         #region Events
 
         #region OnBeforeCreate...
@@ -581,7 +574,12 @@ namespace Xigadee
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <returns>Returns the string signature.</returns>
-        protected virtual string SignatureCreate(E entity) => SignaturePolicy?.Calculate(entity);
+        protected virtual string SignatureCreate(E entity)
+        {
+            var signature = SignaturePolicy?.Calculate(entity);
+
+            return signature;
+        }
         #endregion
         #region SignatureValidate(E entity, string signature)
         /// <summary>
@@ -590,7 +588,12 @@ namespace Xigadee
         /// <param name="entity">The entity.</param>
         /// <param name="signature">The signature.</param>
         /// <returns>Returns the string signature.</returns>
-        protected virtual bool SignatureValidate(E entity, string signature) => SignaturePolicy?.Verify(entity, signature) ?? true;
+        protected virtual bool SignatureValidate(E entity, string signature)
+        {
+            var success = SignaturePolicy?.Verify(entity, signature) ?? true;
+
+            return success;
+        }
         #endregion
 
         #region VersionPolicySet(IEntityContext<K, E> ctx, bool isUpdate)
@@ -689,6 +692,13 @@ namespace Xigadee
 
             return rs;
         }
+        #endregion
+
+        #region Collector
+        /// <summary>
+        /// This is the data collector used to collect logging and data information.
+        /// </summary>
+        public virtual IDataCollection Collector { get; set; } 
         #endregion
     }
 
