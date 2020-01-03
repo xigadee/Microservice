@@ -84,33 +84,12 @@ namespace Test.Xigadee
             yield return new Tuple<string, string>("datecreated", c.DateCreated.ToString("o"));
         }
 
-        //protected Tuple<string, Func<E, List<KeyValuePair<string, string>>, bool>> TBuild<E>(string key, Func<E, List<KeyValuePair<string, string>>, bool> function)
-        //{
-        //    return new Tuple<string, Func<E, List<KeyValuePair<string, string>>, bool>>(key, function);
-        //}
-
-        //protected string FilterValue(List<KeyValuePair<string, string>> p, string key)
-        //{
-        //    return p.Where((i) => i.Key == key)
-        //            .Select((i) => i.Value)
-        //            .FirstOrDefault();
-        //}
-
-        //protected IEnumerable<Tuple<string, Func<TestClass, List<KeyValuePair<string, string>>, bool>>> TransactionStateSearches()
-        //{
-        //    //This is the default state holder search
-        //    yield return TBuild<TestClass>("", (e, p) =>
-        //    {
-        //        var typeCode = FilterValue(p, "type");
-
-        //        return e.Type == typeCode;
-        //    });
-        //}
-
 
         [TestInitialize]
         public void Init()
         {
+            var prov = AesSha512SignaturePolicy.CreateTestPolicy();
+
             _repo = new RepositoryMemory<Guid, TestClass>((r) => r.Id
                 , referenceMaker: References
                 , propertiesMaker: Properties
@@ -118,6 +97,7 @@ namespace Test.Xigadee
                     (e) => e.VersionId.ToString("N").ToUpperInvariant()
                     , (e) => e.VersionId = Guid.NewGuid()
                 )
+                , signaturePolicy: prov
                 );
         }
 

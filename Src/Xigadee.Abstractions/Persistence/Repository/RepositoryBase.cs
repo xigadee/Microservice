@@ -256,8 +256,12 @@ namespace Xigadee
 
             //Signature maker
             SignaturePolicy = signaturePolicy;
-            if (SignaturePolicy == null && (res?.SupportsSignature ?? false))
+            bool supportSig = (res?.SupportsSignature ?? false);
+            if (SignaturePolicy != null && supportSig)
+                SignaturePolicy.RegisterChildPolicy(res.SignaturePolicyGet());
+            else if (supportSig)
                 SignaturePolicy = res.SignaturePolicyGet();
+            
 
             //Key Manager
             KeyManager = keyManager ?? RepositoryKeyManager.Resolve<K>();

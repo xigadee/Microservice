@@ -42,11 +42,14 @@ namespace Xigadee
         /// <param name="prePopulate">The pre-populate function.</param>
         /// <param name="readOnly">This property specifies that the collection is read-only.</param>
         /// <param name="sContext">This context contains the serialization components for storing the entities.</param>
+        /// <param name="signaturePolicy">This is the default signature policy.</param>
         public RepositoryMemory(
               IEnumerable<RepositoryMemorySearch<K, E>> searches = null
             , IEnumerable<E> prePopulate = null
             , bool readOnly = false
-            , ServiceHandlerCollectionContext sContext = null) :base()
+            , ServiceHandlerCollectionContext sContext = null
+            , ISignaturePolicy signaturePolicy = null
+            ) :base(signaturePolicy: signaturePolicy)
         {
             _supportedSearches = searches?.ToDictionary(s => s.Id.ToLowerInvariant(), s => s) ?? new Dictionary<string, RepositoryMemorySearch<K, E>>();
 
@@ -67,6 +70,7 @@ namespace Xigadee
         /// <param name="readOnly">This property specifies that the collection is read-only.</param>
         /// <param name="sContext">This context contains the serialization components for storing the entities.</param>
         /// <param name="keyManager">The key serialization manager. if this is not passed, then a default serializer will be passed using the component model.</param>
+        /// <param name="signaturePolicy">This is the default signature policy.</param>
         public RepositoryMemory(Func<E, K> keyMaker
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<E, IEnumerable<Tuple<string, string>>> propertiesMaker = null
@@ -76,8 +80,9 @@ namespace Xigadee
             , bool readOnly = false
             , ServiceHandlerCollectionContext sContext = null
             , RepositoryKeyManager<K> keyManager = null
+            , ISignaturePolicy signaturePolicy = null
             )
-            : base(keyMaker, referenceMaker, propertiesMaker, versionPolicy, keyManager)
+            : base(keyMaker, referenceMaker, propertiesMaker, versionPolicy, keyManager, signaturePolicy)
         {
             _supportedSearches = searches?.ToDictionary(s => s.Id.ToLowerInvariant(), s => s) ?? new Dictionary<string, RepositoryMemorySearch<K, E>>();
 
