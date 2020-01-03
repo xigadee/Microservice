@@ -26,5 +26,12 @@ namespace Xigadee
         /// <param name="signature">The signature to verify for the entity.</param>
         /// <returns>Returns true if the signature is verified.</returns>
         bool Verify(object entity, string signature);
+
+        /// <summary>
+        /// This method is used to register the child policy. This is used to register and encryption policy for the 
+        /// signature while using the base attribute signature policy which is calculated by the persistence class.
+        /// </summary>
+        /// <param name="childPolicy">The child policy to register.</param>
+        void RegisterChildPolicy(ISignaturePolicy childPolicy);
     }
 }

@@ -16,6 +16,11 @@ namespace Test.Xigadee
             throw new NotImplementedException();
         }
 
+        public void RegisterChildPolicy(ISignaturePolicy childPolicy)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool Supports(Type entityType)
         {
             throw new NotImplementedException();

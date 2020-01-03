@@ -825,7 +825,5 @@ namespace Xigadee
         /// This is the entity type.
         /// </summary>
         public Type TypeEntity { get; }
-
-
     }
 }

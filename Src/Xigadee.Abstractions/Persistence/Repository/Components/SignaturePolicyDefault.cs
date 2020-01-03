@@ -22,6 +22,10 @@ namespace Xigadee
             return "";
         }
 
+        public void RegisterChildPolicy(ISignaturePolicy childPolicy)
+        {
+        }
+
         public bool Supports(Type entityType) => true;
 
 
