@@ -22,6 +22,9 @@ namespace Xigadee
             return "";
         }
 
+        public bool Supports(Type entityType) => true;
+
+
         public bool Verify(object entity, string signature)
         {
             return true;

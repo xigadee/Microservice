@@ -1,10 +1,18 @@
-﻿namespace Xigadee
+﻿using System;
+
+namespace Xigadee
 {
     /// <summary>
     /// This interface is implemented by a class that calculates and verifies the signature of an entity.
     /// </summary>
     public interface ISignaturePolicy
     {
+        /// <summary>
+        /// Specifies whether the signature policy supports the entity.
+        /// </summary>
+        /// <param name="entityType">This is the entity type.</param>
+        /// <returns>Returns true if the entity is supported.</returns>
+        bool Supports(Type entityType);
         /// <summary>
         /// This method returns a case-sensitive string that forms a unique signature for an entity.
         /// </summary>

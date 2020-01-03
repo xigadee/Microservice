@@ -144,7 +144,11 @@ namespace Xigadee
             var result = Atomic(true, () =>
             {
                 var newContainer = CreateEntityContainer(
-                    key, entity, references, properties, VersionPolicy?.EntityVersionAsString(entity)
+                      key
+                    , entity
+                    , references
+                    , properties
+                    , VersionPolicy?.EntityVersionAsString(entity)
                     , KeyManager.Serialize(key)
                     , SignatureCreate(entity)
                     );
@@ -253,7 +257,12 @@ namespace Xigadee
             var newReferences = ReferencesMaker?.Invoke(entity).ToList();
             var newProperties = PropertiesMaker?.Invoke(entity).ToList();
 
-            EntityContainer<K,E> newContainer = CreateEntityContainer(key, entity, newReferences, newProperties, null
+            EntityContainer<K,E> newContainer = CreateEntityContainer(
+                  key
+                , entity
+                , newReferences
+                , newProperties
+                , null
                 , KeyManager.Serialize(key)
                 , SignatureCreate(entity)
                 );
@@ -286,7 +295,12 @@ namespace Xigadee
                      string newVersion = VersionPolicy.EntityVersionUpdate(newEntity);
 
                      //We need to update the container as the version has changed.
-                     newContainer = CreateEntityContainer(key, newEntity, newReferences, newProperties, newVersion
+                     newContainer = CreateEntityContainer(
+                           key
+                         , newEntity
+                         , newReferences
+                         , newProperties
+                         , newVersion
                          , KeyManager.Serialize(key)
                          , SignatureCreate(newEntity)
                          );

@@ -16,7 +16,7 @@ namespace Test.Xigadee
 
         public string Calculate(object entity)
         {
-            if (entity is TestMemoryPersistenceCheck.TestClass)
+            if (Supports(entity.GetType()))
             {
                 return HashGenerate(entity as TestMemoryPersistenceCheck.TestClass);
             }
@@ -29,14 +29,17 @@ namespace Test.Xigadee
 
         public bool Verify(object entity, string signature)
         {
-            if (entity is TestMemoryPersistenceCheck.TestClass)
-            {
+            if (Supports(entity.GetType()))
+            { 
                 var hash = Calculate(entity);
                 return hash == signature;
             }
 
             return false;
         }
+
+        public bool Supports(Type entityType) => entityType.IsSubclassOf(typeof(TestMemoryPersistenceCheck.TestClass));
+
     }
 
 
@@ -131,15 +134,17 @@ namespace Test.Xigadee
 
             //var result = await _repo.Search();
             //Assert.IsTrue(result.Entity.Data.Count == 3);
+
+            //OK, we just need to confirm the update.
             var resRead2 = await _repo.Read(result2.Entity.Id);
             var entity = resRead2.Entity;
-
             entity.Name = Guid.NewGuid().ToString("N");
 
             var rsUpdate = await _repo.Update(entity);
+            Assert.IsTrue(rsUpdate.IsSuccess);
 
             var resRead3 = await _repo.Read(entity.Id);
-
+            Assert.IsTrue(resRead3.IsSuccess);
 
         }
 

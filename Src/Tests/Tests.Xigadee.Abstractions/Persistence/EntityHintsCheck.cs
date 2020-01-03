@@ -16,6 +16,11 @@ namespace Test.Xigadee
             throw new NotImplementedException();
         }
 
+        public bool Supports(Type entityType)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool Verify(object entity, string signature)
         {
             throw new NotImplementedException();
