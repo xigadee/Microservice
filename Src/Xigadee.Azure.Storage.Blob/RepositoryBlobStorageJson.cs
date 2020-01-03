@@ -11,6 +11,11 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the repository for json encoded entity blob storage.
+    /// </summary>
+    /// <typeparam name="K">The key type.</typeparam>
+    /// <typeparam name="E">The entity type.</typeparam>
     public class RepositoryBlobStorageJson<K, E> : RepositoryBlobStorage<K, E>
         where K: IEquatable<K>
     {
@@ -25,10 +30,11 @@ namespace Xigadee
             , BlobRequestOptions options = null
             , OperationContext context = null
             , TimeSpan? defaultTimeout = null
+            , ISignaturePolicy signaturePolicy = null
             , IServiceHandlerCompression compression = null
             , IServiceHandlerEncryption encryption = null
             , IServiceHandlerSerialization serialization = null
-            ):base(credentials, containerName, accessType, keyMaker, referenceMaker, propertiesMaker, versionPolicy, keyManager, options, context, defaultTimeout, compression, encryption)
+            ):base(credentials, containerName, accessType, keyMaker, referenceMaker, propertiesMaker, versionPolicy, keyManager, options, context, defaultTimeout, signaturePolicy, compression, encryption)
         {
 
         }

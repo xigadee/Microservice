@@ -69,10 +69,11 @@ namespace Xigadee
             , BlobRequestOptions options = null
             , OperationContext context = null
             , TimeSpan? defaultTimeout = null
+            , ISignaturePolicy signaturePolicy = null
             , IServiceHandlerCompression compression = null
             , IServiceHandlerEncryption encryption = null
             )
-            : base(keyMaker, referenceMaker, propertiesMaker, versionPolicy, keyManager)
+            : base(keyMaker, referenceMaker, propertiesMaker, versionPolicy, keyManager, signaturePolicy)
         {
             if (credentials == null)
                 throw new ArgumentNullException("StorageServiceBase: Storage credentials cannot be null.");

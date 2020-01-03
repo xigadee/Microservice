@@ -30,14 +30,18 @@ namespace Xigadee
         /// <param name="propertiesMaker">The optional entity properties maker.</param>
         /// <param name="versionPolicy">The version policy.</param>
         /// <param name="keyManager">The key manager.</param>
+        /// <param name="signaturePolicy">This is the manual signature policy for the entity. 
+        /// If this is null, the repository attempts to set the policy using the EntitySignaturePolicyAttribute</param>
         public RepositorySqlJson(string sqlConnection
             , Func<E, K> keyMaker = null
             , ISqlStoredProcedureResolver spNamer = null
             , Func<E, IEnumerable<Tuple<string, string>>> referenceMaker = null
             , Func<E, IEnumerable<Tuple<string, string>>> propertiesMaker = null
             , VersionPolicy<E> versionPolicy = null
-            , RepositoryKeyManager<K> keyManager = null)
-            : base(sqlConnection, keyMaker, spNamer, referenceMaker, propertiesMaker, versionPolicy, keyManager)
+            , RepositoryKeyManager<K> keyManager = null
+            , ISignaturePolicy signaturePolicy = null
+            )
+            : base(sqlConnection, keyMaker, spNamer, referenceMaker, propertiesMaker, versionPolicy, keyManager, signaturePolicy)
         {
         } 
         #endregion
