@@ -29,7 +29,7 @@ namespace Xigadee
         /// This method registers a child signature policy.
         /// </summary>
         /// <param name="childPolicy">The child policy to register.</param>
-        public void RegisterChildPolicy(ISignaturePolicy childPolicy) => _childPolicy = childPolicy;
+        public virtual void RegisterChildPolicy(ISignaturePolicy childPolicy) => _childPolicy = childPolicy;
 
         /// <summary>
         /// This method calculates and returns the signature.
@@ -46,20 +46,17 @@ namespace Xigadee
 
             versionId = versionId ?? SignatureVersion;
 
-
             if (!Supports(entity.GetType()))
-                throw new NotSupportedException();
+                throw new NotSupportedException($"{entity.GetType().Name} is not supported for signature generation.");
 
-            if (versionId.HasValue)
-                return $"v{versionId.Value}.{CalculateInternal(entity, versionId)}";
-            else
-                return CalculateInternal(entity, versionId);
+            return SignatureFormat(versionId, CalculateInternal(entity, versionId));
         }
 
         /// <summary>
         /// This method calculates and returns the signature without any additional checks.
         /// </summary>
         /// <param name="entity">The entity to calculate.</param>
+        /// <param name="versionId">The version of the hash to calculate.</param>
         /// <returns>The signature as a string.</returns>
         protected abstract string CalculateInternal(object entity, int? versionId = null);
 
@@ -76,34 +73,53 @@ namespace Xigadee
         /// <param name="entity">The entity to check.</param>
         /// <param name="signature">The verification signature.</param>
         /// <returns>Returns true if verified.</returns>
-        public virtual bool Verify(object entity, string signature) => Calculate(entity) == signature;
-
-        /// <summary>
-        /// This method creates a hash from the incoming string.
-        /// </summary>
-        /// <param name="signature">The signature string to hash.</param>
-        /// <returns>Returns the byte array.</returns>
-        protected virtual byte[] CreateSHA512Hash(string signature)
+        public virtual bool Verify(object entity, string signature)
         {
-            var bytes = Encoding.UTF8.GetBytes(signature);
+            if (!SignatureParse(signature, out var versionId, out var hashPart))
+                throw new ArgumentOutOfRangeException("signature", "signature version cannot be parsed.");
 
-            //Hash the root
-            // computes the hash of the name space ID concatenated with the name (step 4)
-            byte[] hash;
-            using (var incrementalHash = IncrementalHash.CreateHash(HashAlgorithmName.SHA512))
-            {
-                incrementalHash.AppendData(bytes);
-                hash = incrementalHash.GetHashAndReset();
-            }
+            var hash = Calculate(entity, versionId);
 
-            return hash;
+            return hash == signature;
         }
 
+        protected virtual string SignatureFormat(int? versionId, string hash)
+        {
+            if (versionId.HasValue)
+                return $"#v{versionId.Value}.{hash}";
+            else
+                return hash;
+        }
         /// <summary>
-        /// This method creates a hash from the incoming string.
+        /// This method parses the signatue in to the version and hash.
         /// </summary>
-        /// <param name="signature">The signature string to hash.</param>
-        /// <returns>Returns the hash as a base64 encoded string.</returns>
-        protected virtual string CreateSHA512HashAsBase64(string signature) => Convert.ToBase64String(CreateSHA512Hash(signature));
-    }
+        /// <param name="signature">The combined signature.</param>
+        /// <param name="versionId">The output version.</param>
+        /// <param name="hash">The output hash part.</param>
+        /// <returns>Returns true if the signature was parsed and returned correctly.</returns>
+        protected virtual bool SignatureParse(string signature, out int? versionId, out string hash)
+        {
+            versionId = null;
+            hash = null;
+
+            if (string.IsNullOrWhiteSpace(signature))
+                return false;
+
+            if (signature.StartsWith("#v"))
+            {
+                int pos = signature.IndexOf('.');
+                var ver = signature.Substring(2, signature.Length - pos - 2);
+
+                if (!int.TryParse(ver, out var value))
+                    return false;
+
+                versionId = value;
+                hash = signature.Substring(pos + 1);
+            }
+            else
+                hash = signature;
+
+            return true;
+        }
+}
 }

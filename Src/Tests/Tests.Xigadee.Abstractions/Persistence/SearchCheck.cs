@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
 using System.Linq.Expressions;
 
-namespace Test.Xigadee
+namespace Tests.Xigadee
 {
     [TestClass]
     public class SearchFilterCheck

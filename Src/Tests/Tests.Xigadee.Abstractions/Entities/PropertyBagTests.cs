@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
 
-namespace Test.Xigadee
+namespace Tests.Xigadee
 {
 
     [TestClass]

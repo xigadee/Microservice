@@ -5,56 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Tests.Xigadee;
 using Xigadee;
 
-namespace Test.Xigadee
+namespace Tests.Xigadee
 {
-
-    public class TestClassSignature : ISignaturePolicy
-    {
-
-        ISignaturePolicy _childPolicy = null;
-
-        readonly Guid Namespace = new Guid("{7F09C1CF-4CDB-45EB-BA3B-E9F3610635C0}");
-
-        public int? SignatureVersion => 1;
-
-        public string Calculate(object entity, int? versionid = null)
-        {
-            if (Supports(entity.GetType()))
-            {
-                return HashGenerate(entity as TestMemoryPersistenceCheck.TestClass);
-            }
-
-            return null;
-        }
-
-        private string HashGenerate(TestMemoryPersistenceCheck.TestClass e) => 
-            GuidHelper.Create(Namespace, $"{e.Id.ToString("N")}:{e.VersionId.ToString("N")}:{e.Name}".ToLowerInvariant()).ToString("N").ToUpperInvariant();
-
-        public bool Verify(object entity, string signature)
-        {
-            if (Supports(entity.GetType()))
-            { 
-                var hash = Calculate(entity);
-                return hash == signature;
-            }
-
-            return false;
-        }
-
-        public bool Supports(Type entityType) => entityType == typeof(TestMemoryPersistenceCheck.TestClass)
-            || entityType.IsSubclassOf(typeof(TestMemoryPersistenceCheck.TestClass));
-
-        public void RegisterChildPolicy(ISignaturePolicy childPolicy) => _childPolicy = childPolicy;
-    }
-
 
     [TestClass]
     public class TestMemoryPersistenceCheck
     {
 
-        [EntitySignatureHint(typeof(TestClassSignature))]
+        [EntitySignatureHint(typeof(TestClassSignaturePolicy))]
         public class TestClass
         {
             public Guid Id { get; set; } = Guid.NewGuid();
@@ -90,7 +51,7 @@ namespace Test.Xigadee
         [TestInitialize]
         public void Init()
         {
-            var prov = AesSha512SignaturePolicy.CreateTestPolicy();
+            var prov = AesWrapperSignaturePolicyWrapper.CreateTestPolicy();
 
             _repo = new RepositoryMemory<Guid, TestClass>((r) => r.Id
                 , referenceMaker: References

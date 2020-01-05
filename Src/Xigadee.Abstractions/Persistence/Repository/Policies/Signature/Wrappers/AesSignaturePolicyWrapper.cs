@@ -8,17 +8,20 @@ namespace Xigadee
     /// <summary>
     /// This method hashes the root signature and signs it with a symetric key.
     /// </summary>
-    public class AesSha512SignaturePolicy : SignaturePolicyBase
+    public class AesWrapperSignaturePolicyWrapper : SignaturePolicyBase
     {
+        #region Static helper constructor
         /// <summary>
         /// Creates a test policy with a fresh key and Iv.
         /// </summary>
         /// <returns>Returns the provider.</returns>
-        public static AesSha512SignaturePolicy CreateTestPolicy() =>  new AesSha512SignaturePolicy();
+        public static AesWrapperSignaturePolicyWrapper CreateTestPolicy() => new AesWrapperSignaturePolicyWrapper();
+        #endregion        
+        #region Constructors
         /// <summary>
         /// This is the default constructor. It will create a default provider with a new key and new IV.
         /// </summary>
-        private AesSha512SignaturePolicy()
+        internal AesWrapperSignaturePolicyWrapper()
         {
             Provider = new AesCryptoServiceProvider();
             Provider.Mode = CipherMode.CBC;
@@ -28,12 +31,12 @@ namespace Xigadee
             Provider.GenerateKey();
         }
 
-        public AesSha512SignaturePolicy(AesCryptoServiceProvider provider)
+        public AesWrapperSignaturePolicyWrapper(AesCryptoServiceProvider provider)
         {
             Provider = provider;
         }
 
-        public AesSha512SignaturePolicy(byte[] key, byte[] iv, CipherMode mode = CipherMode.CBC, int keySize = 128, int blockSize = 128)
+        public AesWrapperSignaturePolicyWrapper(byte[] key, byte[] iv, CipherMode mode = CipherMode.CBC, int keySize = 128, int blockSize = 128)
         {
             Provider = new AesCryptoServiceProvider();
             Provider.Mode = mode;
@@ -41,7 +44,8 @@ namespace Xigadee
             Provider.BlockSize = blockSize;
             Provider.Key = key;
             Provider.IV = iv;
-        }
+        } 
+        #endregion
 
         /// <summary>
         /// This is the crypto provider for the signature.
