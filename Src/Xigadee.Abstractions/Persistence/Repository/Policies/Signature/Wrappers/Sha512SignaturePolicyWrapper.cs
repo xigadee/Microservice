@@ -7,7 +7,7 @@ namespace Xigadee
     /// <summary>
     /// This method hashes the root signature with an SHA512 hash.
     /// </summary>
-    public class Sha512SignaturePolicyWrapper : SignaturePolicyBase
+    public class Sha512SignaturePolicyWrapper : SignaturePolicyWrapperBase
     {
         /// <summary>
         /// This method creates the internal hash.

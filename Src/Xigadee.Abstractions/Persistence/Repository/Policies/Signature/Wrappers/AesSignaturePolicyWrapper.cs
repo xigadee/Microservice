@@ -8,7 +8,7 @@ namespace Xigadee
     /// <summary>
     /// This method hashes the root signature and signs it with a symetric key.
     /// </summary>
-    public class AesWrapperSignaturePolicyWrapper : SignaturePolicyBase
+    public class AesWrapperSignaturePolicyWrapper : SignaturePolicyWrapperBase
     {
         #region Static helper constructor
         /// <summary>

@@ -18,13 +18,13 @@ namespace Tests.Xigadee
         {
             if (Supports(entity.GetType()))
             {
-                return HashGenerate(entity as TestMemoryPersistenceCheck.TestClass);
+                return HashGenerate(entity as TestClass);
             }
 
             return null;
         }
 
-        private string HashGenerate(TestMemoryPersistenceCheck.TestClass e) =>
+        private string HashGenerate(TestClass e) =>
             GuidHelper.Create(Namespace, $"{e.Id.ToString("N")}:{e.VersionId.ToString("N")}:{e.Name}".ToLowerInvariant()).ToString("N").ToUpperInvariant();
 
         public bool Verify(object entity, string signature)
@@ -38,8 +38,8 @@ namespace Tests.Xigadee
             return false;
         }
 
-        public bool Supports(Type entityType) => entityType == typeof(TestMemoryPersistenceCheck.TestClass)
-            || entityType.IsSubclassOf(typeof(TestMemoryPersistenceCheck.TestClass));
+        public bool Supports(Type entityType) => entityType == typeof(TestClass)
+            || entityType.IsSubclassOf(typeof(TestClass));
 
         public void RegisterChildPolicy(ISignaturePolicy childPolicy) => _childPolicy = childPolicy;
     }

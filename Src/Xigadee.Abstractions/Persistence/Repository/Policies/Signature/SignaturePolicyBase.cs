@@ -10,11 +10,6 @@ namespace Xigadee
     public abstract class SignaturePolicyBase : ISignaturePolicy
     {
         /// <summary>
-        /// This is the child policy.
-        /// </summary>
-        protected ISignaturePolicy _childPolicy = null;
-
-        /// <summary>
         /// This is the current version identifier that will be appended before the hash. The default value is v1.
         /// </summary>
         public virtual int? SignatureVersion => 1;
@@ -22,14 +17,14 @@ namespace Xigadee
         /// <summary>
         /// Specifies whether the policy is active.
         /// </summary>
-        protected virtual ISignaturePolicy Validate() => _childPolicy ?? throw new ArgumentNullException("_childPolicy", "Child Policy has not been set.");
+        protected abstract ISignaturePolicy Validate();
 
 
         /// <summary>
         /// This method registers a child signature policy.
         /// </summary>
         /// <param name="childPolicy">The child policy to register.</param>
-        public virtual void RegisterChildPolicy(ISignaturePolicy childPolicy) => _childPolicy = childPolicy;
+        public abstract void RegisterChildPolicy(ISignaturePolicy childPolicy);
 
         /// <summary>
         /// This method calculates and returns the signature.
@@ -65,7 +60,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="entityType">The entity type to verify.</param>
         /// <returns>Returns true if supported.</returns>
-        public virtual bool Supports(Type entityType) => Validate().Supports(entityType);
+        public abstract bool Supports(Type entityType);
 
         /// <summary>
         /// This method verifies the signature passed with the entity.
@@ -83,6 +78,12 @@ namespace Xigadee
             return hash == signature;
         }
 
+        /// <summary>
+        /// This method formats the output in to a signature format.
+        /// </summary>
+        /// <param name="versionId">The supported version.</param>
+        /// <param name="hash">The hash part.</param>
+        /// <returns>Returns the combined signature.</returns>
         protected virtual string SignatureFormat(int? versionId, string hash)
         {
             if (versionId.HasValue)
@@ -121,5 +122,5 @@ namespace Xigadee
 
             return true;
         }
-}
+    }
 }
