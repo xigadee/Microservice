@@ -8,17 +8,24 @@ namespace Xigadee
     public interface ISignaturePolicy
     {
         /// <summary>
+        /// This is the signature version identifier that is appended before the signature hash. 
+        /// </summary>
+        int? SignatureVersion { get; }
+        /// <summary>
         /// Specifies whether the signature policy supports the entity.
         /// </summary>
         /// <param name="entityType">This is the entity type.</param>
         /// <returns>Returns true if the entity is supported.</returns>
         bool Supports(Type entityType);
         /// <summary>
-        /// This method returns a case-sensitive string that forms a unique signature for an entity.
+        /// This method calculates and returns the signature.
         /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        string Calculate(object entity);
+        /// <param name="entity">The entity to calculate.</param>
+        /// <param name="versionid">The version of the hash to calculate. For normal operation this should be left null, but in
+        /// cases when moving from say a v1 to a v2 hash, especially when adding new properties to the hash, you may need to upgrade the 
+        /// hash when updating an entity.</param>
+        /// <returns>The signature as a string.</returns>
+        string Calculate(object entity, int? versionid = null);
         /// <summary>
         /// This method returns true if the entity and signature passed are correct.
         /// </summary>

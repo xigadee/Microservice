@@ -17,7 +17,9 @@ namespace Test.Xigadee
 
         readonly Guid Namespace = new Guid("{7F09C1CF-4CDB-45EB-BA3B-E9F3610635C0}");
 
-        public string Calculate(object entity)
+        public int? SignatureVersion => 1;
+
+        public string Calculate(object entity, int? versionid = null)
         {
             if (Supports(entity.GetType()))
             {

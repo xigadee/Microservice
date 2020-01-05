@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Xigadee
 {
@@ -11,6 +13,11 @@ namespace Xigadee
         /// This is the child policy.
         /// </summary>
         protected ISignaturePolicy _childPolicy = null;
+
+        /// <summary>
+        /// This is the current version identifier that will be appended before the hash. The default value is v1.
+        /// </summary>
+        public virtual int? SignatureVersion => 1;
 
         /// <summary>
         /// Specifies whether the policy is active.
@@ -28,16 +35,25 @@ namespace Xigadee
         /// This method calculates and returns the signature.
         /// </summary>
         /// <param name="entity">The entity to calculate.</param>
+        /// <param name="versionId">The version of the hash to calculate. For normal operation this should be left null, but in
+        /// cases when moving from say a v1 to a v2 hash, especially when adding new properties to the hash, you may need to upgrade the 
+        /// hash when updating an entity.</param>
         /// <returns>The signature as a string.</returns>
-        public virtual string Calculate(object entity)
+        public virtual string Calculate(object entity, int? versionId = null)
         {
             if (entity == null)
                 throw new ArgumentNullException("entity");
 
+            versionId = versionId ?? SignatureVersion;
+
+
             if (!Supports(entity.GetType()))
                 throw new NotSupportedException();
 
-            return CalculateInternal(entity);
+            if (versionId.HasValue)
+                return $"v{versionId.Value}.{CalculateInternal(entity, versionId)}";
+            else
+                return CalculateInternal(entity, versionId);
         }
 
         /// <summary>
@@ -45,8 +61,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="entity">The entity to calculate.</param>
         /// <returns>The signature as a string.</returns>
-        protected abstract string CalculateInternal(object entity);
-
+        protected abstract string CalculateInternal(object entity, int? versionId = null);
 
         /// <summary>
         /// This method returns true if the entity type is supported.
@@ -63,5 +78,32 @@ namespace Xigadee
         /// <returns>Returns true if verified.</returns>
         public virtual bool Verify(object entity, string signature) => Calculate(entity) == signature;
 
+        /// <summary>
+        /// This method creates a hash from the incoming string.
+        /// </summary>
+        /// <param name="signature">The signature string to hash.</param>
+        /// <returns>Returns the byte array.</returns>
+        protected virtual byte[] CreateSHA512Hash(string signature)
+        {
+            var bytes = Encoding.UTF8.GetBytes(signature);
+
+            //Hash the root
+            // computes the hash of the name space ID concatenated with the name (step 4)
+            byte[] hash;
+            using (var incrementalHash = IncrementalHash.CreateHash(HashAlgorithmName.SHA512))
+            {
+                incrementalHash.AppendData(bytes);
+                hash = incrementalHash.GetHashAndReset();
+            }
+
+            return hash;
+        }
+
+        /// <summary>
+        /// This method creates a hash from the incoming string.
+        /// </summary>
+        /// <param name="signature">The signature string to hash.</param>
+        /// <returns>Returns the hash as a base64 encoded string.</returns>
+        protected virtual string CreateSHA512HashAsBase64(string signature) => Convert.ToBase64String(CreateSHA512Hash(signature));
     }
 }

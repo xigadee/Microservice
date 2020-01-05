@@ -53,7 +53,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <returns>Returns the Base 64 encoded encrypted hash.</returns>
-        protected override string CalculateInternal(object entity)
+        protected override string CalculateInternal(object entity, int? versionId = null)
         {
             //Calculate the child signature
             byte[] hash = CreateHash(entity);
@@ -66,10 +66,10 @@ namespace Xigadee
             return Convert.ToBase64String(result);
         }
 
-        private byte[] CreateHash(object entity)
+        private byte[] CreateHash(object entity, int? versionId = null)
         {
             //Calculate the child signature
-            var child = _childPolicy.Calculate(entity);
+            var child = _childPolicy.Calculate(entity, versionId);
 
             var bytes = Encoding.UTF8.GetBytes(child);
 
@@ -84,6 +84,8 @@ namespace Xigadee
 
             return hash;
         }
+
+
 
         public override bool Verify(object entity, string signature)
         {

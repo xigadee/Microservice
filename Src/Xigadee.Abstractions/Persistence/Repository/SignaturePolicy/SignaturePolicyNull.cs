@@ -7,17 +7,20 @@ namespace Xigadee
     /// <summary>
     /// This is the base signature policy class for an entity.
     /// </summary>
-    public class SignaturePolicyDefault : ISignaturePolicy
+    public class SignaturePolicyNull : ISignaturePolicy
     {
         Type _signatureMaker;
 
-        public SignaturePolicyDefault(Type signatureMaker)
+        public SignaturePolicyNull(Type signatureMaker)
         {
             _signatureMaker = signatureMaker;
 
         }
 
-        public string Calculate(object entity)
+        public int? SignatureVersion => null;
+
+
+        public string Calculate(object entity, int? versionid = null)
         {
             return "";
         }

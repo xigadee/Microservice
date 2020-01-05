@@ -11,7 +11,9 @@ namespace Test.Xigadee
 {
     public class SignMe : ISignaturePolicy
     {
-        public string Calculate(object entity)
+        public int? SignatureVersion => throw new NotImplementedException();
+
+        public string Calculate(object entity, int? versionid = null)
         {
             throw new NotImplementedException();
         }
