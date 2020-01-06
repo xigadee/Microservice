@@ -33,11 +33,6 @@ namespace Xigadee
         protected virtual string CalculateSignature(object entity, int? versionId = null)
             => Validate().Calculate(entity, versionId);
 
-        static bool ByteArrayCompare(ReadOnlySpan<byte> a1, ReadOnlySpan<byte> a2)
-        {
-            return a1.SequenceEqual(a2);
-        }
-
         /// <summary>
         /// This method creates a hash from the incoming string.
         /// </summary>

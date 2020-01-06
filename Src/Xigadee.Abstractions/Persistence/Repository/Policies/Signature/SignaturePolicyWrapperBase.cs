@@ -32,5 +32,15 @@ namespace Xigadee
         /// <returns>Returns true if supported.</returns>
         public override bool Supports(Type entityType) => Validate().Supports(entityType);
 
+        /// <summary>
+        /// This method is used to compare two byte arrays for equality.
+        /// </summary>
+        /// <param name="a1">The first array.</param>
+        /// <param name="a2">The second array.</param>
+        /// <returns>Returns if they are equal.</returns>
+        protected bool ByteArrayCompare(ReadOnlySpan<byte> a1, ReadOnlySpan<byte> a2)
+        {
+            return a1.SequenceEqual(a2);
+        }
     }
 }

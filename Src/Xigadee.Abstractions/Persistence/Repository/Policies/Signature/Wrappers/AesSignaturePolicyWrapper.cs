@@ -89,26 +89,23 @@ namespace Xigadee
             return hash;
         }
 
-
-
         public override bool Verify(object entity, string signature)
         {
+            if (!SignatureParse(signature, out var versionId, out var hashPart))
+                throw new ArgumentOutOfRangeException("signature", "signature version cannot be parsed.");
+
             //Calculate the child signature
-            byte[] hash = CreateHash(entity);
+            byte[] hash = CreateHash(entity, versionId);
 
             //Encrypt the root using the symetric key
             var dec = Provider.CreateDecryptor();
 
-            var encBody = Convert.FromBase64String(signature);
+            var encBody = Convert.FromBase64String(hashPart);
 
             var result = dec.TransformFinalBlock(encBody, 0, encBody.Length);
 
             return ByteArrayCompare(hash, result);
         }
 
-        static bool ByteArrayCompare(ReadOnlySpan<byte> a1, ReadOnlySpan<byte> a2)
-        {
-            return a1.SequenceEqual(a2);
-        }
     }
 }

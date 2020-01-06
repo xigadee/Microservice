@@ -7,7 +7,6 @@ namespace Tests.Xigadee
 {
     public class TestClassSignaturePolicy : ISignaturePolicy
     {
-
         ISignaturePolicy _childPolicy = null;
 
         readonly Guid Namespace = new Guid("{7F09C1CF-4CDB-45EB-BA3B-E9F3610635C0}");
@@ -16,12 +15,12 @@ namespace Tests.Xigadee
 
         public string Calculate(object entity, int? versionid = null)
         {
-            if (Supports(entity.GetType()))
-            {
-                return HashGenerate(entity as TestClass);
-            }
+            if (!Supports(entity.GetType()))
+                return null;
 
-            return null;
+            var e = entity as TestClass;
+
+            return $"{e.Id.ToString("N")}:{e.VersionId.ToString("N")}:{e.Name}".ToLowerInvariant();
         }
 
         private string HashGenerate(TestClass e) =>

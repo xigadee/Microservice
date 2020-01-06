@@ -109,7 +109,7 @@ namespace Xigadee
             if (signature.StartsWith("#v"))
             {
                 int pos = signature.IndexOf('.');
-                var ver = signature.Substring(2, signature.Length - pos - 2);
+                var ver = signature.Substring(2, pos - 2);
 
                 if (!int.TryParse(ver, out var value))
                     return false;
