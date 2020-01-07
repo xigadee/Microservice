@@ -40,5 +40,12 @@ namespace Xigadee
         /// </summary>
         /// <param name="childPolicy">The child policy to register.</param>
         void RegisterChildPolicy(ISignaturePolicy childPolicy);
+
+        /// <summary>
+        /// This switch allows the persistence agent to accept an empty signature when reading an entity.
+        /// This can be used during transition period when the signature is implemented. This property should be set to 
+        /// false when the entity collection has been updated.
+        /// </summary>
+        bool ReadPermittedWithoutSignature { get; }
     }
 }

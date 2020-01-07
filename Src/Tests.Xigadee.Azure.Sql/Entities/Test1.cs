@@ -6,6 +6,19 @@ using Xigadee;
 
 namespace Tests.Xigadee.Azure.Sql
 {
+    public class Test1Signature : SignaturePolicyEntityBase
+    {
+        public override bool Supports(Type entityType) => entityType == typeof(Test1);
+
+
+        protected override string CalculateInternal(object entity, int? versionId = null)
+            => Calc((Test1)entity);
+
+        private string Calc(Test1 e) => $"{e.Id:N}:{e.VersionId:N}:{e.UserId:N}:{e.AccountId:N}:{e.Second}";
+
+    }
+
+    [EntitySignatureHint(typeof(Test1Signature))]
     public class Test1 : EntityAuditableBase
     {
         /// <summary>

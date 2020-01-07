@@ -21,7 +21,8 @@ namespace Tests.Xigadee.Azure.Sql
         }
         #endregion
 
-        public string BuildSqlConnection()
+        #region BuildSqlConnection()
+        private string BuildSqlConnection()
         {
             var server = TestContext.Properties["sqlServer"].ToString();
             var uname = TestContext.Properties["sqlUser"].ToString();
@@ -31,7 +32,8 @@ namespace Tests.Xigadee.Azure.Sql
             var conn = $"Server=tcp:{server}.database.windows.net,1433;Initial Catalog={catalog};Persist Security Info=False;User ID={uname};Password={pwd};MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
             return conn;
-        }
+        } 
+        #endregion
 
         readonly Guid[] Accounts = { new Guid("{C9BD832A-DFDC-41D6-934C-853EC1272C37}"), new Guid("{48693BD8-05D2-49D0-BCAA-4B588303D2C6}") };
 
@@ -109,7 +111,6 @@ namespace Tests.Xigadee.Azure.Sql
 
         }
 
-
         [TestMethod]
         public async Task SqlJsonTest()
         {
@@ -137,7 +138,7 @@ namespace Tests.Xigadee.Azure.Sql
                 var srq1 = (SearchRequest)"$top=100&$id=default&$skip=3&$select=Type,Group,DateCreated&$orderby=Group desc, Type desc&$filter=id eq '123' and ertp gt 610 and CustomerID eq null";
 
                 var s1 = await repo.SearchEntity(srq1);
-                var s2 = await repo.Search(new SearchRequest());
+                var s2 = await repo.Search(srq1);
                 var s1m = await repom.SearchEntity(new SearchRequest());
             }
             catch (Exception ex)

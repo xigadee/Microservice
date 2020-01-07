@@ -13,6 +13,8 @@ namespace Tests.Xigadee
 
         public int? SignatureVersion => 1;
 
+        public bool ReadPermittedWithoutSignature => false;
+
         public string Calculate(object entity, int? versionid = null)
         {
             if (!Supports(entity.GetType()))
@@ -28,6 +30,9 @@ namespace Tests.Xigadee
 
         public bool Verify(object entity, string signature)
         {
+            if (ReadPermittedWithoutSignature && string.IsNullOrWhiteSpace(signature))
+                return true;
+
             if (Supports(entity.GetType()))
             {
                 var hash = Calculate(entity);

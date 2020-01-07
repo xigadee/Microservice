@@ -19,6 +19,7 @@ namespace Xigadee
 
         public int? SignatureVersion => null;
 
+        public bool ReadPermittedWithoutSignature => false;
 
         public string Calculate(object entity, int? versionid = null)
         {

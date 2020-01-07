@@ -15,6 +15,13 @@ namespace Xigadee
         public virtual int? SignatureVersion => 1;
 
         /// <summary>
+        /// This property can be overriden and allows an entity to be read without a signature.
+        /// This is useful when transitioning signatures in to an existing entity store. 
+        /// The default value is false and should be switched off when the migration is completed.
+        /// </summary>
+        public virtual bool ReadPermittedWithoutSignature { get; } = false;
+
+        /// <summary>
         /// Specifies whether the policy is active.
         /// </summary>
         protected abstract ISignaturePolicy Validate();
