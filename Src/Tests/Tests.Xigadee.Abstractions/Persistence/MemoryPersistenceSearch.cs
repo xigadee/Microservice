@@ -63,23 +63,23 @@ namespace Tests.Xigadee
             return repo;
         }
 
-        [TestMethod]
-        public async Task SearchEntity()
-        {
-            var repo = GetRepo();
+        //[TestMethod]
+        //public async Task SearchEntity()
+        //{
+        //    var repo = GetRepo();
 
             
-            var item1 = await repo.ReadByRef("Name", "Id55");
-            var e = item1.Entity;
-            e.Name = "Paul123";
-            var resChange = await repo.Update(e);
+        //    var item1 = await repo.ReadByRef("Name", "Id55");
+        //    var e = item1.Entity;
+        //    e.Name = "Paul123";
+        //    var resChange = await repo.Update(e);
 
-            var sr = new SearchRequest() { Id = "default" };
-            var sr2 = (SearchRequest)"$top=100&$id=default&$skip=3&$select=Type,Group,DateCreated&$orderby=Group desc, Type desc";
-            var str = sr2.ToString();
-            var res1 = await repo.SearchEntity(sr2);
-            var res2 = await repo.Search(sr2);
+        //    var sr = new SearchRequest() { Id = "default" };
+        //    var sr2 = (SearchRequest)"$top=100&$id=default&$skip=3&$select=Type,Group,DateCreated&$orderby=Group desc, Type desc";
+        //    var str = sr2.ToString();
+        //    var res1 = await repo.SearchEntity(sr2);
+        //    var res2 = await repo.Search(sr2);
 
-        }
+        //}
     }
 }

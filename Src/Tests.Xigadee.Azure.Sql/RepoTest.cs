@@ -42,7 +42,7 @@ namespace Tests.Xigadee.Azure.Sql
         {
             var conn = BuildSqlConnection();
 
-            var repo = new RepositorySqlJson2<Guid, Test1>(conn);
+            var repo = new RepositorySqlJson2<Guid, Test1>(conn, signaturePolicy: new SignaturePolicyNull());
 
             for (int i = 0; i < 100; i++)
             {
