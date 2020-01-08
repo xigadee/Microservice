@@ -52,14 +52,38 @@ namespace Xigadee
     /// <typeparam name="E"></typeparam>
     public class SqlJsonWrapper<E>
     {
+        /// <summary>
+        /// This is the empty constructor.
+        /// </summary>
         public SqlJsonWrapper()
         {
 
         }
-
+        /// <summary>
+        /// This is the entity based constructor.
+        /// </summary>
+        /// <param name="entity">The entity to load.</param>
         public SqlJsonWrapper(E entity)
         {
+            Load(entity);
+        }
+
+        /// <summary>
+        /// This method loads the entity and extracts its properties and references.
+        /// </summary>
+        /// <param name="entity">The entity to load.</param>
+        public void Load(E entity)
+        {
+            var res = EntityHintHelper.Resolve(entity.GetType());
             Entity = entity;
+
+            if (res?.SupportsReferences??false)
+                References = res.References(entity).Select(i => new KeyValuePair<string,string>(i.Item1,i.Item2))
+                    .ToList();
+
+            if (res?.SupportsProperties??false)
+                Properties = res.Properties(entity).Select(i => new KeyValuePair<string, string>(i.Item1, i.Item2))
+                    .ToList();
         }
 
         /// <summary>
