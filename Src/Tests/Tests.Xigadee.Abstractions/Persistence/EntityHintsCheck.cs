@@ -13,7 +13,7 @@ namespace Tests.Xigadee
     {
         public int? SignatureVersion => throw new NotImplementedException();
 
-        public bool ReadPermittedWithoutSignature => false;
+        public bool VerificationPassedWithoutSignature => false;
 
         public string Calculate(object entity, int? versionid = null)
         {

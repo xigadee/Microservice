@@ -9,25 +9,14 @@ namespace Xigadee
     /// </summary>
     public class SignaturePolicyNull : ISignaturePolicy
     {
-        Type _signatureMaker;
-
-        public SignaturePolicyNull(Type signatureMaker)
-        {
-            _signatureMaker = signatureMaker;
-
-        }
 
         public int? SignatureVersion => null;
 
-        public bool ReadPermittedWithoutSignature => false;
+        public bool VerificationPassedWithoutSignature { get; } = true;
 
         public string Calculate(object entity, int? versionid = null)
         {
-            return "";
-        }
-
-        public void RegisterChildPolicy(ISignaturePolicy childPolicy)
-        {
+            return null;
         }
 
         public bool Supports(Type entityType) => true;

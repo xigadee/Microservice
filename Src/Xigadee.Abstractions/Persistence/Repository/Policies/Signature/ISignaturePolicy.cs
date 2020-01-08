@@ -35,17 +35,23 @@ namespace Xigadee
         bool Verify(object entity, string signature);
 
         /// <summary>
+        /// This switch allows the persistence agent to accept an empty signature when reading an entity.
+        /// This can be used during transition period when the signature is implemented. This property should be set to 
+        /// false when the entity collection has been updated.
+        /// </summary>
+        bool VerificationPassedWithoutSignature { get; }
+    }
+
+    /// <summary>
+    /// This interface is implemented by policies that implement the wrapper functionality.
+    /// </summary>
+    public interface ISignaturePolicyWrapper : ISignaturePolicy
+    {
+        /// <summary>
         /// This method is used to register the child policy. This is used to register and encryption policy for the 
         /// signature while using the base attribute signature policy which is calculated by the persistence class.
         /// </summary>
         /// <param name="childPolicy">The child policy to register.</param>
         void RegisterChildPolicy(ISignaturePolicy childPolicy);
-
-        /// <summary>
-        /// This switch allows the persistence agent to accept an empty signature when reading an entity.
-        /// This can be used during transition period when the signature is implemented. This property should be set to 
-        /// false when the entity collection has been updated.
-        /// </summary>
-        bool ReadPermittedWithoutSignature { get; }
     }
 }

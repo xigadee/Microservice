@@ -12,7 +12,7 @@ namespace Xigadee
         /// <summary>
         /// This is the default constructor.
         /// </summary>
-        public SignatureEntityVerificationException()
+        public SignatureEntityVerificationException(string message):base(message)
         {
 
         }

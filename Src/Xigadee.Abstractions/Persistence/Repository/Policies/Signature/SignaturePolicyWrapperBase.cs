@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Xigadee
 {
     /// <summary>
     /// This is the abstract base class that supports signature calculation.
     /// </summary>
-    public abstract class SignaturePolicyWrapperBase : SignaturePolicyBase
+    public abstract class SignaturePolicyWrapperBase : SignaturePolicyBase, ISignaturePolicyWrapper
     {
         /// <summary>
         /// This is the child policy.
@@ -17,13 +15,13 @@ namespace Xigadee
         /// <summary>
         /// Specifies whether the policy is active.
         /// </summary>
-        protected override ISignaturePolicy Validate() => _childPolicy ?? throw new ArgumentNullException("_childPolicy", "Child Policy has not been set.");
+        protected virtual ISignaturePolicy Validate() => _childPolicy ?? throw new ArgumentNullException("_childPolicy", "Child Policy has not been set.");
 
         /// <summary>
         /// This method registers a child signature policy.
         /// </summary>
         /// <param name="childPolicy">The child policy to register.</param>
-        public override void RegisterChildPolicy(ISignaturePolicy childPolicy) => _childPolicy = childPolicy;
+        public virtual void RegisterChildPolicy(ISignaturePolicy childPolicy) => _childPolicy = childPolicy;
 
         /// <summary>
         /// This method returns true if the entity type is supported.
@@ -42,5 +40,11 @@ namespace Xigadee
         {
             return a1.SequenceEqual(a2);
         }
+
+        /// <summary>
+        /// This value is set by the root signature policy.
+        /// </summary>
+        public override bool VerificationPassedWithoutSignature => Validate().VerificationPassedWithoutSignature;
+
     }
 }

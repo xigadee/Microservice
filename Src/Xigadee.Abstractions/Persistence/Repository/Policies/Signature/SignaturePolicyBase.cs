@@ -19,20 +19,7 @@ namespace Xigadee
         /// This is useful when transitioning signatures in to an existing entity store. 
         /// The default value is false and should be switched off when the migration is completed.
         /// </summary>
-        public virtual bool ReadPermittedWithoutSignature { get; } = false;
-
-        /// <summary>
-        /// Specifies whether the policy is active.
-        /// </summary>
-        protected abstract ISignaturePolicy Validate();
-
-
-        /// <summary>
-        /// This method registers a child signature policy.
-        /// </summary>
-        /// <param name="childPolicy">The child policy to register.</param>
-        public abstract void RegisterChildPolicy(ISignaturePolicy childPolicy);
-
+        public virtual bool VerificationPassedWithoutSignature { get; } = false;
         /// <summary>
         /// This method calculates and returns the signature.
         /// </summary>
@@ -74,9 +61,14 @@ namespace Xigadee
         /// </summary>
         /// <param name="entity">The entity to check.</param>
         /// <param name="signature">The verification signature.</param>
-        /// <returns>Returns true if verified.</returns>
+        /// <returns>Returns true if verified. If the signature is blank, it will return the VerificationPassedWithoutSignature value.</returns>
         public virtual bool Verify(object entity, string signature)
         {
+            //This check is used during transition when an entity begins signing but not all entities have been signed.
+            //The default value is false. 
+            if (string.IsNullOrWhiteSpace(signature))
+                return VerificationPassedWithoutSignature;
+
             if (!SignatureParse(signature, out var versionId, out var hashPart))
                 throw new ArgumentOutOfRangeException("signature", "signature version cannot be parsed.");
 

@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -59,14 +57,19 @@ namespace Xigadee
                 var json = dataReader["Body"]?.ToString();
                 var entity = CreateEntity(json);
 
-                var sigRaw = dataReader.GetOrdinal("Sig");
+                var sigPos = dataReader.GetOrdinal("Sig");
 
                 string sig = null;
-                if (!dataReader.IsDBNull(sigRaw))
-                    sig = dataReader.GetFieldValue<string>(sigRaw);
+                if (!dataReader.IsDBNull(sigPos))
+                    sig = dataReader.GetFieldValue<string>(sigPos);
 
                 if (!SignatureValidate(entity, sig))
-                    throw new SignatureEntityVerificationException();
+                {
+                    var errSig = $"{typeof(E).Name} Signature verification failed: {entity.Id}/{entity.VersionId}->{sig ?? "No Signature"}";
+                    Collector?.LogException(errSig);
+                    throw new SignatureEntityVerificationException(errSig);
+                }
+
                 ctx.ResponseEntities.Add(entity);
             }
             catch (JsonException e)

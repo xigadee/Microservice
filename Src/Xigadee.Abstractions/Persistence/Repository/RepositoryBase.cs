@@ -254,26 +254,14 @@ namespace Xigadee
             if (VersionPolicy == null && (res?.SupportsVersion ?? false))
                     VersionPolicy = res.VersionPolicyGet<E>();
 
-            //Signature maker
-            SignaturePolicy = signaturePolicy;
-            bool supportSig = (res?.SupportsSignature ?? false);
-            if (SignaturePolicy != null && supportSig)
-                SignaturePolicy.RegisterChildPolicy(res.SignaturePolicyGet());
-            else if (supportSig)
-                SignaturePolicy = res.SignaturePolicyGet();
-            
-
+            //Signature policy
+            SignaturePolicy = SignaturePolicyCalculate(res,signaturePolicy);
+           
             //Key Manager
             KeyManager = keyManager ?? RepositoryKeyManager.Resolve<K>();
         }
         #endregion
 
-        #region SignaturePolicy
-        /// <summary>
-        /// Holds the policy concerning whether the repository implements an entity signature when creating and reading an entity.
-        /// </summary>
-        public ISignaturePolicy SignaturePolicy { get; }
-        #endregion
         #region VersionPolicy
         /// <summary>
         /// Holds the policy concerning whether the repository implements optimistic locking 
@@ -299,6 +287,7 @@ namespace Xigadee
         /// </summary>
         public RepositoryKeyManager<K> KeyManager { get; }
         #endregion
+
         #region ReferencesMaker
         /// <summary>
         /// The reference maker used to make the reference values from an entity.
@@ -571,6 +560,47 @@ namespace Xigadee
         public abstract Task<RepositoryHolder<HistoryRequest<K>, HistoryResponse<E>>> History(HistoryRequest<K> key, RepositorySettings options = null);
         #endregion
 
+        #region SignaturePolicy
+        /// <summary>
+        /// Holds the policy concerning whether the repository implements an entity signature when creating and reading an entity.
+        /// </summary>
+        public ISignaturePolicy SignaturePolicy { get; }
+        #endregion
+        #region SignaturePolicyCalculate(EntityHintResolver res, ISignaturePolicy signaturePolicy)
+        /// <summary>
+        /// This method calculates the resulting signature policy from the parameters passed.
+        /// </summary>
+        /// <param name="res">The entity hint resolver.</param>
+        /// <param name="signaturePolicy">The policy passed in the constructor.</param>
+        /// <returns>Returns the ammended policy.</returns>
+        protected virtual ISignaturePolicy SignaturePolicyCalculate(EntityHintResolver res, ISignaturePolicy signaturePolicy)
+        {
+            //This shouldn't happen, but best to check anyway.
+            if (res == null)
+                throw new ArgumentNullException("res");
+
+            //OK, firstly do we have a root signature policy wrapper. If we do, we just set that and move on.
+            if (signaturePolicy != null && !(signaturePolicy is ISignaturePolicyWrapper))
+                return signaturePolicy;
+
+            //OK, does the entity have a signature policy defined, if so just return that.
+            if (signaturePolicy == null && res.SupportsSignature)
+                return res.SignaturePolicyGet();
+
+            ISignaturePolicy leafPolicy = null;
+            if (res.SupportsSignature)
+                leafPolicy = res.SignaturePolicyGet();
+            else
+                leafPolicy = new SignaturePolicyNull();
+            //OK, we now need to register the leaf policy with the wrapper.
+            var wrapperPolicy = signaturePolicy as ISignaturePolicyWrapper;
+
+            //Signature policy
+            wrapperPolicy.RegisterChildPolicy(leafPolicy);
+
+            return wrapperPolicy;
+        } 
+        #endregion
         #region SignatureCreate(E entity)
         /// <summary>
         /// TODO: Creates the signature hash for the entity. 
@@ -586,7 +616,7 @@ namespace Xigadee
         #endregion
         #region SignatureValidate(E entity, string signature)
         /// <summary>
-        /// TODO: Validates the signature hash and confirms that the key fields have not been altered in the database. 
+        /// Validates the signature hash and confirms that the key fields have not been altered in the database. 
         /// </summary>
         /// <param name="entity">The entity.</param>
         /// <param name="signature">The signature.</param>

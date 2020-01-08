@@ -56,6 +56,7 @@ namespace Xigadee
         /// This method creates the internal hash.
         /// </summary>
         /// <param name="entity">The entity.</param>
+        /// <param name="versionId">The signature version.</param>
         /// <returns>Returns the Base 64 encoded encrypted hash.</returns>
         protected override string CalculateInternal(object entity, int? versionId = null)
         {
@@ -89,8 +90,19 @@ namespace Xigadee
             return hash;
         }
 
+        /// <summary>
+        /// This method verifies the signature passed with the entity.
+        /// </summary>
+        /// <param name="entity">The entity to check.</param>
+        /// <param name="signature">The verification signature.</param>
+        /// <returns>Returns true if verified. If the signature is blank, it will return the VerificationPassedWithoutSignature value.</returns>
         public override bool Verify(object entity, string signature)
         {
+            //This check is used during transition when an entity begins signing but not all entities have been signed.
+            //The default value is false. 
+            if (string.IsNullOrWhiteSpace(signature))
+                return VerificationPassedWithoutSignature;
+
             if (!SignatureParse(signature, out var versionId, out var hashPart))
                 throw new ArgumentOutOfRangeException("signature", "signature version cannot be parsed.");
 

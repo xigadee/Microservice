@@ -13,7 +13,7 @@ namespace Tests.Xigadee
 
         public int? SignatureVersion => 1;
 
-        public bool ReadPermittedWithoutSignature => false;
+        public bool VerificationPassedWithoutSignature => false;
 
         public string Calculate(object entity, int? versionid = null)
         {
@@ -30,7 +30,7 @@ namespace Tests.Xigadee
 
         public bool Verify(object entity, string signature)
         {
-            if (ReadPermittedWithoutSignature && string.IsNullOrWhiteSpace(signature))
+            if (VerificationPassedWithoutSignature && string.IsNullOrWhiteSpace(signature))
                 return true;
 
             if (Supports(entity.GetType()))
