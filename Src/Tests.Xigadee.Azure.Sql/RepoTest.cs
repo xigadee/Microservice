@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Xigadee;
 
@@ -32,10 +33,32 @@ namespace Tests.Xigadee.Azure.Sql
             var conn = $"Server=tcp:{server}.database.windows.net,1433;Initial Catalog={catalog};Persist Security Info=False;User ID={uname};Password={pwd};MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
             return conn;
-        } 
+        }
+        #endregion
+
+        #region BuildAesSignatureWrapper()
+        private AesSha512SignaturePolicyWrapper BuildAesSignatureWrapper()
+        {
+            var keyStr = TestContext.Properties["aesKey"].ToString();
+            var ivStr = TestContext.Properties["aesIv"].ToString();
+
+            var key = Convert.FromBase64String(keyStr);
+            var iv = Convert.FromBase64String(ivStr);
+
+            return new AesSha512SignaturePolicyWrapper(key,iv);
+        }
         #endregion
 
         readonly Guid[] Accounts = { new Guid("{C9BD832A-DFDC-41D6-934C-853EC1272C37}"), new Guid("{48693BD8-05D2-49D0-BCAA-4B588303D2C6}") };
+
+        [TestMethod]
+        public async Task CreateKey()
+        {
+            var provider = AesSha512SignaturePolicyWrapper.CreateTestPolicy();
+
+            var key = Convert.ToBase64String(provider.Provider.Key);
+            var iv = Convert.ToBase64String(provider.Provider.IV);
+        }
 
         [TestMethod]
         public async Task SqlJsonTest1Test()
@@ -43,6 +66,38 @@ namespace Tests.Xigadee.Azure.Sql
             var conn = BuildSqlConnection();
 
             var repo = new RepositorySqlJson2<Guid, Test1>(conn, signaturePolicy: new SignaturePolicyNull());
+
+            for (int i = 0; i < 100; i++)
+            {
+                RepositoryHolder<Guid, Test1> rs;
+                try
+                {
+                    var t = new Test1();
+
+                    t.UserId = Guid.NewGuid();
+                    t.AccountId = Accounts[i % Accounts.Length];
+                    var ms = DateTime.UtcNow.Millisecond;
+
+                    if (ms > 100)
+                        t.Second = DateTime.UtcNow.Millisecond;
+
+                    rs = await repo.Create(t);
+
+                    var rsCheck = await repo.Read(t.Id);
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+            }
+        }
+
+        [TestMethod]
+        public async Task SqlJsonTest1TestSignature()
+        {
+            var conn = BuildSqlConnection();
+
+            var repo = new RepositorySqlJson2<Guid, Test1>(conn, signaturePolicy: BuildAesSignatureWrapper());
 
             for (int i = 0; i < 100; i++)
             {

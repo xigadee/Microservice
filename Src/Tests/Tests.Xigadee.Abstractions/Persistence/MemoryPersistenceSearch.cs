@@ -67,7 +67,6 @@ namespace Tests.Xigadee
         //public async Task SearchEntity()
         //{
         //    var repo = GetRepo();
-
             
         //    var item1 = await repo.ReadByRef("Name", "Id55");
         //    var e = item1.Entity;
