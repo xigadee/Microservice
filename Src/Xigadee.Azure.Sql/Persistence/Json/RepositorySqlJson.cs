@@ -77,7 +77,6 @@ namespace Xigadee
             }
         } 
         #endregion
-
         #region DbSerializeEntity(E entity, SqlCommand cmd)
         /// <summary>
         /// This method serializes the entity in to the SqlCommand.

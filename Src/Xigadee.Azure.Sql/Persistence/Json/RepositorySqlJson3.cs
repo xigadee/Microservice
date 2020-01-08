@@ -14,7 +14,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K"></typeparam>
     /// <typeparam name="E"></typeparam>
-    public class RepositorySqlJson3<K, E> : RepositorySqlJson<K, E>
+    public class RepositorySqlJson3<K, E> : RepositorySqlJson2<K, E>
         where E : EntityAuditableBase
         where K : IEquatable<K>
     {
@@ -44,8 +44,58 @@ namespace Xigadee
         {
         }
         #endregion
+
+        #region DbSerializeEntity(E entity, SqlCommand cmd)
+        /// <summary>
+        /// This method serializes the entity in to the SqlCommand.
+        /// </summary>
+        /// <param name="ctx">The context</param>
+        protected override void DbSerializeEntity(SqlEntityContext<E> ctx)
+        {
+            try
+            {
+                var cmd = ctx.Command;
+                var entity = ctx.EntityOutgoing;
+
+                cmd.Parameters.Add(new SqlParameter("@ExternalId", SqlDbType.UniqueIdentifier) { Value = entity.Id });
+
+                cmd.Parameters.Add(new SqlParameter("@VersionId", SqlDbType.UniqueIdentifier) { Value = ctx.EntityIncoming.VersionId });
+
+                cmd.Parameters.Add(new SqlParameter("@VersionIdNew", SqlDbType.UniqueIdentifier) { Value = entity.VersionId });
+
+                cmd.Parameters.Add(new SqlParameter("@UserIdAudit", SqlDbType.UniqueIdentifier) { Value = entity.UserIdAudit });
+                cmd.Parameters.Add(new SqlParameter("@DateCreated", SqlDbType.DateTime) { Value = entity.DateCreated });
+                cmd.Parameters.Add(new SqlParameter("@DateUpdated", SqlDbType.DateTime) { Value = entity.DateUpdated });
+
+                cmd.Parameters.Add(new SqlParameter("@Body", SqlDbType.NVarChar) { Value = CreateBody(entity) });
+
+                cmd.Parameters.Add(new SqlParameter("@Sig", SqlDbType.VarChar, 255) { Value = SignatureCreate(entity) });
+            }
+            catch (Exception e)
+            {
+                Collector?.LogWarning($"Unable to serialize entity {typeof(E).Name}/{ctx.EntityOutgoing.Id} - {e.Message}");
+
+                throw;
+            }
+
+        }
+        #endregion
+        #region CreateBody(E entity)
+        /// <summary>
+        /// This method converts the entity in to JSON body. 
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        /// <returns>Returns the Json serialized entity wrapper.</returns>
+        protected override string CreateBody(E entity)
+        {
+            var wrapper = new SqlJsonWrapper<E>(entity);
+
+            return JsonConvert.SerializeObject(wrapper);
+        }
+        #endregion
     }
 
+    #region SqlJsonWrapper<E>
     /// <summary>
     /// This wrapper holds an entity and it's associated properties.
     /// </summary>
@@ -77,11 +127,11 @@ namespace Xigadee
             var res = EntityHintHelper.Resolve(entity.GetType());
             Entity = entity;
 
-            if (res?.SupportsReferences??false)
-                References = res.References(entity).Select(i => new KeyValuePair<string,string>(i.Item1,i.Item2))
+            if (res?.SupportsReferences ?? false)
+                References = res.References(entity).Select(i => new KeyValuePair<string, string>(i.Item1, i.Item2))
                     .ToList();
 
-            if (res?.SupportsProperties??false)
+            if (res?.SupportsProperties ?? false)
                 Properties = res.Properties(entity).Select(i => new KeyValuePair<string, string>(i.Item1, i.Item2))
                     .ToList();
         }
@@ -98,5 +148,6 @@ namespace Xigadee
         /// This collection holds the entity references.
         /// </summary>
         public List<KeyValuePair<string, string>> References { get; set; } = new List<KeyValuePair<string, string>>();
-    }
+    } 
+    #endregion
 }
