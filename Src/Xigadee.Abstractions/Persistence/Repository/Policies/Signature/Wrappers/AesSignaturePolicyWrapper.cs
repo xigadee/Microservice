@@ -30,12 +30,22 @@ namespace Xigadee
             Provider.GenerateIV();
             Provider.GenerateKey();
         }
-
+        /// <summary>
+        /// This constructor accepts the crypt service provider used to encrypt and decrypt the signature.
+        /// </summary>
+        /// <param name="provider">The crypto service provider.</param>
         public AesWrapperSignaturePolicyWrapper(AesCryptoServiceProvider provider)
         {
             Provider = provider;
         }
-
+        /// <summary>
+        /// This constructor accepts the paramters directly used to create a crypt service provider used to encrypt and decrypt the signature.
+        /// </summary>
+        /// <param name="key">The AES encrpytion key.</param>
+        /// <param name="iv">The AES initialization vector.</param>
+        /// <param name="mode">The optional mode, the default is CBC.</param>
+        /// <param name="keySize">The key size, the default is 128.</param>
+        /// <param name="blockSize">The block size, the default is 128.</param>
         public AesWrapperSignaturePolicyWrapper(byte[] key, byte[] iv, CipherMode mode = CipherMode.CBC, int keySize = 128, int blockSize = 128)
         {
             Provider = new AesCryptoServiceProvider();

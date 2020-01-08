@@ -13,11 +13,6 @@ namespace Xigadee
         protected ISignaturePolicy _childPolicy = null;
 
         /// <summary>
-        /// Specifies whether the policy is active.
-        /// </summary>
-        protected virtual ISignaturePolicy Validate() => _childPolicy ?? throw new ArgumentNullException("_childPolicy", "Child Policy has not been set.");
-
-        /// <summary>
         /// This method registers a child signature policy.
         /// </summary>
         /// <param name="childPolicy">The child policy to register.</param>
@@ -28,7 +23,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="entityType">The entity type to verify.</param>
         /// <returns>Returns true if supported.</returns>
-        public override bool Supports(Type entityType) => Validate().Supports(entityType);
+        public override bool Supports(Type entityType) => _childPolicy?.Supports(entityType) ?? false;
 
         /// <summary>
         /// This method is used to compare two byte arrays for equality.
@@ -44,7 +39,7 @@ namespace Xigadee
         /// <summary>
         /// This value is set by the root signature policy.
         /// </summary>
-        public override bool VerificationPassedWithoutSignature => Validate().VerificationPassedWithoutSignature;
+        public override bool VerificationPassedWithoutSignature => _childPolicy?.VerificationPassedWithoutSignature ?? true;
 
     }
 }

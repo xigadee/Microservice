@@ -609,6 +609,9 @@ namespace Xigadee
         /// <returns>Returns the string signature.</returns>
         protected virtual string SignatureCreate(E entity)
         {
+            if (!(SignaturePolicy?.Supports(entity.GetType()) ?? false))
+                return null;
+
             var signature = SignaturePolicy?.Calculate(entity);
 
             return signature;
@@ -623,6 +626,9 @@ namespace Xigadee
         /// <returns>Returns the string signature.</returns>
         protected virtual bool SignatureValidate(E entity, string signature)
         {
+            if (SignaturePolicy?.Supports(entity.GetType()) ?? false)
+                return true;
+
             var success = SignaturePolicy?.Verify(entity, signature) ?? true;
 
             return success;

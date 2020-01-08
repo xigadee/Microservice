@@ -31,7 +31,7 @@ namespace Xigadee
         /// <param name="versionId">This is the required version of the hash.</param>
         /// <returns>Returns the string signature for the entity.</returns>
         protected virtual string CalculateSignature(object entity, int? versionId = null)
-            => Validate().Calculate(entity, versionId);
+            => _childPolicy.Calculate(entity, versionId);
 
         /// <summary>
         /// This method creates a hash from the incoming string.
