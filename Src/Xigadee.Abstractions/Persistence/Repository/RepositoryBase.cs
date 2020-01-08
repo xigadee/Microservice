@@ -255,7 +255,7 @@ namespace Xigadee
                     VersionPolicy = res.VersionPolicyGet<E>();
 
             //Signature policy
-            SignaturePolicy = SignaturePolicyCalculate(res,signaturePolicy);
+            SignaturePolicy = SignaturePolicyCalculate(res, signaturePolicy);
            
             //Key Manager
             KeyManager = keyManager ?? RepositoryKeyManager.Resolve<K>();
@@ -575,23 +575,22 @@ namespace Xigadee
         /// <returns>Returns the ammended policy.</returns>
         protected virtual ISignaturePolicy SignaturePolicyCalculate(EntityHintResolver res, ISignaturePolicy signaturePolicy)
         {
-            //This shouldn't happen, but best to check anyway.
-            if (res == null)
-                throw new ArgumentNullException("res");
-
             //OK, firstly do we have a root signature policy wrapper. If we do, we just set that and move on.
             if (signaturePolicy != null && !(signaturePolicy is ISignaturePolicyWrapper))
                 return signaturePolicy;
 
+            bool resSupportsSignature = res?.SupportsSignature ?? false;
+
             //OK, does the entity have a signature policy defined, if so just return that.
-            if (signaturePolicy == null && res.SupportsSignature)
+            if (signaturePolicy == null && resSupportsSignature)
                 return res.SignaturePolicyGet();
 
             ISignaturePolicy leafPolicy = null;
-            if (res.SupportsSignature)
+            if (resSupportsSignature)
                 leafPolicy = res.SignaturePolicyGet();
             else
                 leafPolicy = new SignaturePolicyNull();
+
             //OK, we now need to register the leaf policy with the wrapper.
             var wrapperPolicy = signaturePolicy as ISignaturePolicyWrapper;
 
