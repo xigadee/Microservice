@@ -52,6 +52,14 @@ namespace Tests.Xigadee.Azure.Sql
         readonly Guid[] Accounts = { new Guid("{C9BD832A-DFDC-41D6-934C-853EC1272C37}"), new Guid("{48693BD8-05D2-49D0-BCAA-4B588303D2C6}") };
 
         [TestMethod]
+        public async Task CreateRepoReflection()
+        {
+            var conn = BuildSqlConnection();
+
+            var directive = SqlPersistenceHelper.RepositoryCreateSqlJson2(typeof(Guid),typeof(Test1),conn);
+        }
+
+        [TestMethod]
         public async Task CreateKey()
         {
             var provider = AesSha512SignaturePolicyWrapper.CreateTestPolicy();

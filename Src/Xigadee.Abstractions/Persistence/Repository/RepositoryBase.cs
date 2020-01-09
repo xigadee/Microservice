@@ -575,29 +575,36 @@ namespace Xigadee
         /// <returns>Returns the ammended policy.</returns>
         protected virtual ISignaturePolicy SignaturePolicyCalculate(EntityHintResolver res, ISignaturePolicy signaturePolicy)
         {
-            //OK, firstly do we have a root signature policy wrapper. If we do, we just set that and move on.
-            if (signaturePolicy != null && !(signaturePolicy is ISignaturePolicyWrapper))
-                return signaturePolicy;
+            try
+            {
+                //OK, firstly do we have a root signature policy wrapper. If we do, we just set that and move on.
+                if (signaturePolicy != null && !(signaturePolicy is ISignaturePolicyWrapper))
+                    return signaturePolicy;
 
-            bool resSupportsSignature = res?.SupportsSignature ?? false;
+                bool resSupportsSignature = res?.SupportsSignature ?? false;
 
-            //OK, does the entity have a signature policy defined, if so just return that.
-            if (signaturePolicy == null && resSupportsSignature)
-                return res.SignaturePolicyGet();
+                //OK, does the entity have a signature policy defined, if so just return that.
+                if (signaturePolicy == null && resSupportsSignature)
+                    return res.SignaturePolicyGet();
 
-            ISignaturePolicy leafPolicy = null;
-            if (resSupportsSignature)
-                leafPolicy = res.SignaturePolicyGet();
-            else
-                leafPolicy = new SignaturePolicyNull();
+                ISignaturePolicy leafPolicy = null;
+                if (resSupportsSignature)
+                    leafPolicy = res.SignaturePolicyGet();
+                else
+                    leafPolicy = new SignaturePolicyNull();
 
-            //OK, we now need to register the leaf policy with the wrapper.
-            var wrapperPolicy = signaturePolicy as ISignaturePolicyWrapper;
+                //OK, we now need to register the leaf policy with the wrapper.
+                var wrapperPolicy = signaturePolicy as ISignaturePolicyWrapper;
 
-            //Signature policy
-            wrapperPolicy.RegisterChildPolicy(leafPolicy);
+                //Signature policy
+                wrapperPolicy.RegisterChildPolicy(leafPolicy);
 
-            return wrapperPolicy;
+                return wrapperPolicy;
+            }
+            catch (Exception ex)
+            {
+                throw new SignaturePolicyCalculateException($"Unexpected exception {GetType().Name} - {ex.Message}",ex);
+            }
         } 
         #endregion
         #region SignatureCreate(E entity)

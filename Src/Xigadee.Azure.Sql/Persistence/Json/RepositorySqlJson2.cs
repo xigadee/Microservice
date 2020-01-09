@@ -3,9 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -16,8 +13,8 @@ namespace Xigadee
     /// <typeparam name="E">The entity type.</typeparam>
     /// <seealso cref="Xigadee.RepositorySqlJson{K, E}" />
     public class RepositorySqlJson2<K, E> : RepositorySqlJson<K, E>
-        where E : EntityAuditableBase
         where K : IEquatable<K>
+        where E : EntityAuditableBase
     {
         #region Constructor
         /// <summary>
