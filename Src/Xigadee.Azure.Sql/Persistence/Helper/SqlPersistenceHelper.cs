@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace Xigadee
 {
@@ -11,7 +8,6 @@ namespace Xigadee
     /// </summary>
     public static class SqlPersistenceHelper
     {
-
         #region RepositoryCreateSqlJson2(RepositoryDirective dir)
         /// <summary>
         /// This class is responsible for setting the repository as SQLJson backed based on the type of entity.
