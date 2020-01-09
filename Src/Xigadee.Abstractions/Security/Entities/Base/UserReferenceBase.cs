@@ -9,7 +9,7 @@ namespace Xigadee
     /// </summary>
     /// <seealso cref="Xigadee.EntityAuditableBase" />
     /// <seealso cref="Xigadee.IPropertyBag" />
-    public abstract class UserReferenceBase : EntitySignatureBase, IPropertyBag
+    public abstract class UserReferenceBase : EntityAuditableBase, IPropertyBag
     {
         /// <summary>
         /// Gets or sets the user identifier. This may not be set for all entities.

@@ -10,7 +10,7 @@ namespace Xigadee
     /// </summary>
     /// <seealso cref="Xigadee.EntityAuditableBase" />
     /// <seealso cref="Xigadee.IPropertyBag" />
-    public class UserSecurity : EntitySignatureBase, IPropertyBag
+    public class UserSecurity : EntityAuditableBase, IPropertyBag
     {
         #region Constructor
         /// <summary>

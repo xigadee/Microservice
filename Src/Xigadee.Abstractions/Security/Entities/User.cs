@@ -7,7 +7,7 @@ namespace Xigadee
     /// </summary>
     /// <seealso cref="Xigadee.EntityAuditableBase" />
     /// <seealso cref="Xigadee.IPropertyBag" />
-    public class User : EntitySignatureBase, IPropertyBag
+    public class User : EntityAuditableBase, IPropertyBag
     {
         /// <summary>
         /// Gets the realm for the user. This is to allow users groupings to be segmented across an application.
