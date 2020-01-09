@@ -18,7 +18,7 @@ namespace Tests.Xigadee.Azure.Sql
 
     }
 
-    [EntitySignatureHint(typeof(Test1Signature))]
+    [EntitySignatureHint(typeof(Test1Signature),true)]
     public class Test1 : EntityAuditableBase
     {
         /// <summary>

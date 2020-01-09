@@ -39,7 +39,14 @@ namespace Xigadee
         /// <summary>
         /// This value is set by the root signature policy.
         /// </summary>
-        public override bool VerificationPassedWithoutSignature => _childPolicy?.VerificationPassedWithoutSignature ?? true;
-
+        public override bool VerificationPassedWithoutSignature 
+        { 
+            get => _childPolicy?.VerificationPassedWithoutSignature ?? true; 
+            set 
+            {
+                if (_childPolicy != null)
+                    _childPolicy.VerificationPassedWithoutSignature = value;
+            } 
+        }
     }
 }

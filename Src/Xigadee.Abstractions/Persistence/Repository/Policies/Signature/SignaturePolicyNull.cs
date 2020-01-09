@@ -15,7 +15,7 @@ namespace Xigadee
         /// <summary>
         /// Always return true.
         /// </summary>
-        public bool VerificationPassedWithoutSignature { get; } = true;
+        public bool VerificationPassedWithoutSignature { get => true; set { } } 
 
         /// <summary>
         /// No calculation is performed.

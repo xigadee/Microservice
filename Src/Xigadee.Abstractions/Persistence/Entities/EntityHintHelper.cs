@@ -330,6 +330,9 @@ namespace Xigadee
                     throw new SignaturePolicyException(EntityType, EntitySignatureHint.SignatureClass);
 
                 _cachedSignaturePolicy = (ISignaturePolicy)p;
+
+                if (EntitySignatureHint.VerificationPassedWithoutSignature.HasValue)
+                    _cachedSignaturePolicy.VerificationPassedWithoutSignature = EntitySignatureHint.VerificationPassedWithoutSignature.Value;
             }
 
             return _cachedSignaturePolicy;

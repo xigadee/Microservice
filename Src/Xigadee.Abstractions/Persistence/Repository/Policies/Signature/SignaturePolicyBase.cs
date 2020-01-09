@@ -19,7 +19,7 @@ namespace Xigadee
         /// This is useful when transitioning signatures in to an existing entity store. 
         /// The default value is false and should be switched off when the migration is completed.
         /// </summary>
-        public virtual bool VerificationPassedWithoutSignature { get; } = false;
+        public virtual bool VerificationPassedWithoutSignature { get; set; } = false;
         /// <summary>
         /// This method calculates and returns the signature.
         /// </summary>

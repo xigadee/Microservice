@@ -39,7 +39,7 @@ namespace Xigadee
         /// This can be used during transition period when the signature is implemented. This property should be set to 
         /// false when the entity collection has been updated.
         /// </summary>
-        bool VerificationPassedWithoutSignature { get; }
+        bool VerificationPassedWithoutSignature { get; set; }
     }
 
     /// <summary>
