@@ -583,15 +583,14 @@ namespace Xigadee
 
                 bool resSupportsSignature = res?.SupportsSignature ?? false;
 
-                //OK, does the entity have a signature policy defined, if so just return that.
-                if (signaturePolicy == null && resSupportsSignature)
-                    return res.SignaturePolicyGet();
-
                 ISignaturePolicy leafPolicy = null;
                 if (resSupportsSignature)
                     leafPolicy = res.SignaturePolicyGet();
                 else
                     leafPolicy = new SignaturePolicyNull();
+
+                if (signaturePolicy == null)
+                    return leafPolicy;
 
                 //OK, we now need to register the leaf policy with the wrapper.
                 var wrapperPolicy = signaturePolicy as ISignaturePolicyWrapper;
