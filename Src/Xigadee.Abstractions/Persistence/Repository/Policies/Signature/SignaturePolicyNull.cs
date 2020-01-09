@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Xigadee
 {
@@ -9,23 +7,31 @@ namespace Xigadee
     /// </summary>
     public class SignaturePolicyNull : ISignaturePolicy
     {
-
+        /// <summary>
+        /// No version.
+        /// </summary>
         public int? SignatureVersion => null;
 
+        /// <summary>
+        /// Always return true.
+        /// </summary>
         public bool VerificationPassedWithoutSignature { get; } = true;
 
-        public string Calculate(object entity, int? versionid = null)
-        {
-            return null;
-        }
+        /// <summary>
+        /// No calculation is performed.
+        /// </summary>
+        public string Calculate(object entity, int? versionid = null) => null;
 
-        public bool Supports(Type entityType) => true;
+        /// <summary>
+        /// This policy does not support signature.
+        /// </summary>
+        /// <param name="entityType"></param>
+        /// <returns></returns>
+        public bool Supports(Type entityType) => false;
 
-
-        public bool Verify(object entity, string signature)
-        {
-            return true;
-        }
+        /// <summary>
+        /// No verification will be done.
+        /// </summary>
+        public bool Verify(object entity, string signature) => true;
     }
-
 }
