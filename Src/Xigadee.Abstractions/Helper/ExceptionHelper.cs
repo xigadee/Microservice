@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Xigadee
 {
@@ -24,5 +25,17 @@ namespace Xigadee
             return message;
         }
         #endregion
+
+        /// <summary>
+        /// This helper method returns a short name for the calling class and the current line number.
+        /// </summary>
+        /// <param name="caller">The calling class where the type is needed.</param>
+        /// <param name="memberName">This is filled in by the compiler.</param>
+        /// <param name="sourceLineNumber">This is populated by the compiler.</param>
+        /// <returns>Returns the debug string.</returns>
+        public static string DebugPos<C>(this C caller,  
+            [CallerMemberName] string memberName = "",
+            [CallerLineNumber] int sourceLineNumber = 0) where C: class =>
+            $"{caller.GetType().Name}/{memberName}@{sourceLineNumber}";
     }
 }
