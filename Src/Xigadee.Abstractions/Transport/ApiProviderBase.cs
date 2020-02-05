@@ -367,7 +367,7 @@ namespace Xigadee
             {
                 var httpRs = await CallApiClientBase(method, uri, model, adjustIn, adjustOut, requestmodelSerializer);
 
-                await ProcessResponse(response, httpRs, responsemodelDeserializer, errorObjectDeserializer);
+                await ProcessResponse(response, httpRs, responsemodelDeserializer, errorObjectDeserializer?? DefaultErrorObjectDeserializer);
 
                 //Maps any additional properties or adjustments to the response.
                 mapOut?.Invoke(httpRs, response);
@@ -413,7 +413,7 @@ namespace Xigadee
             {
                 var httpRs = await CallApiClientBase(method, uri, content, adjustIn, adjustOut);
 
-                await ProcessResponse(response, httpRs, responsemodelDeserializer, errorObjectDeserializer);
+                await ProcessResponse(response, httpRs, responsemodelDeserializer, errorObjectDeserializer ?? DefaultErrorObjectDeserializer);
 
                 //Maps any additional properties to the response.
                 mapOut?.Invoke(httpRs, response);
@@ -599,6 +599,13 @@ namespace Xigadee
                 }
             }
         }
+        #endregion
+
+        #region DefaultErrorObjectDeserializer
+        /// <summary>
+        /// This property contains the default error object deserializer. If this is set, it will be used to deserialize incoming error objects.
+        /// </summary>
+        protected Func<HttpContent, Task<object>> DefaultErrorObjectDeserializer { get; set; } 
         #endregion
     }
 }
