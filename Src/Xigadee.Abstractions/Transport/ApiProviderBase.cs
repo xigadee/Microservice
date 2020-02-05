@@ -575,6 +575,7 @@ namespace Xigadee
         {
             //Set the HTTP Response code.
             response.ResponseCode = (int)httpRs.StatusCode;
+            response.ResponseMessage = httpRs.ReasonPhrase;
 
             if (httpRs.HasContent()) 
             {
@@ -584,12 +585,8 @@ namespace Xigadee
                         response.ErrorObject = await errorObjectDeserializer(httpRs.Content);
                     else
                     {
-                        byte[] httpRsContent = await httpRs.Content.ReadAsByteArrayAsync();
-
                         var err = new ApiResponse.ErrorObjectDefault();
-
-                        err.Blob = httpRsContent;
-
+                        err.Blob = await httpRs.Content.ReadAsByteArrayAsync();
                         response.ErrorObject = err;
                     }
                 }
@@ -598,8 +595,7 @@ namespace Xigadee
                     if (objectDeserializer == null)
                         objectDeserializer = (c) => c.FromJsonUTF8<O>();
 
-                    if (response.IsSuccess && httpRs.HasContent())
-                        response.Entity = await objectDeserializer(httpRs.Content);
+                    response.Entity = await objectDeserializer(httpRs.Content);
                 }
             }
         }
