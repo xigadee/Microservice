@@ -4,8 +4,6 @@ RETURNS @Results TABLE
     Id BIGINT PRIMARY KEY NOT NULL,
     Position INT NOT NULL
 )  
---Returns a result set that lists all the employees who report to the   
---specific employee directly or indirectly.*/  
 AS  
 BEGIN  
 
