@@ -18,10 +18,10 @@ BEGIN
 	--OK, we need to check that the collection is still valid.
 	DECLARE @CurrentHistoryIndexId BIGINT = (SELECT TOP 1 Id FROM [{NamespaceTable}].[{EntityName}History] ORDER BY Id DESC);
 
-	IF (@ParamsCount > 0 AND @ETag IS NOT NULL)
+	IF (@ETag IS NOT NULL)
 	BEGIN
 		--OK, check whether the ETag is already assigned to a results set
-		SELECT TOP 1 @CollectionId = Id, @HistoryIndexId = [HistoryIndex], @TimeStamp = [TimeStamp], @RecordResult = [RecordCount]
+		SELECT TOP 1 @CollectionId = Id, @HistoryIndexId = [HistoryIndex], @RecordResult = [RecordCount], @FullScan = [FullScan]
 		FROM [{NamespaceTable}].[{EntityName}SearchHistory] 
 		WHERE ETag = @ETag;
 
@@ -30,6 +30,7 @@ BEGIN
 			AND @HistoryIndexId IS NOT NULL
 			AND (@HistoryIndexId = @CurrentHistoryIndexId OR @ETagDoNotInvalidate=1))
 		BEGIN
+			SET @CacheHit = 1;
 			RETURN 202;
 		END
 	END
