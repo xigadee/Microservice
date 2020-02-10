@@ -9,6 +9,7 @@ AS
 BEGIN
 	DECLARE @HistoryIndexId BIGINT, @TimeStamp DATETIME
 	SET @ETag = TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(@Body,'lax $.ETag'));
+	DECLARE @ETagDoNotInvalidate BIT = CAST(JSON_VALUE(@Body,'lax $.ETagDoNotInvalidate') AS BIT);
 
 	DECLARE @ParamsCount INT = ISNULL(TRY_CONVERT(INT, JSON_VALUE(@Body,'lax $.ParamsFilter.Count')),0);
 
@@ -27,7 +28,7 @@ BEGIN
 		IF (@CollectionId IS NOT NULL 
 			AND @CurrentHistoryIndexId IS NOT NULL
 			AND @HistoryIndexId IS NOT NULL
-			AND @HistoryIndexId = @CurrentHistoryIndexId)
+			AND (@HistoryIndexId = @CurrentHistoryIndexId OR @ETagDoNotInvalidate=1))
 		BEGIN
 			RETURN 202;
 		END
