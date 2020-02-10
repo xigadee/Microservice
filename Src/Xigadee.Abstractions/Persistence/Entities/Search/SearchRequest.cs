@@ -261,6 +261,13 @@ namespace Xigadee
         public string ETag { get; set; } = Guid.NewGuid().ToString();
 
         /// <summary>
+        /// This method ensures the cache collection is used irrespective of any changes to the underlying collection.
+        /// This is particularly useful when navigating through a set of entities and changing those entities. The update
+        /// would invalidate the collection cache, but this setting allows you to keep paginating.
+        /// </summary>
+        public bool ETagDoNotInvalidate { get; set; }
+
+        /// <summary>
         /// The raw $filter query value from the incoming request, this maps to the filter algorithm defined
         /// on the server side.
         /// </summary>
