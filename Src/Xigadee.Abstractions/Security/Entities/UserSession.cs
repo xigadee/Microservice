@@ -47,5 +47,25 @@ namespace Xigadee
                 if (prop.Key.StartsWith(cnClaimPrefix))
                     yield return (prop.Key.Substring(cnClaimPrefix.Length), prop.Value);
         }
+
+        /// <summary>
+        /// This class holds the 2FA information when a user is waiting to confirm their logon.
+        /// </summary>
+        public Session2FA Session2FA { get; set; }
+    }
+
+    /// <summary>
+    /// This class is used to hold the 2FA verification code.
+    /// </summary>
+    public class Session2FA
+    {
+        /// <summary>
+        /// The id of the pending user.
+        /// </summary>
+        public Guid UserIdPending { get; set; } 
+        /// <summary>
+        /// The hash of the 2FA code to compare against.
+        /// </summary>
+        public string Hash2FACode { get; set; }
     }
 }
