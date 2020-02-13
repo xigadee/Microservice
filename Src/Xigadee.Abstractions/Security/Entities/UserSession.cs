@@ -49,6 +49,12 @@ namespace Xigadee
         }
 
         /// <summary>
+        /// This is the optional expriy date of the session. This is used primarily when 
+        /// waiting for a 2FA code to be entered for a pending authenticated session.
+        /// </summary>
+        public DateTime? DateExpiry { get; set; }
+
+        /// <summary>
         /// This class holds the 2FA information when a user is waiting to confirm their logon.
         /// </summary>
         public Session2FA Session2FA { get; set; }
@@ -67,5 +73,15 @@ namespace Xigadee
         /// The hash of the 2FA code to compare against.
         /// </summary>
         public string Hash2FACode { get; set; }
+
+        /// <summary>
+        /// This is the number of attempts to verify the 2FA code.
+        /// </summary>
+        public int VerificationAttempts { get; set; } = 0;
+        /// <summary>
+        /// This is the optional expriy date of the session. This is used primarily when 
+        /// waiting for a 2FA code to be entered for a pending authenticated session.
+        /// </summary>
+        public DateTime? DateExpiry { get; set; }
     }
 }
