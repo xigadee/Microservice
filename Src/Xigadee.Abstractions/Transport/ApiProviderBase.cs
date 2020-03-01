@@ -66,6 +66,18 @@ namespace Xigadee
             /// </summary>
             public HttpClient ClientOverride { get; set; }
             #endregion
+            /// <summary>
+            /// This is the User Agent for the context. If this is null, the header will be skipped.
+            /// </summary>
+            public string UserAgent { get; set; }
+            /// <summary>
+            /// This is the value set for the x-api-clientversion header. If this is null, the header will be skipped.
+            /// </summary>
+            public string AssemblyVersion { get; set; }
+            /// <summary>
+            /// This is the value set for the x-api-version header. If this is null, the header will be skipped.
+            /// </summary>
+            public string ApiVersion { get; set; }
         }
         #endregion
 
@@ -127,6 +139,10 @@ namespace Xigadee
                 Context.TransportOutDefault = transportOverride.First().MediaType.ToLowerInvariant();
                 Context.TransportSerializers = transportOverride.ToDictionary(t => t.MediaType.ToLowerInvariant(), t => t);
             }
+
+            Context.UserAgent = UserAgentGet();
+            Context.AssemblyVersion = AssemblyVersionGet();
+            Context.ApiVersion = ApiVersionGet();
         }
         #endregion
 
@@ -151,12 +167,22 @@ namespace Xigadee
         #region AssemblyVersionGet()
         /// <summary>
         /// This method returns the assembly version that is passed to the calling party. You can override this
-        /// method to change the version.
+        /// method to change the version, or leave it as null to stop sending this header.
         /// </summary>
         /// <returns>Returns a string containing the assembly version.</returns>
         protected virtual string AssemblyVersionGet()
         {
             return GetType().Assembly.GetName().Version.ToString();
+        }
+        #endregion
+        #region ApiVersionGet()
+        /// <summary>
+        /// This method returns the api version that is expecting. Leave this as null the skip this header.
+        /// </summary>
+        /// <returns>Returns a string containing the api version.</returns>
+        protected virtual string ApiVersionGet()
+        {
+            return "2016-08-01";
         }
         #endregion
 
@@ -218,9 +244,12 @@ namespace Xigadee
         /// <param name="rq">The http request.</param>
         protected virtual void RequestHeadersSet(HttpRequestMessage rq)
         {
-            rq.Headers.Add("User-Agent", UserAgentGet());
-            rq.Headers.Add("x-api-clientversion", AssemblyVersionGet());
-            rq.Headers.Add("x-api-version", "2016-08-01");
+            if (!string.IsNullOrEmpty(Context.UserAgent))
+                rq.Headers.Add("User-Agent", Context.UserAgent);
+            if (!string.IsNullOrEmpty(Context.AssemblyVersion))
+                rq.Headers.Add("x-api-clientversion", Context.AssemblyVersion);
+            if (!string.IsNullOrEmpty(Context.ApiVersion))
+                rq.Headers.Add("x-api-version", Context.ApiVersion);
         }
         #endregion
         #region RequestHeadersPreferSet(HttpRequestMessage rq, Dictionary<string, string> Prefer)

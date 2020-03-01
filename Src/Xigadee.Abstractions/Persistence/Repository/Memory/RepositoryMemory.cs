@@ -475,7 +475,7 @@ namespace Xigadee
         }
         #endregion
 
-        #region SearchEntity(SearchRequest key)
+        #region History...
         /// <summary>
         /// Searches the collection using the specified parameters.
         /// </summary>
