@@ -10,7 +10,7 @@ namespace Xigadee
         /// <typeparam name="C">The incoming channel type.</typeparam>
         /// <param name="cpipe">The pipeline.</param>
         /// <param name="directive">The directive.</param>
-        /// <param name="repo">The optional repository. This does not need to be set if the directive has a reference to the repository. </param>
+        /// <param name="fnRepo">The optional repository. This does not need to be set if the directive has a reference to the repository. </param>
         /// <param name="startupPriority">The command start-up priority.</param>
         /// <returns>The pipeline.</returns>
         public static C AttachPersistenceRepositoryDirective<C>(this C cpipe
@@ -40,7 +40,6 @@ namespace Xigadee
 
             //Attach the client to send the requests.
             cpipe.SetPersistenceClientChannel(client, startupPriority: startupPriority);
-            //cpipe.AttachCommand(client, startupPriority);
 
             directive.Set(client);
 
