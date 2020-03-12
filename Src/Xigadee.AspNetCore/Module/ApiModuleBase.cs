@@ -2,6 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
+using System;
+
 namespace Xigadee
 {
     /// <summary>
@@ -9,11 +11,12 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="C">The application context type.</typeparam>
     public abstract class ApiModuleBase<C>: ApiModuleBase
+        where C:class
     {
         /// <summary>
         /// This is the application context.
         /// </summary>
-        protected C _context;
+        private C _context = null;
 
         /// <summary>
         /// This method can be used to connect the module to the relevant application services.
@@ -22,10 +25,16 @@ namespace Xigadee
         /// <param name="logger">The optional logger.</param>
         public virtual void Connect(C context, ILogger logger = null)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+
             if (logger != null)
                 Logger = logger;
         }
+
+        /// <summary>
+        /// This is the application environment context.
+        /// </summary>
+        protected virtual C Context => _context;
     }
 
     /// <summary>
