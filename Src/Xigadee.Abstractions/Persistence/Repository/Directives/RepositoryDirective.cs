@@ -41,7 +41,7 @@ namespace Xigadee
         /// </summary>
         public object Module { get; }
         /// <summary>
-        /// THis is the specific property.
+        /// This is the specific property.
         /// </summary>
         public PropertyInfo Property { get; }
 

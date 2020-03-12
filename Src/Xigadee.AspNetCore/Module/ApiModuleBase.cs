@@ -5,6 +5,30 @@ using System.Runtime.CompilerServices;
 namespace Xigadee
 {
     /// <summary>
+    /// This method can be used to connect the module to the other application services.
+    /// </summary>
+    /// <typeparam name="C">The application context type.</typeparam>
+    public abstract class ApiModuleBase<C>: ApiModuleBase
+    {
+        /// <summary>
+        /// This is the application context.
+        /// </summary>
+        protected C _context;
+
+        /// <summary>
+        /// This method can be used to connect the module to the relevant application services.
+        /// </summary>
+        /// <param name="context">The application context.</param>
+        /// <param name="logger">The optional logger.</param>
+        public virtual void Connect(C context, ILogger logger = null)
+        {
+            _context = context;
+            if (logger != null)
+                Logger = logger;
+        }
+    }
+
+    /// <summary>
     /// This is the base class for ApiModules
     /// </summary>
     public abstract class ApiModuleBase: IApiModuleService
