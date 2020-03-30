@@ -60,6 +60,7 @@ namespace Xigadee
         public override void Connect(ILoggerFactory lf)
         {
             base.Connect(lf);
+
             UserSecurityModule.Logger = lf.CreateLogger<IApiUserSecurityModule>();
         }
         #endregion

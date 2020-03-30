@@ -14,18 +14,13 @@ namespace Xigadee
         where C:class
     {
         /// <summary>
-        /// This is the application context.
-        /// </summary>
-        private C _context = null;
-
-        /// <summary>
         /// This method can be used to connect the module to the relevant application services.
         /// </summary>
-        /// <param name="context">The application context.</param>
+        /// <param name="context">The application context. This will throw an exception if this is not set.</param>
         /// <param name="logger">The optional logger.</param>
         public virtual void Connect(C context, ILogger logger = null)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            Context = context ?? throw new ArgumentNullException(nameof(context));
 
             if (logger != null)
                 Logger = logger;
@@ -34,7 +29,7 @@ namespace Xigadee
         /// <summary>
         /// This is the application environment context.
         /// </summary>
-        protected virtual C Context => _context;
+        protected virtual C Context { get; set; }
     }
 
     /// <summary>
