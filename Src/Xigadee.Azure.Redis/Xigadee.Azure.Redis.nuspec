@@ -12,7 +12,7 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>This library contains the Xigadee connectors for Azure Redis Cache.</description>
     <releaseNotes>First update for 2.0.</releaseNotes>
-    <copyright>Copyright © Xigadee 2017-2019 incorporates copyright of Hitachi Consulting 2012-2017</copyright>
+    <copyright>Copyright © Xigadee 2017-2020 incorporates copyright of Hitachi Consulting 2012-2017</copyright>
     <tags>Xigadee Microservice Azure Redis Cache .NET</tags>
     <dependencies>
       <group targetFramework=".NETStandard2.0">

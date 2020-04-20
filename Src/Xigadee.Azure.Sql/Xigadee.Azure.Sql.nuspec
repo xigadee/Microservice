@@ -10,13 +10,13 @@
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>http://xigadee.org</projectUrl>
     <description>This library contains the Xigadee connectors for Microsoft SQL Server.</description>
-    <releaseNotes>First update for 2.0.</releaseNotes>
-    <copyright>Copyright © Xigadee 2017-2019 incorporates copyright of Hitachi Consulting 2012-2017</copyright>
+    <releaseNotes>Initial update for 2.0 Standard and .NET Core 3.1.</releaseNotes>
+    <copyright>Copyright © Xigadee 2017-2020 incorporates copyright of Hitachi Consulting 2012-2017</copyright>
     <tags>Xigadee Microservice Azure SQL .NET</tags>
     <dependencies>
       <group targetFramework=".NETStandard2.0">
         <dependency id="Xigadee.Abstractions" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
-        <dependency id="System.Data.SqlClient" version="4.8.0" exclude="Build,Analyzers" />
+        <dependency id="System.Data.SqlClient" version="4.8.1" exclude="Build,Analyzers" />
         <dependency id="Newtonsoft.Json" version="12.0.1" exclude="Build,Analyzers" />
         <dependency id="Microsoft.Extensions.Logging.Abstractions" version="2.2.0" />
         <dependency id="Microsoft.Extensions.Http.Polly" version="2.2.0" />
