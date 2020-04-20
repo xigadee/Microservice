@@ -12,7 +12,7 @@
     <description>This Xigadee library is used to extend AspNetCore applications.</description>
     <summary>Xigadee Microservice Framework for .NET</summary>
     <releaseNotes>Release 2.0</releaseNotes>
-    <copyright>Copyright © Xigadee 2017-2019</copyright>
+    <copyright>Copyright © Xigadee 2017-2020</copyright>
     <tags>Xigadee Microservice AspNetCore</tags>
     <dependencies>
       <group targetFramework=".NETCoreApp2.2">
