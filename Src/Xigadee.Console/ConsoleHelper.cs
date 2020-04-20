@@ -17,6 +17,14 @@ namespace Xigadee
                 setter(config, config.Switches[id]);
         }
 
+        /// <summary>
+        /// This method writes the string at the specific position on the console screen.
+        /// </summary>
+        /// <param name="left">The left position.</param>
+        /// <param name="top">The top position.</param>
+        /// <param name="format">The string to format.</param>
+        /// <param name="args">The optional format arguments.</param>
+        /// <returns></returns>
         public static int WriteAtPos(int left, int top, string format, params object[] args)
         {
             Console.SetCursorPosition(left, top);
@@ -232,9 +240,11 @@ namespace Xigadee
         /// <summary>
         /// Like System.Console.ReadLine(), only with a mask.
         /// </summary>
+        /// <param name="value">This is the output value.</param>
         /// <param name="mask">a <c>char</c> representing your choice of console mask</param>
+        /// <param name="charFilter">This is a set of characters that should be filtered out: 0, 27, 9, 10 are the default values.</param>
         /// <returns>the string the user typed in </returns>
-        public static bool ReadString(out string password, char? mask = '*', int[] charFilter = null)
+        public static bool ReadString(out string value, char? mask = '*', int[] charFilter = null)
         {
             if (charFilter == null)
                 charFilter = new int[] { 0, 27, 9, 10 /*, 32 space, if you care */ };
@@ -288,11 +298,11 @@ namespace Xigadee
 
             if (result.Value)
             {
-                password = new string(pass.Reverse().ToArray());
+                value = new string(pass.Reverse().ToArray());
                 return true;
             }
 
-            password = null;
+            value = null;
             return false;
         }
         #endregion
