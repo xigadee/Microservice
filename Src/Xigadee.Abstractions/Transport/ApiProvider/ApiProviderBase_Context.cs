@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Xigadee
@@ -89,8 +87,23 @@ namespace Xigadee
         /// <summary>
         /// This property is true if the context was inherited from a parent container.
         /// </summary>
-        public bool ContextIsInherited { get; protected set; } 
+        public bool ContextIsInherited { get; protected set; }
         #endregion
+
+        #region Configure(Uri uri, string token ...
+        /// <summary>
+        /// This method configures the connection with the URI and the token.
+        /// </summary>
+        /// <param name="uri">The Api Uri.</param>
+        /// <param name="jwtToken">The JWT token.</param>
+        /// <param name="clientCert">The client certificate to connect to the remote party.</param>
+        /// <param name="manualCertValidation">The certificate validation function.</param>
+        /// <param name="transportOverride">The transport serializer collection.</param>
+        public virtual void Configure(Uri uri, string jwtToken
+            , X509Certificate clientCert = null
+            , Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> manualCertValidation = null
+            , IEnumerable<TransportSerializer> transportOverride = null) 
+            => Configure(uri, new[] { new JwtAuthProvider(jwtToken) }, clientCert, manualCertValidation, transportOverride);
 
         /// <summary>
         /// This method can be used to change the context parameters.
@@ -100,7 +113,7 @@ namespace Xigadee
         /// <param name="clientCert">The SSL client certificate to use when connecting to the remote party.</param>
         /// <param name="manualCertValidation">The certificate validation function.</param>
         /// <param name="transportOverride">The transport serializer collection.</param>
-        public void Configure(Uri uri
+        public virtual void Configure(Uri uri
             , IEnumerable<IApiProviderAuthBase> authHandlers = null
             , X509Certificate clientCert = null
             , Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> manualCertValidation = null
@@ -146,6 +159,7 @@ namespace Xigadee
             Context.UserAgent = UserAgentGet();
             Context.AssemblyVersion = AssemblyVersionGet();
             Context.ApiVersion = ApiVersionGet();
-        }
+        } 
+        #endregion
     }
 }
