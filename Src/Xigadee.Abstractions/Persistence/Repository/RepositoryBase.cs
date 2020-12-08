@@ -729,7 +729,7 @@ namespace Xigadee
 
         {
             var entity = context.ResponseEntities.FirstOrDefault();
-            var rs = (entity == null) ? new RepositoryHolder<K, Tuple<K, string>>(key, null, null, 404)
+            var rs = (entity == null) ? new RepositoryHolder<K, Tuple<K, string>>(key, null, null, context.ResponseCode, context.ResponseMessage)
                 : new RepositoryHolder<K, Tuple<K, string>>(entity.Item1, null, new Tuple<K, string>(entity.Item1, entity.Item2), context.ResponseCode, context.ResponseMessage);
 
             onEvent?.Invoke(rs);

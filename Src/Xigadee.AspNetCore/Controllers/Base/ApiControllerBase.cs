@@ -34,7 +34,7 @@ namespace Xigadee
         /// <param name="name">The name of the calling method. This is used for more detailed logging.</param>
         /// <param name="includeDescription">A boolean flag that indicates whether the error description should be included in the response. The default is false.</param>
         /// <returns></returns>
-        protected async Task<IActionResult> ProcessRequest(Func<Task<IActionResult>> a
+        protected virtual async Task<IActionResult> ProcessRequest(Func<Task<IActionResult>> a
             , bool extendErrors = true
             , [CallerMemberName] string name = null
             , bool includeDescription = false

@@ -58,6 +58,8 @@ namespace Xigadee
         /// This class holds the 2FA information when a user is waiting to confirm their logon.
         /// </summary>
         public Session2FA Session2FA { get; set; }
+
+        public bool Has2FACode => Session2FA != null;
     }
 
     /// <summary>

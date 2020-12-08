@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tests\Tests.Xigadee.Shared\Tests.Xigadee.Shared.csproj" />
+    <ProjectReference Include="..\Xigadee.AspNetCore\Xigadee.AspNetCore.csproj" />
+  </ItemGroup>
+
+
+</Project>

@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Internal;
 
 namespace Xigadee
 {
@@ -82,7 +82,7 @@ namespace Xigadee
             };
 
             // Extract formatted values excluding the original format value which is the unformatted message
-            var logValues = state as FormattedLogValues;
+            var logValues = state as IReadOnlyList<KeyValuePair<string, object>>;
             logValues?.Where(lv => lv.Key.IndexOf("OriginalFormat", StringComparison.InvariantCultureIgnoreCase) < 0)
                 .ForEach(lv => logEvent.FormattedParameters[lv.Key] = lv.Value);
 

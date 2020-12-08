@@ -1,20 +1,4 @@
-﻿#region Copyright
-// Copyright Hitachi Consulting
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//    http://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-#endregion
-
-using System;
+﻿using System;
 using System.IO;
 using System.IO.Compression;
 using System.Security.Cryptography;
@@ -26,11 +10,18 @@ namespace Xigadee
     /// </summary>
     public class AesEncryptionHandler : IServiceHandlerEncryption
     {
-        private readonly byte[] mKey;
-
-        private readonly bool mUseCompression;
-
-        private readonly int mBlockSize;
+        /// <summary>
+        /// This is the symettric key.
+        /// </summary>
+        protected readonly byte[] mKey;
+        /// <summary>
+        /// This specifies whether compression should be used.
+        /// </summary>
+        protected readonly bool mUseCompression;
+        /// <summary>
+        /// This is the specified block size.
+        /// </summary>
+        protected readonly int mBlockSize;
 
 
         /// <summary>
@@ -151,7 +142,7 @@ namespace Xigadee
         /// <summary>
         /// This is the friendly name for the handler.
         /// </summary>
-        public string Name => $"{nameof(AesEncryptionHandler)}/{Id}";
+        public virtual string Name => $"{nameof(AesEncryptionHandler)}/{Id}";
 
         /// <summary>
         /// Gets the encryption identifier used to match a handler with a specific id.
