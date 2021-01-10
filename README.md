@@ -1,6 +1,6 @@
 ![Xigadee](/docs/X2a.png)
 
-Xigadee is an open-source Microservice framework, developed by [Paul Stancer](https://github.com/paulstancer) and [Guy Steel](https://github.com/guysteel), and released under the Apache 2 license by Hitachi Consulting in 2016. You are free to use it within your own commercial applications without restriction. 
+Xigadee is an open-source Microservice framework, developed by [Paul Stancer](https://github.com/paulstancer) and [Guy Steel](https://github.com/guysteel), and originally released under the Apache 2 license by Hitachi Consulting in 2016. You are free to use it within your own commercial applications without restriction. 
 
 The framework is a result of our experience - and frustration - over the past five years, in building large-scale distributed cloud applications for our enterprise customers.
 
