@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Exceptions\" />
+    <Folder Include="Module\" />
   </ItemGroup>
   
 </Project>
