@@ -32,20 +32,27 @@
   </ItemGroup>
   
   <ItemGroup>
+    <Compile Remove="Logging\Agents\**" />
+    <Compile Remove="Logging\DataCollectionPipe\**" />
+    <Compile Remove="Logging\Telemetry\**" />
     <Compile Remove="Swagger\**" />
     <Content Remove="Swagger\**" />
+    <EmbeddedResource Remove="Logging\Agents\**" />
+    <EmbeddedResource Remove="Logging\DataCollectionPipe\**" />
+    <EmbeddedResource Remove="Logging\Telemetry\**" />
     <EmbeddedResource Remove="Swagger\**" />
+    <None Remove="Logging\Agents\**" />
+    <None Remove="Logging\DataCollectionPipe\**" />
+    <None Remove="Logging\Telemetry\**" />
     <None Remove="Swagger\**" />
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\Xigadee.Abstractions.AspNetCore\Xigadee.Abstractions.AspNetCore.csproj" />
     <ProjectReference Include="..\Xigadee\Xigadee.csproj" />
   </ItemGroup>
   
   <ItemGroup>
-    <Folder Include="Logging\Agents\" />
-    <Folder Include="Logging\DataCollectionPipe\" />
-    <Folder Include="Logging\Telemetry\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   

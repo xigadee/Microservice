@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Xigadee.AspNetCore50</id>
+    <version>{UpdateVersion.ps1.replace}</version>
+    <title>Xigadee AspNetCore 5.0 extension Library</title>
+    <authors>Paul Stancer</authors>
+    <owners>Xigadee.org</owners>
+    <iconUrl>https://raw.githubusercontent.com/xigadee/Microservice/master/docs/Logo.png</iconUrl>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>http://xigadee.org</projectUrl>
+    <description>This Xigadee library is used to extend AspNetCore applications.</description>
+    <summary>Xigadee Microservice Framework for .NET</summary>
+    <releaseNotes>Release 2.0</releaseNotes>
+    <copyright>Copyright © Xigadee 2017-2021</copyright>
+    <tags>Xigadee Microservice AspNetCore</tags>
+    <dependencies>
+      <group targetFramework=".NETCoreApp2.2">
+
+        <dependency id="Microsoft.AspNetCore.App" version="2.2.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Hosting.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Hosting.Server.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Http.Features" version="2.2.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Configuration.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.FileProviders.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Hosting.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Logging.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Primitives" version="2.2.0" exclude="Build,Analyzers" />
+
+        <dependency id="Xigadee" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\netcoreapp2.2\Xigadee.AspNetCore.dll" target="lib\netcoreapp2.2\" />
+    <file src="bin\Release\netcoreapp2.2\Xigadee.AspNetCore.pdb" target="lib\netcoreapp2.2\" />
+    <file src="bin\Release\netcoreapp2.2\Xigadee.AspNetCore.xml" target="lib\netcoreapp2.2\" />
+  </files>
+</package>

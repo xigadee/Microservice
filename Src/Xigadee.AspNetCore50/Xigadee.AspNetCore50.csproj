@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <PackageId>Xigadee.AspNetCore50</PackageId>
+    <RootNamespace>Xigadee</RootNamespace>
+    <AssemblyName>Xigadee.AspNetCore50</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Xigadee.Abstractions.AspNetCore\Xigadee.Abstractions.AspNetCore.csproj" />
+    <ProjectReference Include="..\Xigadee\Xigadee.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+  </ItemGroup>
+  
+</Project>

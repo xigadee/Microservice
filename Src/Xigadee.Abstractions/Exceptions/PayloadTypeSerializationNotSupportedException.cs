@@ -1,9 +1,4 @@
-﻿#region using
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-#endregion
+﻿using System;
 namespace Xigadee
 {
     /// <summary>
