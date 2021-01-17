@@ -10,35 +10,15 @@ namespace Xigadee
     /// <summary>
     /// This is the default start up context.
     /// </summary>
-    public class ApiStartUpContext : IApiStartupContext
+    public class ApiStartUpContext : ApiStartUpContextRoot, IApiStartupContext
     {
-        #region Id
-        /// <summary>
-        /// This is the unique service Id which is regenerated each time the service starts up.
-        /// </summary>
-        public readonly Guid Id = Guid.NewGuid(); 
 
+
+        #region Environment
         /// <summary>
-        /// This is the service identity for the Api.
+        /// Gets or sets the hosting environment.
         /// </summary>
-        public IApiServiceIdentity ServiceIdentity { get; protected set; }
-        #endregion
-        #region Constructor
-        /// <summary>
-        /// This is the default construct that creates the directive class.
-        /// </summary>
-        public ApiStartUpContext()
-        {
-            Directives = new ContextDirectives(this);
-        } 
-        #endregion
-        #region Directives
-        /// <summary>
-        /// This collection contains the list of repository directives for the context.
-        /// This can be used to populate the repositories and run time from a central method.
-        /// Useful when you want to set as memory backed for testing.
-        /// </summary>
-        public ContextDirectives Directives { get; }
+        public virtual Microsoft.AspNetCore.Hosting.IHostingEnvironment Environment { get; set; }
         #endregion
 
         #region CXA => Initialize(IHostingEnvironment env)
@@ -50,15 +30,14 @@ namespace Xigadee
         {
             Environment = env;
 
-            Build();
-            Bind();
+            Initialize();
         }
         #endregion
         #region 1.Build()
         /// <summary>
         /// Builds and sets the default configuration using the appsettings.json file and the appsettings.{Environment.EnvironmentName}.json file.
         /// </summary>
-        protected virtual void Build()
+        protected override void Build()
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Environment.ContentRootPath)
@@ -69,27 +48,13 @@ namespace Xigadee
             Configuration = builder.Build();
         }
         #endregion
-        #region 2.Bind()
-        /// <summary>
-        /// Creates and binds specific configuration components required by the application.
-        /// </summary>
-        protected virtual void Bind()
-        {
-            BindConfigApplication();
 
-            BindConfigMicroservice();
-
-            BindConfigHealthCheck();
-
-            ServiceIdentitySet();
-        }
-        #endregion
-
+        //2. Bind
         #region BindConfigApplication()
         /// <summary>
         /// This in the application config binding.
         /// </summary>
-        protected virtual void BindConfigApplication()
+        protected override void BindConfigApplication()
         {
             ConfigApplication = new ConfigApplication();
             if (!string.IsNullOrWhiteSpace(BindNameConfigApplication))
@@ -105,7 +70,7 @@ namespace Xigadee
         /// <summary>
         /// This is the microservice config binding.
         /// </summary>
-        protected virtual void BindConfigMicroservice()
+        protected override void BindConfigMicroservice()
         {
             ConfigMicroservice = new ConfigMicroservice();
             if (UseMicroservice)
@@ -119,7 +84,7 @@ namespace Xigadee
         /// <summary>
         /// This is the config health check creation and binding.
         /// </summary>
-        protected virtual void BindConfigHealthCheck()
+        protected override void BindConfigHealthCheck()
         {
             ConfigHealthCheck = new ConfigHealthCheck();
             if (!string.IsNullOrWhiteSpace(BindNameConfigHealthCheck))
@@ -134,7 +99,7 @@ namespace Xigadee
         /// This is primarily used for logging and contains the various parameters needed
         /// to identity this instance when debugging and logging.
         /// </summary>
-        protected virtual void ServiceIdentitySet()
+        protected override void ServiceIdentitySet()
         {
             //Set the Microservice Identity
             string instanceId = System.Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID");
@@ -154,101 +119,19 @@ namespace Xigadee
         } 
         #endregion
 
-        #region CXB => ModulesCreate(IServiceCollection services)
-        /// <summary>
-        /// Connects the application components and registers the relevant services.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        public virtual void ModulesCreate(IServiceCollection services)
-        {
-        }
-        #endregion
 
         #region CXC => Connect(ILoggerFactory lf)
         /// <summary>
         /// Connects the application components and registers the relevant services.
         /// </summary>
         /// <param name="lf">The logger factory.</param>
-        public virtual void Connect(ILoggerFactory lf)
+        public override void Connect(ILoggerFactory lf)
         {
             Logger = lf.CreateLogger<IApiStartupContext>();
         }
         #endregion
 
-        #region Environment
-        /// <summary>
-        /// Gets or sets the hosting environment.
-        /// </summary>
-        public virtual Microsoft.AspNetCore.Hosting.IHostingEnvironment Environment { get; set; }
-        #endregion
-        #region Configuration
-        /// <summary>
-        /// Gets or sets the application configuration.
-        /// </summary>
-        public virtual IConfiguration Configuration { get; set; }
-        #endregion
-        #region Logger
-        /// <summary>
-        /// Gets or sets the logger.
-        /// </summary>
-        public virtual ILogger Logger { get; set; }
-        #endregion
 
-        #region UseMicroservice
-        /// <summary>
-        /// Gets a value indicating whether the service should create an initialize a Microservice Pipeline
-        /// </summary>
-        public virtual bool UseMicroservice => true;
-        #endregion
-        #region ConfigMicroservice
-        /// <summary>
-        /// Gets or sets the microservice configuration.
-        /// </summary>
-        public virtual ConfigMicroservice ConfigMicroservice { get; set; }
-        /// <summary>
-        /// Gets the bind section for ConfigMicroservice.
-        /// </summary>
-        protected virtual string BindNameConfigMicroservice => "ConfigMicroservice";
-        #endregion
-        #region ConfigApplication
-        /// <summary>
-        /// Gets or sets the microservice configuration.
-        /// </summary>
-        public virtual ConfigApplication ConfigApplication { get; set; }
-        /// <summary>
-        /// Gets the bind section for ConfigMicroservice.
-        /// </summary>
-        protected virtual string BindNameConfigApplication => "ConfigApplication";
-        #endregion
 
-        #region ConfigHealthCheck
-        /// <summary>
-        /// This is the config health check settings.
-        /// </summary>
-        public virtual ConfigHealthCheck ConfigHealthCheck { get; set; }
-        /// <summary>
-        /// This is the bind name for the health check. Override this if you need to change it.
-        /// </summary>
-        protected virtual string BindNameConfigHealthCheck => "ConfigHealthCheck";
-        #endregion
-
-        #region StartAsync/StopAsync
-        /// <summary>
-        /// This override starts any registered module that have the start stop attribute set in the context.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        public async Task StartAsync(CancellationToken cancellationToken)
-        {
-            await Task.WhenAll(Directives.ModuleStartStopExtract().Select(m => m.Start(cancellationToken)));
-        }
-        /// <summary>
-        /// This method stops any modules that have been marked for start stop.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        public async Task StopAsync(CancellationToken cancellationToken)
-        {
-            await Task.WhenAll(Directives.ModuleStartStopExtract().Select(m => m.Stop(cancellationToken)));
-        } 
-        #endregion
     }
 }
