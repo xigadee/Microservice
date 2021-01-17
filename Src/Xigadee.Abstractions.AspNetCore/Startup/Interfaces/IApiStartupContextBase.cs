@@ -7,16 +7,10 @@ using Microsoft.Extensions.Logging;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the root API-based microservice application interface.
+    /// This is the base interface with non-platform specific properties.
     /// </summary>
-    public interface IApiStartupContext: Microsoft.Extensions.Hosting.IHostedService
+    public interface IApiStartupContextBase
     {
-        /// <summary>
-        /// Initializes the module with the application environment settings.
-        /// </summary>
-        /// <param name="env">The environment.</param>
-        void Initialize(IHostingEnvironment env);
-
         /// <summary>
         /// Connects the application components and registers the relevant services.
         /// </summary>
@@ -33,11 +27,6 @@ namespace Xigadee
         /// Gets or sets the application configuration.
         /// </summary>
         IConfiguration Configuration { get; set; }
-
-        /// <summary>
-        /// Gets or sets the hosting environment.
-        /// </summary>
-        IHostingEnvironment Environment { get; set; }
 
         /// <summary>
         /// Gets or sets the logger.

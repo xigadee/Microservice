@@ -10,7 +10,7 @@ namespace Xigadee
     public class ContextDirectives
     {
         #region Declarations
-        readonly IApiStartupContext _ctx;
+        readonly IApiStartupContextBase _ctx;
 
         //Filter for the attribute types that we wish to get.
         readonly Func<CustomAttributeData, bool> attrFilterRepoRoot = (d) =>
@@ -39,7 +39,7 @@ namespace Xigadee
         /// This is the default constructor.
         /// </summary>
         /// <param name="ctx">The api context.</param>
-        public ContextDirectives(IApiStartupContext ctx)
+        public ContextDirectives(IApiStartupContextBase ctx)
         {
             _ctx = ctx;
         }
