@@ -77,11 +77,7 @@ namespace Xigadee
         /// </returns>
         public static bool HasCISetting(this TestContext context, string key, string prefix = "CI_")
         {
-#if NET47
             return context.Properties.Contains(CIKey(key, prefix));
-#else
-            return context.Properties.ContainsKey(CIKey(key, prefix));
-#endif
         }
 
         private static string CIKey(string key, string prefix)

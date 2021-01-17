@@ -32,18 +32,9 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Compile Remove="Logging\Agents\**" />
-    <Compile Remove="Logging\DataCollectionPipe\**" />
-    <Compile Remove="Logging\Telemetry\**" />
     <Compile Remove="Swagger\**" />
     <Content Remove="Swagger\**" />
-    <EmbeddedResource Remove="Logging\Agents\**" />
-    <EmbeddedResource Remove="Logging\DataCollectionPipe\**" />
-    <EmbeddedResource Remove="Logging\Telemetry\**" />
     <EmbeddedResource Remove="Swagger\**" />
-    <None Remove="Logging\Agents\**" />
-    <None Remove="Logging\DataCollectionPipe\**" />
-    <None Remove="Logging\Telemetry\**" />
     <None Remove="Swagger\**" />
   </ItemGroup>
   
@@ -54,7 +45,6 @@
   
   <ItemGroup>
     <Folder Include="Properties\" />
-    <Folder Include="Security\Jwt\" />
   </ItemGroup>
   
   <ItemGroup>
