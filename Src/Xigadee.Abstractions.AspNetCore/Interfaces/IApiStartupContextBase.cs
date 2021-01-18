@@ -1,8 +1,7 @@
-﻿using System;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 
 namespace Xigadee
 {
@@ -43,5 +42,24 @@ namespace Xigadee
         /// This is the service identity for the Api.
         /// </summary>
         IApiServiceIdentity ServiceIdentity { get; }
+    }
+
+    /// <summary>
+    /// This is the root API-based microservice application interface.
+    /// </summary>
+    public interface IApiStartupContext<HE> : IHostedService, IApiStartupContextBase
+    {
+        /// <summary>
+        /// Initializes the module with the application environment settings.
+        /// </summary>
+        /// <param name="env">The environment.</param>
+        void Initialize(HE env);
+
+
+        /// <summary>
+        /// Gets or sets the hosting environment.
+        /// </summary>
+        HE Environment { get; set; }
+
     }
 }
