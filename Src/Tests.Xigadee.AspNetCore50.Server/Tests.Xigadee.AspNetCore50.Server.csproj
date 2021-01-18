@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -8,6 +8,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
 
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Xigadee.AspNetCore50\Xigadee.AspNetCore50.csproj" />
   </ItemGroup>
 
 </Project>

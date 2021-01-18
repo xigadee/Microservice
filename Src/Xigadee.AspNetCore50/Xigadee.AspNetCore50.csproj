@@ -9,11 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Xigadee.Abstractions.AspNetCore\Xigadee.Abstractions.AspNetCore.csproj" />
+    <ProjectReference Include="..\Xigadee.AspNetCore.Abstractions\Xigadee.AspNetCore.Abstractions.csproj" />
     <ProjectReference Include="..\Xigadee\Xigadee.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="StartUp\" />
     <Folder Include="Properties\" />
   </ItemGroup>
 

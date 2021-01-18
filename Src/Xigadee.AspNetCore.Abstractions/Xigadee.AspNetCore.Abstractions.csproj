@@ -3,9 +3,9 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <PackageId>Xigadee.Abstractions.AspNetCore</PackageId>
+    <PackageId>Xigadee.AspNetCore.Abstractions</PackageId>
     <RootNamespace>Xigadee</RootNamespace>
-    <AssemblyName>Xigadee.Abstractions.AspNetCore</AssemblyName>
+    <AssemblyName>Xigadee.AspNetCore.Abstractions</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
