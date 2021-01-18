@@ -42,7 +42,7 @@ namespace Xigadee
         /// <summary>
         /// Idempotent Sql Retry Policy for operations that are idempotent
         /// </summary>
-        private static readonly Policy IdempotentSqlRetryAsyncPolicy = Policy
+        private static readonly AsyncPolicy IdempotentSqlRetryAsyncPolicy = Policy
             .Handle<TimeoutException>()
             .Or<SqlException>()
             .WaitAndRetryAsync(SqlRetryCount, ExponentialBackOff, LogPollyRetry)
@@ -51,7 +51,7 @@ namespace Xigadee
         /// <summary>
         /// Standard Sql Retry Policy for operations that are not idempotent
         /// </summary>
-        private static readonly Policy SqlRetryAsyncPolicy = Policy
+        private static readonly AsyncPolicy SqlRetryAsyncPolicy = Policy
             .Handle<TimeoutException>()
             .Or<SqlException>(AnyRetryableError)
             .WaitAndRetryAsync(SqlRetryCount, ExponentialBackOff, LogPollyRetry)
