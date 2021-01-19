@@ -40,6 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Tests.Xigadee.Common\Tests.Xigadee.Common.csproj" />
     <ProjectReference Include="..\..\Xigadee\Xigadee.csproj" />
     <ProjectReference Include="..\Tests.Xigadee.Shared\Tests.Xigadee.Shared.csproj" />
   </ItemGroup>

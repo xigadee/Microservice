@@ -634,7 +634,7 @@ namespace Xigadee
         /// <summary>
         /// This property contains the default error object deserializer. If this is set, it will be used to deserialize incoming error objects.
         /// </summary>
-        protected Func<HttpContent, Task<object>> DefaultErrorObjectDeserializer { get; set; } 
+        protected Func<HttpContent, Task<object>> DefaultErrorObjectDeserializer { get; set; } = ApiProviderHelper.ToErrorObject;
         #endregion
     }
 }

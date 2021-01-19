@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tests.Xigadee.Common\Tests.Xigadee.Common.csproj" />
+    <ProjectReference Include="..\Xigadee.Abstractions\Xigadee.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
