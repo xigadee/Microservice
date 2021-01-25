@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Xigadee
+namespace Tests.Xigadee
 {
     /// <summary>
     /// This specifies whether the server will be run locally, or will be run connection to a remote Url
