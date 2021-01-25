@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <PackageId>Tests.Xigadee.AspNetCore50</PackageId>
+    <RootNamespace>Tests.Xigadee</RootNamespace>
+    <AssemblyName>Tests.Xigadee.AspNetCore50</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Xigadee.AspNetCore.Abstractions\Xigadee.AspNetCore.Abstractions.csproj" />
+    <ProjectReference Include="..\Xigadee.AspNetCore50.SelfHost\Xigadee.AspNetCore50.SelfHost.csproj" />
+    <ProjectReference Include="..\Xigadee\Xigadee.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="5.0.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
+  </ItemGroup>
+  
+</Project>

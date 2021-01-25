@@ -107,11 +107,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AspNetCore31", "AspNetCore3
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AspNetCoreConnector", "AspNetCoreConnector", "{2C8C52C6-780C-47B1-9929-4E4DDEAA93A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Xigadee.AspNetCore.Connector", "Tests.Xigadee.AspNetCore.Connector\Tests.Xigadee.AspNetCore.Connector.csproj", "{1673547E-CC67-4DEB-B4D2-A398BC5CD802}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee.AspNetCore.Connector", "Tests.Xigadee.AspNetCore.Connector\Tests.Xigadee.AspNetCore.Connector.csproj", "{1673547E-CC67-4DEB-B4D2-A398BC5CD802}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Xigadee.Common", "Tests.Xigadee.Common\Tests.Xigadee.Common.csproj", "{65C49654-61DE-4E38-94C7-7C1148AA029E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee.Common", "Tests.Xigadee.Common\Tests.Xigadee.Common.csproj", "{65C49654-61DE-4E38-94C7-7C1148AA029E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{E095B721-6471-484B-BCA7-D8623B6563A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xigadee.AspNetCore50.SelfHost", "Xigadee.AspNetCore50.SelfHost\Xigadee.AspNetCore50.SelfHost.csproj", "{00177D3E-F5CD-4520-B37C-7ADA09CED4E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Xigadee.AspNetCore50", "Tests.Xigadee.AspNetCore50\Tests.Xigadee.AspNetCore50.csproj", "{E420993C-99CC-446F-AFD8-97A83C062B39}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -261,6 +265,14 @@ Global
 		{65C49654-61DE-4E38-94C7-7C1148AA029E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65C49654-61DE-4E38-94C7-7C1148AA029E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65C49654-61DE-4E38-94C7-7C1148AA029E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00177D3E-F5CD-4520-B37C-7ADA09CED4E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00177D3E-F5CD-4520-B37C-7ADA09CED4E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00177D3E-F5CD-4520-B37C-7ADA09CED4E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00177D3E-F5CD-4520-B37C-7ADA09CED4E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E420993C-99CC-446F-AFD8-97A83C062B39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E420993C-99CC-446F-AFD8-97A83C062B39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E420993C-99CC-446F-AFD8-97A83C062B39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E420993C-99CC-446F-AFD8-97A83C062B39}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -303,9 +315,10 @@ Global
 		{1673547E-CC67-4DEB-B4D2-A398BC5CD802} = {2C8C52C6-780C-47B1-9929-4E4DDEAA93A8}
 		{65C49654-61DE-4E38-94C7-7C1148AA029E} = {E095B721-6471-484B-BCA7-D8623B6563A3}
 		{E095B721-6471-484B-BCA7-D8623B6563A3} = {147BDD3C-B68D-4D13-912C-240F23DD1C91}
+		{E420993C-99CC-446F-AFD8-97A83C062B39} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
 		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
+		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
 	EndGlobalSection
 EndGlobal
