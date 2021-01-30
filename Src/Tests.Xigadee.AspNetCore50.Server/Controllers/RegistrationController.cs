@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Xigadee;
 
-namespace Tests.Xigadee.AspNetCore.Server.Controllers
+namespace Tests.Xigadee.AspNetCore50
 {
     [Route("api/[controller]")]
     [ApiController]

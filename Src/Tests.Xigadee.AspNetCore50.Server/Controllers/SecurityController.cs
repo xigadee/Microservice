@@ -7,8 +7,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Tests.Xigadee.AspNetCore50;
 using Xigadee;
-namespace Tests.Xigadee.AspNetCore.Server.Controllers
+namespace Tests.Xigadee.AspNetCore50
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -101,7 +102,7 @@ namespace Tests.Xigadee.AspNetCore.Server.Controllers
         #region Logon([FromBody]SecurityInfo sInfo)
         [Route("logon")]
         [HttpPost()]
-        public virtual async Task<IActionResult> Logon([FromBody]LogonInfo sInfo)
+        public virtual async Task<IActionResult> Logon([FromBody]LogonModel sInfo)
         {
             var sid = User.ExtractUserSessionId();
 
@@ -206,26 +207,5 @@ namespace Tests.Xigadee.AspNetCore.Server.Controllers
         public string Value { get; set; }
     }
 
-    /// <summary>
-    /// This is the security information passed to a sign-on method.
-    /// </summary>
-    public class LogonInfo
-    {
-        /// <summary>
-        /// Gets or sets the username.
-        /// </summary>
-        public string Username { get; set; }
-        /// <summary>
-        /// Gets or sets the email.
-        /// </summary>
-        public string Email { get; set; }
-        /// <summary>
-        /// Gets or sets the associated password.
-        /// </summary>
-        public string Password { get; set; }
-        /// <summary>
-        /// Gets or sets the not a robot confirmation code.
-        /// </summary>
-        public string NotARobot { get; set; }
-    }
+
 }

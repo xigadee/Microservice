@@ -1,6 +1,6 @@
 using System;
 
-namespace Tests.Xigadee.AspNetCore50.Server
+namespace Tests.Xigadee.AspNetCore50
 {
     public class WeatherForecast
     {

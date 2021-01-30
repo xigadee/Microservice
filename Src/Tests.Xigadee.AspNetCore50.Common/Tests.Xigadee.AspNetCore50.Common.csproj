@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <PackageId>Tests.Xigadee.AspNetCore50.Common</PackageId>
+    <RootNamespace>Tests.Xigadee.AspNetCore50</RootNamespace>
+    <AssemblyName>Tests.Xigadee.AspNetCore50.Common</AssemblyName>
   </PropertyGroup>
 
 </Project>

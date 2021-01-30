@@ -9,7 +9,7 @@ using Test.Xigadee;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 
-namespace Tests.Xigadee
+namespace Tests.Xigadee.AspNetCore50
 {
     [Route("api/[controller]")]
     [Produces("application/json")]

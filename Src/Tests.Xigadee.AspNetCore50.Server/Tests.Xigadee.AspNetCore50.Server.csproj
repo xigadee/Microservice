@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <PackageId>Tests.Xigadee.AspNetCore50.Server</PackageId>
+    <RootNamespace>Tests.Xigadee.AspNetCore50</RootNamespace>
+    <AssemblyName>Tests.Xigadee.AspNetCore50.Server</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

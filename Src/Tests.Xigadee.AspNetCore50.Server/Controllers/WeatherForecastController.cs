@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Tests.Xigadee.AspNetCore50.Server.Controllers
+namespace Tests.Xigadee.AspNetCore50
 {
     [ApiController]
     [Route("[controller]")]

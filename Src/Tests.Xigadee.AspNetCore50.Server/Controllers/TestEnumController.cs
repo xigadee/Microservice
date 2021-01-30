@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 using System;
 
-namespace Tests.Xigadee
+namespace Tests.Xigadee.AspNetCore50
 {
     [Route("api/[controller]")]
     [ApiController]
