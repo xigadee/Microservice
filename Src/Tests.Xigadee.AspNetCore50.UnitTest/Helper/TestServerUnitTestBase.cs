@@ -10,7 +10,7 @@ namespace Tests.Xigadee.AspNetCore50
     /// <summary>
     /// This is the root class used to create the in-memory connection.
     /// </summary>
-    public class ProcessingApiTestBase : TestHostBase<TestHostApiConnector, Startup>
+    public class TestServerUnitTestBase : TestHostBase<TestHostApiConnector, Startup>
     {
 
     }
