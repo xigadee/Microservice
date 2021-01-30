@@ -3,9 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xigadee;
 using Tests.Xigadee.AspNetCore50.Server;
-using Tests.Xigadee.AspNetCore50;
 
-namespace Tests.Tpjr.Microservice
+namespace Tests.Xigadee.AspNetCore50
 {
 
     /// <summary>

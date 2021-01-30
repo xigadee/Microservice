@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <PackageId>Tests.Xigadee.AspNetCore50.UnitTest</PackageId>
+    <RootNamespace>Tests.Xigadee</RootNamespace>
+    <AssemblyName>Tests.Xigadee.AspNetCore50.UnitTest</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="5.0.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
+    <PackageReference Include="coverlet.collector" Version="1.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\Tests.Xigadee.AspNetCore50.Server\appsettings.Development.json" Link="appsettings.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Tests.Xigadee.AspNetCore50.Server\appsettings.json" Link="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Tests.Xigadee.AspNetCore50.Connector\Tests.Xigadee.AspNetCore50.Connector.csproj" />
+    <ProjectReference Include="..\Tests.Xigadee.AspNetCore50.Server\Tests.Xigadee.AspNetCore50.Server.csproj" />
+    <ProjectReference Include="..\Tests.Xigadee.AspNetCore50\Tests.Xigadee.AspNetCore50.csproj" />
+  </ItemGroup>
+
+</Project>
