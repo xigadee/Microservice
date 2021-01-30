@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using Tests.Xigadee.AspNetCore50.Connector;
 using Xigadee;
 
 namespace Tests.Xigadee.AspNetCore50
 {
+    /// <summary>
+    /// This connector is used to test the basic functionality for the Xigadee AspNetCore support.
+    /// </summary>
     public class TestHostApiConnector : ApiProviderBase
     {
         #region Constructor
@@ -33,6 +37,24 @@ namespace Tests.Xigadee.AspNetCore50
             : base(uri, authHandlers ?? new List<IApiProviderAuthBase>(), clientCert, manualCertValidation, transportOverride)
         {
             DefaultErrorObjectDeserializer = ApiProviderHelper.ToErrorObject;
+        }
+        #endregion
+
+        #region Session
+        private SessionApiConnector _session = null;
+        /// <summary>
+        /// This is the security connector.
+        /// </summary>
+        public virtual SessionApiConnector Session
+        {
+            get
+            {
+                //No need for thread safety here as they share a common context.
+                if (_session == null)
+                    _session = new SessionApiConnector(Context, "api/security");
+
+                return _session;
+            }
         }
         #endregion
     }
