@@ -83,6 +83,10 @@ namespace Xigadee
 
         #region Constructor
         /// <summary>
+        /// This is the default  empty constructor.
+        /// </summary>
+        protected ApiProviderBase() { }
+        /// <summary>
         /// This is the parent constructor. This is used when creating a child container that inherits the parent security settings.
         /// </summary>
         /// <param name="parent">The parent connection.</param>
@@ -91,10 +95,8 @@ namespace Xigadee
         /// This is the parent constructor. This is used when creating a child container that inherits the parent security settings.
         /// </summary>
         /// <param name="context">The connection context.</param>
-        protected ApiProviderBase(ConnectionContext context)
-        {
-            Context = context;
-        }
+        protected ApiProviderBase(ConnectionContext context) => Context = context;
+
         /// <summary>
         /// This is the default constructor.
         /// </summary>
@@ -150,7 +152,7 @@ namespace Xigadee
         /// <summary>
         /// This is the Api connection context.
         /// </summary>
-        public ConnectionContext Context { get; }
+        public ConnectionContext Context { get; protected set; }
         #endregion
 
         #region UserAgentGet()
