@@ -107,10 +107,10 @@ namespace Xigadee
         {
             Context = new ConnectionContext();
 
+            Context.Uri = uri ?? throw new ArgumentNullException("uri");
+
             // Get the types assembly version to add to the request headers
             Context.AuthHandlers = authHandlers?.ToList() ?? new List<IApiProviderAuthBase>();
-
-            Context.Uri = uri ?? throw new ArgumentNullException("uri");
 
             Context.Handler = new HttpClientHandler();
             Context.Handler.AllowAutoRedirect = false;

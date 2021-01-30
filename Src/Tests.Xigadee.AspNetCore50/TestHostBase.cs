@@ -10,7 +10,7 @@ namespace Tests.Xigadee
     /// </summary>
     /// <typeparam name="S">The start-up class.</typeparam>
     /// <typeparam name="C">The connector type.</typeparam>
-    public abstract class MsTestHostBase<C,S,T>: TestHostBase<C, S>
+    public abstract class TestHostBase<C,S,T>: TestHostBase<C, S>
         where S : class, IStartup
         where C : ApiProviderBase, new()
         where T : TestEnvironmentTokens, new()

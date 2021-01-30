@@ -11,49 +11,25 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Xigadee;
 
 namespace Tests.Xigadee.AspNetCore50.Server
 {
-    public class Startup
+    public class Startup : ApiStartUpRoot<StartupContext>
     {
-        public Startup(IConfiguration configuration)
+        protected override void ConfigureSecurity(IApplicationBuilder app)
         {
-            Configuration = configuration;
+            throw new NotImplementedException();
         }
 
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        protected override void ConfigureSecurityAuthentication(IServiceCollection services)
         {
-
-            services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Tests.Xigadee.AspNetCore50.Server", Version = "v1" });
-            });
+            throw new NotImplementedException();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        protected override void ConfigureSecurityAuthorization(IServiceCollection services)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tests.Xigadee.AspNetCore50.Server v1"));
-            }
-
-            app.UseHttpsRedirection();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            throw new NotImplementedException();
         }
     }
 }

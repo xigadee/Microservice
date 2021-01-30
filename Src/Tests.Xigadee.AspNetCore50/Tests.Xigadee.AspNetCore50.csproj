@@ -9,6 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Tests.Xigadee.AspNetCore50.Connector\Tests.Xigadee.AspNetCore50.Connector.csproj" />
+    <ProjectReference Include="..\Tests.Xigadee.AspNetCore50.Server\Tests.Xigadee.AspNetCore50.Server.csproj" />
     <ProjectReference Include="..\Xigadee.AspNetCore.Abstractions\Xigadee.AspNetCore.Abstractions.csproj" />
     <ProjectReference Include="..\Xigadee.AspNetCore50.SelfHost\Xigadee.AspNetCore50.SelfHost.csproj" />
     <ProjectReference Include="..\Xigadee\Xigadee.csproj" />
@@ -16,6 +18,15 @@
 
   <ItemGroup>
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\Tests.Xigadee.AspNetCore50.Server\appsettings.Development.json" Link="appsettings.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Tests.Xigadee.AspNetCore50.Server\appsettings.json" Link="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
