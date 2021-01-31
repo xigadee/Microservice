@@ -27,16 +27,7 @@ namespace Xigadee
         /// <param name="env">The environment.</param>
         protected ApiStartupBase(IWebHostEnvironment whEnv, IHostEnvironment hEnv, IConfiguration cfg) 
         {
-            //            IWebHostEnvironment
-            //            IHostEnvironment
-            //IConfiguration
-
-            WebHostEnvironment = whEnv;
-            HostEnvironment = hEnv;
-            Configuration = cfg;
-
-
-            //HostingEnvironment = env;
+            HostContainer = new HostContainer(whEnv, hEnv, cfg);
 
             Initialize();
         }
@@ -48,7 +39,7 @@ namespace Xigadee
         /// </summary>
         protected override void ContextInitialize()
         {
-            Context.Initialize(WebHostEnvironment, HostEnvironment, Configuration);
+            Context.Initialize(HostContainer);
         }
         #endregion
 
@@ -64,13 +55,26 @@ namespace Xigadee
         }
         #endregion
 
-        private IWebHostEnvironment WebHostEnvironment { get; }
+        private HostContainer HostContainer { get; }
 
-        private IHostEnvironment HostEnvironment { get; }
+    }
 
-        private IConfiguration Configuration { get; }
+    /// <summary>
+    /// This container holds the host environment.
+    /// </summary>
+    public class HostContainer
+    {
+        public HostContainer(IWebHostEnvironment whEnv, IHostEnvironment hEnv, IConfiguration cfg)
+        {
+            WebHostEnvironment = whEnv;
+            HostEnvironment = hEnv;
+            Configuration = cfg;
+        }
 
+        public IWebHostEnvironment WebHostEnvironment { get; }
 
+        public IHostEnvironment HostEnvironment { get; }
 
+        public IConfiguration Configuration { get; }
     }
 }

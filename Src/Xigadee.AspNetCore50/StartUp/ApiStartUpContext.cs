@@ -15,14 +15,14 @@ namespace Xigadee
     public class ApiStartUpContext : ApiStartUpContextRoot//, IApiStartupContext
     {
 
-
         #region Environment
-        /// <summary>
-        /// Gets or sets the hosting environment.
-        /// </summary>
-        public virtual IWebHostEnvironment WebHostEnvironment { get; protected set; }
 
-        public virtual IHostEnvironment HostEnvironment { get; protected set; }
+        /// <summary>
+        /// This is the host container.
+        /// </summary>
+        public virtual HostContainer HostContainer { get; protected set; }
+
+        public override IConfiguration Configuration { get => HostContainer?.Configuration; set => throw new NotSupportedException(); }
 
         #endregion
 
@@ -31,11 +31,9 @@ namespace Xigadee
         /// Initializes the context.
         /// </summary>
         /// <param name="env">The hosting environment.</param>
-        public virtual void Initialize(IWebHostEnvironment whEnv, IHostEnvironment hEnv, IConfiguration cfg)
+        public virtual void Initialize(HostContainer cont)
         {
-            WebHostEnvironment = whEnv;
-            HostEnvironment = hEnv;
-            Configuration = cfg;
+            HostContainer = cont;
 
             Initialize();
         }
@@ -49,9 +47,9 @@ namespace Xigadee
             var builder = new ConfigurationBuilder();
 
             builder
-                .SetBasePath(HostEnvironment.ContentRootPath)
+                .SetBasePath(HostContainer.HostEnvironment.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-                .AddJsonFile($"appsettings.{HostEnvironment.EnvironmentName}.json", optional: true)
+                .AddJsonFile($"appsettings.{HostContainer.HostEnvironment.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
 
             Configuration = builder.Build();
@@ -120,10 +118,10 @@ namespace Xigadee
 
             ServiceIdentity = new ApiServiceIdentity(Id
                 , System.Environment.MachineName
-                , HostEnvironment.ApplicationName
+                , HostContainer.HostEnvironment.ApplicationName
                 , ass.GetName().Version.ToString()
                 , url, instanceId
-                , HostEnvironment.EnvironmentName);
+                , HostContainer.HostEnvironment.EnvironmentName);
 
         } 
         #endregion
