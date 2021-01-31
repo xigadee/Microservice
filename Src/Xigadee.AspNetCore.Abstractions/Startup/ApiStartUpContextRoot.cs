@@ -96,7 +96,7 @@ namespace Xigadee
         protected virtual string BindNameConfigApplication => "ConfigApplication";
         #endregion
 
-        #region CXA => Initialize(IHostingEnvironment env)
+        #region CXA => Initialize()
         /// <summary>
         /// Initializes the context.
         /// </summary>

@@ -6,31 +6,30 @@ using Xigadee;
 
 namespace Tests.Xigadee.AspNetCore50.Server
 {
-    public class StartupContext : ApiStartUpContextRoot
+    public class StartupContext : JwtApiMicroserviceStartUpContext
     {
-        protected override void BindConfigApplication()
+        protected override IApiUserSecurityModule UserSecurityModuleCreate()
         {
-            throw new NotImplementedException();
-        }
+            var usm = new UserSecurityModule<TestUser>()
+                .SetAsMemoryBased();
 
-        protected override void BindConfigHealthCheck()
-        {
-            throw new NotImplementedException();
-        }
+            //Add test security accounts here.
+            var user = new TestUser() { Username = "paul" };
+            var rs = usm.Users.Create(user).Result;
 
-        protected override void BindConfigMicroservice()
-        {
-            throw new NotImplementedException();
-        }
+            var rsv = usm.Users.ReadByRef(TestUser.KeyUsername, "paul").Result;
 
-        protected override void Build()
-        {
-            throw new NotImplementedException();
-        }
+            var uSec = new UserSecurity() { Id = user.Id };
+            uSec.AuthenticationSet("", "123Enter.");
+            var rs2 = usm.UserSecurities.Create(uSec).Result;
 
-        protected override void ServiceIdentitySet()
-        {
-            throw new NotImplementedException();
+            var ur = new UserRoles() { Id = user.Id };
+            ur.RoleAdd("paul");
+            var rs3 = usm.UserRoles.Create(ur).Result;
+
+            //uSec.
+
+            return usm;
         }
     }
 }

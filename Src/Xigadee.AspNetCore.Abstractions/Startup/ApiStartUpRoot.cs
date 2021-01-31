@@ -23,7 +23,6 @@ namespace Xigadee
         /// <param name="env">The environment.</param>
         protected ApiStartUpRoot()
         {
-            Initialize();
         }
         #endregion
 
