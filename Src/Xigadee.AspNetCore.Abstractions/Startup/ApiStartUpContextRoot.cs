@@ -14,7 +14,8 @@ namespace Xigadee
     /// <summary>
     /// This is the root context with shared functionality with the .NET Standard capabilities.
     /// </summary>
-    public abstract class ApiStartUpContextRoot: IApiStartupContextBase, IHostedService
+    public abstract class ApiStartUpContextRoot<HE>: IApiStartupContextBase, IHostedService
+        where HE : HostingContainerBase
     {
         #region Id
         /// <summary>
@@ -96,11 +97,20 @@ namespace Xigadee
         protected virtual string BindNameConfigApplication => "ConfigApplication";
         #endregion
 
-        #region CXA => Initialize()
+        #region CXA => Initialize(IHostingEnvironment env)/Initialize()
         /// <summary>
         /// Initializes the context.
         /// </summary>
         /// <param name="env">The hosting environment.</param>
+        public virtual void Initialize(HE cont)
+        {
+            Host = cont;
+
+            Initialize();
+        }
+        /// <summary>
+        /// Initializes the context.
+        /// </summary>
         public virtual void Initialize()
         {
             Build();
@@ -199,6 +209,13 @@ namespace Xigadee
         {
             await Task.WhenAll(Directives.ModuleStartStopExtract().Select(m => m.Stop(cancellationToken)));
         }
+        #endregion
+
+        #region Host
+        /// <summary>
+        /// This is the hosting container environment.
+        /// </summary>
+        public HE Host { get; protected set; } 
         #endregion
     }
 }

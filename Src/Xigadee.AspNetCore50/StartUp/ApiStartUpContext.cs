@@ -12,17 +12,12 @@ namespace Xigadee
     /// <summary>
     /// This is the default start up context.
     /// </summary>
-    public class ApiStartUpContext : ApiStartUpContextRoot//, IApiStartupContext
+    public class ApiStartUpContext : ApiStartUpContextRoot<AspNetCore5HostingContainer>//, IApiStartupContext
     {
 
         #region Environment
 
-        /// <summary>
-        /// This is the host container.
-        /// </summary>
-        public virtual HostContainer HostContainer { get; protected set; }
-
-        public override IConfiguration Configuration { get => HostContainer?.Configuration; set => throw new NotSupportedException(); }
+        public override IConfiguration Configuration { get => Host?.Configuration;  }
 
         #endregion
 
@@ -31,9 +26,9 @@ namespace Xigadee
         /// Initializes the context.
         /// </summary>
         /// <param name="env">The hosting environment.</param>
-        public virtual void Initialize(HostContainer cont)
+        public virtual void Initialize(AspNetCore5HostingContainer cont)
         {
-            HostContainer = cont;
+            Host = cont;
 
             Initialize();
         }
@@ -47,9 +42,9 @@ namespace Xigadee
             var builder = new ConfigurationBuilder();
 
             builder
-                .SetBasePath(HostContainer.HostEnvironment.ContentRootPath)
+                .SetBasePath(HostContainer.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-                .AddJsonFile($"appsettings.{HostContainer.HostEnvironment.EnvironmentName}.json", optional: true)
+                .AddJsonFile($"appsettings.{HostContainer.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
 
             Configuration = builder.Build();

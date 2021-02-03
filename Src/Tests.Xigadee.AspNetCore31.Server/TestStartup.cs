@@ -19,7 +19,7 @@ namespace Tests.Xigadee
         /// Initializes a new instance of the <see cref="TestStartup"/> class.
         /// </summary>
         /// <param name="env">The environment.</param>
-        public TestStartup(IHostingEnvironment env) : base(env)
+        public TestStartup(Microsoft.AspNetCore.Hosting.IHostingEnvironment env) : base(env)
         {
         } 
         #endregion

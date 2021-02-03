@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Internal;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,18 +13,31 @@ using System.Threading.Tasks;
 
 namespace Xigadee
 {
-    public abstract class ApiStartUpRoot<CTX> : IStartup
-        where CTX : ApiStartUpContextRoot, new()
+    /// <summary>
+    /// This start-up class is responsible for managing the ASP.NET Pipline and interleaving it with the
+    /// Xigadee service framework.
+    /// </summary>
+    /// <typeparam name="CTX">The startup context.</typeparam>
+    public abstract class ApiStartUpRoot<CTX,HE> : IStartup
+        where CTX : ApiStartUpContextRoot<HE>, new()
+        where HE: HostingContainerBase
     {
-
         #region A=>Constructor
         /// <summary>
         /// Initializes a new instance of the API application class.
         /// </summary>
         /// <param name="env">The environment.</param>
-        protected ApiStartUpRoot()
+        protected ApiStartUpRoot(HE host)
         {
+            Host = host;
         }
+        #endregion
+
+        #region Host
+        /// <summary>
+        /// This is the hosting environment.
+        /// </summary>
+        public HE Host { get; protected set; }
         #endregion
 
         #region A. Initialize()
@@ -64,9 +78,8 @@ namespace Xigadee
         /// <summary>
         /// Initializes the context
         /// </summary>
-        protected virtual void ContextInitialize()
-        {
-        }
+        protected virtual void ContextInitialize() => Context.Initialize(Host);
+
         #endregion
 
         #region B=>ConfigureServices(IServiceCollection services)
@@ -90,7 +103,8 @@ namespace Xigadee
 
             ConfigureSecurityAuthorization(services);
 
-            ConfigureAddMvc(services);
+            //ConfigureCustomRouting()
+            //ConfigureAddMvc(services);
 
             // Add framework services
             return services.BuildServiceProvider();
@@ -339,9 +353,8 @@ namespace Xigadee
 
             ConfigureSecurity(app);
 
-            ConfigureCustomRouting(app);
+            ConfigureUseEndpoints(app);
 
-            ConfigureUseMvc(app);
         }
         #endregion
         #region C1. ConfigurePipeline(IApplicationBuilder app)
@@ -349,20 +362,8 @@ namespace Xigadee
         /// Configures the ASP.NET pipeline.
         /// </summary>
         /// <param name="app">The application.</param>
-        protected virtual void ConfigurePipeline(IApplicationBuilder app)
-        {
-            //app.Use(async (context, next) =>
-            //{
-            //    context.Response.Headers.Append("x-oh-fuck", "22");
-            //    //if (!string.IsNullOrEmpty(Context?.Identity?.ServiceVersionId))
-            //    //    context.Response.Headers.Append("x-api-ver", Context.Identity.ServiceVersionId);
+        protected abstract void ConfigurePipeline(IApplicationBuilder app);
 
-            //    //if (!string.IsNullOrEmpty(Activity.Current?.RootId))
-            //    //    context.Response.Headers.Append("x-api-cid", Activity.Current.RootId);
-
-            //    await next();
-            //});
-        }
         #endregion
         #region C2. ConfigureLogging(IApplicationBuilder app)
         /// <summary>
@@ -425,12 +426,13 @@ namespace Xigadee
             }
         }
         #endregion
-        #region C6. ConfigureUseMvc(IApplicationBuilder app)
+        #region C6. ConfigureUseEndpoints(IApplicationBuilder app
         /// <summary>
-        /// Override this method to configure the UseMvc command, or to stop it being set.
+        /// Use this section to configure the routing
         /// </summary>
-        /// <param name="app">The application.</param>
-        protected virtual void ConfigureUseMvc(IApplicationBuilder app) => app.UseMvc();
+        /// <param name="app"></param>
+        protected abstract void ConfigureUseEndpoints(IApplicationBuilder app);
+
         #endregion
 
         #region LoggerFactory
@@ -445,7 +447,7 @@ namespace Xigadee
         #endregion
         #region Context
         /// <summary>
-        /// Gets or sets the API application context.
+        /// Gets or sets the Api application context.
         /// </summary>
         public CTX Context { get; protected set; }
         #endregion
@@ -501,8 +503,5 @@ namespace Xigadee
         /// </summary>
         protected virtual string HealthCheckOutput => $"{Context.ConfigApplication?.Name} => {DateTime.UtcNow:s} @ {Context.Id}";
         #endregion
-
-
-
     }
 }

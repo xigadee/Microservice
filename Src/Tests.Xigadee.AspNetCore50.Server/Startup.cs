@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,8 @@ namespace Tests.Xigadee.AspNetCore50.Server
         public Startup(IWebHostEnvironment whEnv, IHostEnvironment hEnv, IConfiguration cfg) : base(whEnv, hEnv, cfg)
         {
         }
+
+
 
         protected override void ConfigureSecurityAuthorization(IServiceCollection services)
         {
@@ -39,5 +42,7 @@ namespace Tests.Xigadee.AspNetCore50.Server
             })
             ;
         }
+
+
     }
 }
