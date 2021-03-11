@@ -5,27 +5,27 @@
     <version>{UpdateVersion.ps1.replace}</version>
     <title>Xigadee Azure ServiceBus Library</title>
     <authors>Paul Stancer and Guy Steel at Hitachi Consulting (http://hitachiconsulting.com)</authors>
-    <owners>Hitachi Consulting</owners>
+    <owners>Xigadee.org</owners>
     <iconUrl>https://raw.githubusercontent.com/xigadee/Microservice/master/docs/Logo.png</iconUrl>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>http://xigadee.org</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>This library contains the Xigadee connectors for Azure Service Bus.</description>
-    <releaseNotes>First update for 2.0.</releaseNotes>
-    <copyright>Copyright © Xigadee 2017-2019 incorporates copyright of Hitachi Consulting 2012-2017</copyright>
+    <releaseNotes>Release 5.0</releaseNotes>
+    <copyright>Copyright © Xigadee 2017-2021 incorporates copyright of Hitachi Consulting 2012-2017</copyright>
     <tags>Xigadee Microservice Azure ServiceBus .NET</tags>
     <dependencies>
       <group targetFramework=".NETStandard2.0">
-        <dependency id="Xigadee.Abstractions" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.Azure.ServiceBus" version="1.0.0" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.CSharp" version="4.4.0" exclude="Build,Analyzers" />
-        <dependency id="Newtonsoft.Json" version="10.0.3" exclude="Build,Analyzers" />
+        <dependency id="Xigadee" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Azure.Management.ServiceBus" version="2.1.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Azure.ServiceBus" version="5.1.2" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="12.0.3" exclude="Build,Analyzers" />
       </group>
     </dependencies>
   </metadata>
-  <!--<files>
-    <file src="bin\Release\Xigadee.Azure.dll" target="lib\net46\" />
-    <file src="bin\Release\Xigadee.Azure.pdb" target="lib\net46\" />
-    <file src="bin\Release\Xigadee.Azure.xml" target="lib\net46\" />
-  </files>-->
+  <files>
+    <file src="bin\Release\netstandard2.0\Xigadee.Azure.ServiceBus.dll" target="lib\netstandard2.0\" />
+    <file src="bin\Release\netstandard2.0\Xigadee.Azure.ServiceBus.pdb" target="lib\netstandard2.0\" />
+    <file src="bin\Release\netstandard2.0\Xigadee.Azure.ServiceBus.xml" target="lib\netstandard2.0\" />
+  </files>
 </package>

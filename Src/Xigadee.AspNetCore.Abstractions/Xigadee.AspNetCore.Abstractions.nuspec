@@ -11,7 +11,7 @@
     <projectUrl>http://xigadee.org</projectUrl>
     <description>This Xigadee library is used to extend AspNetCore applications.</description>
     <summary>Xigadee Microservice Framework for AspNet Core 5</summary>
-    <releaseNotes>Release 2.0</releaseNotes>
+    <releaseNotes>Release 5.0</releaseNotes>
     <copyright>Copyright © Xigadee 2017-2021</copyright>
     <tags>Xigadee Microservice AspNetCore</tags>
     <dependencies>

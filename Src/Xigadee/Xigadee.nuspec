@@ -13,7 +13,7 @@
     <description>The Xigadee library is used to create Microservice based applications.</description>
     <summary>Xigadee Microservice Framework for .NET</summary>
     <releaseNotes>Release 2.0</releaseNotes>
-    <copyright>Copyright © Xigadee 2017-2019 incorporates copyright of Hitachi Consulting 2012-2017</copyright>
+    <copyright>Copyright © Xigadee 2017-2021 incorporates copyright of Hitachi Consulting 2012-2017</copyright>
     <tags>Xigadee Microservice .NET</tags>
     <dependencies>
       <group targetFramework=".NETStandard2.0">
