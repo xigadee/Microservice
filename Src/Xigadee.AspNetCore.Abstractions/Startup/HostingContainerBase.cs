@@ -12,12 +12,18 @@ namespace Xigadee
         /// The host content root path.
         /// </summary>
         public abstract string ContentRootPath { get; }
-
         /// <summary>
         /// The envionment name used for config resolution.
         /// </summary>
         public abstract string EnvironmentName { get; }
-
+        /// <summary>
+        /// This is the application name.
+        /// </summary>
+        public abstract string ApplicationName { get; }
+        /// <summary>
+        /// This is the machine name.
+        /// </summary>
+        public virtual string MachineName { get; } = System.Environment.MachineName;
         /// <summary>
         /// The configuration.
         /// </summary>

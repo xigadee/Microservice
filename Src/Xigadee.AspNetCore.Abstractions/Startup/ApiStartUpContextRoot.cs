@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Xigadee
 {
     /// <summary>
-    /// This is the root context with shared functionality with the .NET Standard capabilities.
+    /// This is the root context it contains shared functionality within the .NET Standard capabilities.
     /// </summary>
     public abstract class ApiStartUpContextRoot<HE>: IApiStartupContextBase, IHostedService
         where HE : HostingContainerBase
@@ -45,6 +45,12 @@ namespace Xigadee
         /// </summary>
         public ContextDirectives Directives { get; }
         #endregion
+        #region Host
+        /// <summary>
+        /// This is the hosting container environment.
+        /// </summary>
+        public HE Host { get; protected set; }
+        #endregion
 
         #region ConfigHealthCheck
         /// <summary>
@@ -61,7 +67,7 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the application configuration.
         /// </summary>
-        public virtual IConfiguration Configuration { get; set; }
+        public virtual IConfiguration Configuration { get => Host?.Configuration; }
         #endregion        
         #region Logger
         /// <summary>
@@ -142,28 +148,26 @@ namespace Xigadee
             ServiceIdentitySet();
         }
         #endregion
-
-        //2.Bind
-        #region BindConfigApplication()
+        #region 2.A BindConfigApplication()
         /// <summary>
         /// This in the application config binding.
         /// </summary>
         protected abstract void BindConfigApplication();
         #endregion
-        #region BindConfigMicroservice()
+        #region 2.B BindConfigMicroservice()
         /// <summary>
         /// This is the microservice config binding.
         /// </summary>
         protected abstract void BindConfigMicroservice();
         #endregion
-        #region BindConfigHealthCheck()
+        #region 2.C BindConfigHealthCheck()
         /// <summary>
         /// This is the config health check creation and binding.
         /// </summary>
         protected abstract void BindConfigHealthCheck();
 
         #endregion
-        #region ServiceIdentitySet()
+        #region 2.D ServiceIdentitySet()
         /// <summary>
         /// This method sets the service identity for the application.
         /// This is primarily used for logging and contains the various parameters needed
@@ -211,11 +215,5 @@ namespace Xigadee
         }
         #endregion
 
-        #region Host
-        /// <summary>
-        /// This is the hosting container environment.
-        /// </summary>
-        public HE Host { get; protected set; } 
-        #endregion
     }
 }

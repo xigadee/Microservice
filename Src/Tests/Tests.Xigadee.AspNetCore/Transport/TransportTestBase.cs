@@ -21,8 +21,8 @@ namespace Tests.Xigadee
         [TestInitialize]
         public void Setup()
         {
-            _server = new TestServer(new WebHostBuilder().UseStartup<TestStartup>());
-            _client = _server.CreateClient();
+            //_server = new TestServer(new WebHostBuilder().UseStartup<TestStartup>());
+            //_client = _server.CreateClient();
         }
         /// <summary>
         /// Cleans up and disposes of the instance.

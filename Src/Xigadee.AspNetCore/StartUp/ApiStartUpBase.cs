@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -16,7 +17,7 @@ namespace Xigadee
     /// This class is used by all services for the application.
     /// </summary>
     /// <typeparam name="CTX">The application context type.</typeparam>
-    public abstract class ApiStartupBase<CTX> : ApiStartUpRoot<CTX>
+    public abstract class ApiStartupBase<CTX> : ApiStartUpRoot<CTX, AspNetHostingContainer>
         where CTX : ApiStartUpContext, new()
     {
         #region A=>Constructor
@@ -24,21 +25,8 @@ namespace Xigadee
         /// Initializes a new instance of the API application class.
         /// </summary>
         /// <param name="env">The environment.</param>
-        protected ApiStartupBase(Microsoft.AspNetCore.Hosting.IHostingEnvironment env):base()
+        protected ApiStartupBase(Microsoft.AspNetCore.Hosting.IHostingEnvironment env, IConfiguration cfg) :base(new AspNetHostingContainer(env, cfg))
         {
-            HostingEnvironment = env;
-
-            Initialize();
-        }
-        #endregion
-
-        #region 3. ContextInitialize() -> CXA ->
-        /// <summary>
-        /// Initializes the context
-        /// </summary>
-        protected override void ContextInitialize()
-        {
-            Context.Initialize(HostingEnvironment);
         }
         #endregion
 
@@ -54,16 +42,12 @@ namespace Xigadee
         }
         #endregion
 
-
         #region HostingEnvironment
         /// <summary>
         /// Gets the AspNet Core hosting environment.
         /// </summary>
         Microsoft.AspNetCore.Hosting.IHostingEnvironment HostingEnvironment { get; }
         #endregion
-
-
-
 
     }
 }

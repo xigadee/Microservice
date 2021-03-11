@@ -10,29 +10,8 @@ namespace Xigadee
     /// <summary>
     /// This is the default start up context.
     /// </summary>
-    public class ApiStartUpContext : ApiStartUpContextRoot, IApiStartupContext
+    public class ApiStartUpContext : ApiStartUpContextRoot<AspNetHostingContainer>, IApiStartupContext
     {
-
-
-        #region Environment
-        /// <summary>
-        /// Gets or sets the hosting environment.
-        /// </summary>
-        public virtual Microsoft.AspNetCore.Hosting.IHostingEnvironment Environment { get; set; }
-        #endregion
-
-        #region CXA => Initialize(IHostingEnvironment env)
-        /// <summary>
-        /// Initializes the context.
-        /// </summary>
-        /// <param name="env">The hosting environment.</param>
-        public virtual void Initialize(Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
-        {
-            Environment = env;
-
-            Initialize();
-        }
-        #endregion
         #region 1.Build()
         /// <summary>
         /// Builds and sets the default configuration using the appsettings.json file and the appsettings.{Environment.EnvironmentName}.json file.
@@ -40,12 +19,12 @@ namespace Xigadee
         protected override void Build()
         {
             var builder = new ConfigurationBuilder()
-                .SetBasePath(Environment.ContentRootPath)
+                .SetBasePath(Host.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-                .AddJsonFile($"appsettings.{Environment.EnvironmentName}.json", optional: true)
+                .AddJsonFile($"appsettings.{Host.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
 
-            Configuration = builder.Build();
+            Host.Configuration = builder.Build();
         }
         #endregion
 
@@ -110,15 +89,14 @@ namespace Xigadee
             var ass = GetType().Assembly;
 
             ServiceIdentity = new ApiServiceIdentity(Id
-                , System.Environment.MachineName
-                , Environment.ApplicationName
+                , Host.MachineName
+                , Host.ApplicationName
                 , ass.GetName().Version.ToString()
                 , url, instanceId
-                , Environment.EnvironmentName);
+                , Host.EnvironmentName);
 
         } 
         #endregion
-
 
         #region CXC => Connect(ILoggerFactory lf)
         /// <summary>
@@ -130,8 +108,6 @@ namespace Xigadee
             Logger = lf.CreateLogger<IApiStartupContext>();
         }
         #endregion
-
-
 
     }
 }

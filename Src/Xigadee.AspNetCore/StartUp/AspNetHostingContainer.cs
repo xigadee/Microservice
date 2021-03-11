@@ -12,43 +12,35 @@ namespace Xigadee
     /// <summary>
     /// This is the hosting container.
     /// </summary>
-    public class AspNetCore5HostingContainer: HostingContainerBase
+    public class AspNetHostingContainer: HostingContainerBase
     {
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="whEnv"></param>
         /// <param name="hEnv"></param>
         /// <param name="cfg"></param>
-        public AspNetCore5HostingContainer(IWebHostEnvironment whEnv, IHostEnvironment hEnv, IConfiguration cfg)
+        public AspNetHostingContainer(Microsoft.AspNetCore.Hosting.IHostingEnvironment hEnv, IConfiguration cfg)
         {
-            WebHostEnvironment = whEnv;
-            HostEnvironment = hEnv;
+            HostingEnvironment = hEnv;
             Configuration = cfg;
         }
 
         /// <summary>
-        /// The web host environment.
-        /// </summary>
-        public IWebHostEnvironment WebHostEnvironment { get; }
-        /// <summary>
         /// The underlying host.
         /// </summary>
-        public IHostEnvironment HostEnvironment { get; }
+        public Microsoft.AspNetCore.Hosting.IHostingEnvironment HostingEnvironment { get; }
 
         /// <summary>
         /// The content root path.
         /// </summary>
-        public override string ContentRootPath => HostEnvironment?.ContentRootPath;
+        public override string ContentRootPath => HostingEnvironment?.ContentRootPath;
         /// <summary>
         /// The current environment name.
         /// </summary>
-        public override string EnvironmentName => HostEnvironment?.EnvironmentName;
+        public override string EnvironmentName => HostingEnvironment?.EnvironmentName;
         /// <summary>
         /// This is the application name.
         /// </summary>
-        public override string ApplicationName => HostEnvironment?.ApplicationName;
-
-        
+        public override string ApplicationName => HostingEnvironment?.ApplicationName;
     }
 }

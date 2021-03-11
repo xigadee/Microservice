@@ -30,6 +30,7 @@ namespace Xigadee
         protected ApiStartUpRoot(HE host)
         {
             Host = host;
+            Initialize();
         }
         #endregion
 
@@ -79,7 +80,6 @@ namespace Xigadee
         /// Initializes the context
         /// </summary>
         protected virtual void ContextInitialize() => Context.Initialize(Host);
-
         #endregion
 
         #region B=>ConfigureServices(IServiceCollection services)

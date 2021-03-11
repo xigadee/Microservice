@@ -25,7 +25,7 @@ namespace Xigadee
         /// <summary>
         /// Gets or sets the application configuration.
         /// </summary>
-        IConfiguration Configuration { get; set; }
+        IConfiguration Configuration { get; }
 
         /// <summary>
         /// Gets or sets the logger.

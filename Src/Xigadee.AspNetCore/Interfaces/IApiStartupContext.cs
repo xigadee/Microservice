@@ -11,17 +11,5 @@ namespace Xigadee
     /// </summary>
     public interface IApiStartupContext: Microsoft.Extensions.Hosting.IHostedService, IApiStartupContextBase
     {
-        /// <summary>
-        /// Initializes the module with the application environment settings.
-        /// </summary>
-        /// <param name="env">The environment.</param>
-        void Initialize(IHostingEnvironment env);
-
-
-        /// <summary>
-        /// Gets or sets the hosting environment.
-        /// </summary>
-        IHostingEnvironment Environment { get; set; }
-
     }
 }

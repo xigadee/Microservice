@@ -20,7 +20,7 @@ namespace Xigadee
         /// Initializes a new instance of the <see cref="JwtApiMicroserviceStartupBase{CTX}"/> class.
         /// </summary>
         /// <param name="env">The environment.</param>
-        protected JwtApiMicroserviceStartupBase(Microsoft.AspNetCore.Hosting.IHostingEnvironment env) : base(env)
+        protected JwtApiMicroserviceStartupBase(Microsoft.AspNetCore.Hosting.IHostingEnvironment env, IConfiguration cfg) : base(env, cfg)
         {
         }
         #endregion

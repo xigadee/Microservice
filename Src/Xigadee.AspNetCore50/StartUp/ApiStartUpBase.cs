@@ -15,24 +15,13 @@ namespace Xigadee
         /// <summary>
         /// Initializes a new instance of the API application class.
         /// </summary>
-        /// <param name="env">The environment.</param>
-        protected ApiStartupBase(IWebHostEnvironment whEnv, IHostEnvironment hEnv, IConfiguration cfg) 
+        /// <param name="env">The web host environment.</param>
+        /// <param name="hEnv">The host environment</param>
+        protected ApiStartupBase(IWebHostEnvironment whEnv, IHostEnvironment hEnv, IConfiguration cfg) : base(new AspNetCore5HostingContainer(whEnv, hEnv, cfg))
         {
-            HostContainer = new HostContainer(whEnv, hEnv, cfg);
-
-            Initialize();
         }
         #endregion
 
-        #region 3. ContextInitialize() -> CXA ->
-        /// <summary>
-        /// Initializes the context
-        /// </summary>
-        protected override void ContextInitialize()
-        {
-            Context.Initialize(HostContainer);
-        }
-        #endregion
 
         #region B7. ConfigureAddMvc(IServiceCollection services)
         /// <summary>
@@ -47,5 +36,4 @@ namespace Xigadee
         #endregion
 
     }
-
 }
