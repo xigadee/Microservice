@@ -127,6 +127,7 @@ namespace Xigadee
         }
         #endregion
 
+        #region UriParts(HttpMethod method)
         /// <summary>
         /// This method returns a UriBuilder for the request.
         /// </summary>
@@ -146,6 +147,8 @@ namespace Xigadee
 
             return builder;
         }
+        #endregion
+        #region MakeUri ...
         /// <summary>
         /// 
         /// </summary>
@@ -156,7 +159,7 @@ namespace Xigadee
             var builder = UriParts(method);
 
             return new KeyValuePair<HttpMethod, Uri>(method, builder.Uri);
-        }
+        } 
         /// <summary>
         /// 
         /// </summary>
@@ -196,5 +199,6 @@ namespace Xigadee
             builder.Query = rq.ToString();
             return new KeyValuePair<HttpMethod, Uri>(method, builder.Uri);
         }
+        #endregion
     }
 }
