@@ -9,7 +9,7 @@ namespace Xigadee
     /// This is the root class used to create the in-memory connection.
     /// </summary>
     public abstract class TestHostBase<S>
-        where S : class, IStartup
+        where S : class
     {
         #region Declarations
         protected HttpClient _client;
@@ -65,7 +65,7 @@ namespace Xigadee
     /// <typeparam name="C">The connector type.</typeparam>
     /// <typeparam name="S">The startup class.</typeparam>
     public abstract class TestHostBase<C, S> : TestHostBase<S>
-        where S : class, IStartup
+        where S : class
         where C : ApiProviderBase, new()
     {
         #region ConnectorGet ...

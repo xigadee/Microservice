@@ -18,7 +18,8 @@ namespace Xigadee
     /// Xigadee service framework.
     /// </summary>
     /// <typeparam name="CTX">The startup context.</typeparam>
-    public abstract class ApiStartUpRoot<CTX,HE> : IStartup
+    /// <typeparam name="HE">The hosting environment.</typeparam>
+    public abstract class ApiStartUpRoot<CTX,HE>
         where CTX : ApiStartUpContextRoot<HE>, new()
         where HE: HostingContainerBase
     {
@@ -26,7 +27,7 @@ namespace Xigadee
         /// <summary>
         /// Initializes a new instance of the API application class.
         /// </summary>
-        /// <param name="env">The environment.</param>
+        /// <param name="host">The environment host.</param>
         protected ApiStartUpRoot(HE host)
         {
             Host = host;
