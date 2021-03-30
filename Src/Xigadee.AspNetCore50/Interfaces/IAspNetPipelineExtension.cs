@@ -9,7 +9,7 @@ namespace Xigadee
     /// <summary>
     /// This interface is implemented by components that add in to the pipeline between the standard controller declarations.
     /// </summary>
-    public interface IXigadeeAspNetPipelineExtension
+    public interface IAspNetPipelineExtension
     {
         /// <summary>
         /// The system logger.

@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Xigadee
 {
-    public interface IXigadeeAspNetPipelineSecurityAuthorization : IXigadeeAspNetPipelineComponent
+    public interface IAspNetPipelineSecurityAuthorization : IAspNetPipelineComponent
     {
         void ConfigureSecurityAuthorization(IApplicationBuilder app);
 

@@ -7,7 +7,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Tests.Xigadee.Common\Tests.Xigadee.Common.csproj" />
     <ProjectReference Include="..\Tests\Tests.Xigadee.Shared\Tests.Xigadee.Shared.csproj" />
-    <ProjectReference Include="..\Xigadee.AspNetCore\Xigadee.AspNetCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>

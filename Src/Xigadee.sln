@@ -44,8 +44,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PiO.Console", "PiO.Console\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PiOStubSender", "PiOStubSender\PiOStubSender.csproj", "{987BEFAA-4A1A-485E-8DC6-B2D50AD7E190}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.AspNetCore", "Xigadee.AspNetCore\Xigadee.AspNetCore.csproj", "{B683B9FC-FDE3-4228-A98E-926B4D4AA86C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Abstractions", "Xigadee.Abstractions\Xigadee.Abstractions.csproj", "{B26E866D-8E1F-42E2-ADE6-80937734FB48}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_docs", "_docs", "{AF8EA5A7-CBDC-4402-851A-8292EC951689}"
@@ -64,8 +62,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee.Abstractions", "Tests\Tests.Xigadee.Abstractions\Tests.Xigadee.Abstractions.csproj", "{D335BA68-ECC7-44D8-B6A3-8D810260119A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee", "Tests\Tests.Xigadee\Tests.Xigadee.csproj", "{954AD464-E0CA-45C4-ACE7-41BA5431A530}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee.AspNetCore", "Tests\Tests.Xigadee.AspNetCore\Tests.Xigadee.AspNetCore.csproj", "{143AEECD-4674-4042-A485-C02CD2B518AA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee.Shared", "Tests\Tests.Xigadee.Shared\Tests.Xigadee.Shared.csproj", "{3F4E5A34-DE57-4BF8-AA33-B291C2E77E1E}"
 EndProject
@@ -93,8 +89,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Azure.Storage.Blob"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee.Azure.Storage.Blob", "Tests.Xigadee.Azure.Storage.Blob\Tests.Xigadee.Azure.Storage.Blob.csproj", "{BD67483C-0CE9-4C96-8134-7E7FE8624B26}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee.AspNetCore31.Server", "Tests.Xigadee.AspNetCore31.Server\Tests.Xigadee.AspNetCore31.Server.csproj", "{A2ADEE2F-17CB-4390-AEBC-60B3A0DA65D5}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.AspNetCore50", "Xigadee.AspNetCore50\Xigadee.AspNetCore50.csproj", "{B2CB55E3-5E5C-48FB-8B8F-664479707FC4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.AspNetCore.Abstractions", "Xigadee.AspNetCore.Abstractions\Xigadee.AspNetCore.Abstractions.csproj", "{E94B8F0B-0F7B-4319-962A-3EFBF39BA220}"
@@ -115,9 +109,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee.AspNetCore50"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee.AspNetCore50.Connector", "Tests.Xigadee.AspNetCore50.Connector\Tests.Xigadee.AspNetCore50.Connector.csproj", "{4F40A0ED-D36F-47FA-99C4-8DFA09D245C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Xigadee.AspNetCore50.UnitTest", "Tests.Xigadee.AspNetCore50.UnitTest\Tests.Xigadee.AspNetCore50.UnitTest.csproj", "{08C14434-AAD4-4261-8722-C21869678C04}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee.AspNetCore50.UnitTest", "Tests.Xigadee.AspNetCore50.UnitTest\Tests.Xigadee.AspNetCore50.UnitTest.csproj", "{08C14434-AAD4-4261-8722-C21869678C04}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Xigadee.AspNetCore50.Common", "Tests.Xigadee.AspNetCore50.Common\Tests.Xigadee.AspNetCore50.Common.csproj", "{94E7DB91-DF2A-411C-AE99-95BF19A69FD6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee.AspNetCore50.Common", "Tests.Xigadee.AspNetCore50.Common\Tests.Xigadee.AspNetCore50.Common.csproj", "{94E7DB91-DF2A-411C-AE99-95BF19A69FD6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -173,10 +167,6 @@ Global
 		{987BEFAA-4A1A-485E-8DC6-B2D50AD7E190}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{987BEFAA-4A1A-485E-8DC6-B2D50AD7E190}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{987BEFAA-4A1A-485E-8DC6-B2D50AD7E190}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B683B9FC-FDE3-4228-A98E-926B4D4AA86C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B683B9FC-FDE3-4228-A98E-926B4D4AA86C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B683B9FC-FDE3-4228-A98E-926B4D4AA86C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B683B9FC-FDE3-4228-A98E-926B4D4AA86C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B26E866D-8E1F-42E2-ADE6-80937734FB48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B26E866D-8E1F-42E2-ADE6-80937734FB48}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B26E866D-8E1F-42E2-ADE6-80937734FB48}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -189,10 +179,6 @@ Global
 		{954AD464-E0CA-45C4-ACE7-41BA5431A530}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{954AD464-E0CA-45C4-ACE7-41BA5431A530}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{954AD464-E0CA-45C4-ACE7-41BA5431A530}.Release|Any CPU.Build.0 = Release|Any CPU
-		{143AEECD-4674-4042-A485-C02CD2B518AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{143AEECD-4674-4042-A485-C02CD2B518AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{143AEECD-4674-4042-A485-C02CD2B518AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{143AEECD-4674-4042-A485-C02CD2B518AA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3F4E5A34-DE57-4BF8-AA33-B291C2E77E1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3F4E5A34-DE57-4BF8-AA33-B291C2E77E1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F4E5A34-DE57-4BF8-AA33-B291C2E77E1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -243,10 +229,6 @@ Global
 		{BD67483C-0CE9-4C96-8134-7E7FE8624B26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD67483C-0CE9-4C96-8134-7E7FE8624B26}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD67483C-0CE9-4C96-8134-7E7FE8624B26}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A2ADEE2F-17CB-4390-AEBC-60B3A0DA65D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A2ADEE2F-17CB-4390-AEBC-60B3A0DA65D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A2ADEE2F-17CB-4390-AEBC-60B3A0DA65D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A2ADEE2F-17CB-4390-AEBC-60B3A0DA65D5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B2CB55E3-5E5C-48FB-8B8F-664479707FC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B2CB55E3-5E5C-48FB-8B8F-664479707FC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2CB55E3-5E5C-48FB-8B8F-664479707FC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -304,7 +286,6 @@ Global
 		{2D95B4DF-5B82-402D-859A-92492C4DCF22} = {BB74DB4E-5BF2-4CA1-8A3A-E64EBD66FD03}
 		{D335BA68-ECC7-44D8-B6A3-8D810260119A} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{954AD464-E0CA-45C4-ACE7-41BA5431A530} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
-		{143AEECD-4674-4042-A485-C02CD2B518AA} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{3F4E5A34-DE57-4BF8-AA33-B291C2E77E1E} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{34AC5130-FAE1-4666-92E1-F226CE85CBA1} = {B8CB3AD9-A9AD-4344-B0BF-905A8AFED071}
 		{4F22F1C5-2A84-4061-9B70-2FF4B31BEC38} = {2D95B4DF-5B82-402D-859A-92492C4DCF22}
@@ -317,7 +298,6 @@ Global
 		{BD4E6BE8-00E5-4F61-9B3A-0F82DFE769B4} = {2D95B4DF-5B82-402D-859A-92492C4DCF22}
 		{62D2E18F-3B5F-4498-9B4F-B193004CC412} = {BB74DB4E-5BF2-4CA1-8A3A-E64EBD66FD03}
 		{BD67483C-0CE9-4C96-8134-7E7FE8624B26} = {2D95B4DF-5B82-402D-859A-92492C4DCF22}
-		{A2ADEE2F-17CB-4390-AEBC-60B3A0DA65D5} = {3E8089DE-4196-4950-8107-C48D5C8C687C}
 		{57055D8E-255B-4E15-BE5A-EB9A77784151} = {45344820-9E25-4145-B4EA-731F81F60919}
 		{45344820-9E25-4145-B4EA-731F81F60919} = {147BDD3C-B68D-4D13-912C-240F23DD1C91}
 		{3E8089DE-4196-4950-8107-C48D5C8C687C} = {147BDD3C-B68D-4D13-912C-240F23DD1C91}
@@ -329,7 +309,7 @@ Global
 		{94E7DB91-DF2A-411C-AE99-95BF19A69FD6} = {45344820-9E25-4145-B4EA-731F81F60919}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
 		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
+		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
 	EndGlobalSection
 EndGlobal

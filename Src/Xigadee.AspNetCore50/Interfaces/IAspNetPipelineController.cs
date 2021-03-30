@@ -7,7 +7,7 @@ namespace Xigadee
     /// <summary>
     /// 
     /// </summary>
-    public interface IXigadeeAspNetPipelineController : IXigadeeAspNetPipelineComponent
+    public interface IAspNetPipelineController : IAspNetPipelineComponent
     {
         void ConfigureControllerOptions(IServiceCollection services);
 

@@ -6,7 +6,7 @@ namespace Xigadee
     /// <summary>
     /// This extension is specific for the authentiation.
     /// </summary>
-    public interface IXigadeeAspNetPipelineSecurityAuthentication : IXigadeeAspNetPipelineComponent
+    public interface IAspNetPipelineSecurityAuthentication : IAspNetPipelineComponent
     {
         /// <summary>
         /// This method enabled authentication. 

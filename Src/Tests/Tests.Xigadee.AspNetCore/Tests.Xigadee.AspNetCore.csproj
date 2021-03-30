@@ -35,8 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Tests.Xigadee.AspNetCore31.Server\Tests.Xigadee.AspNetCore31.Server.csproj" />
-    <ProjectReference Include="..\..\Xigadee.AspNetCore\Xigadee.AspNetCore.csproj" />
     <ProjectReference Include="..\Tests.Xigadee.Shared\Tests.Xigadee.Shared.csproj" />
   </ItemGroup>
 
