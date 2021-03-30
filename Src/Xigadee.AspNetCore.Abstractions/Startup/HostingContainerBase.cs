@@ -28,5 +28,13 @@ namespace Xigadee
         /// The configuration.
         /// </summary>
         public IConfiguration Configuration { get; set; }
+        /// <summary>
+        /// This is the base Url of the host container
+        /// </summary>
+        public string Url { get; set; }
+        /// <summary>
+        /// This is the unique id of the instance.
+        /// </summary>
+        public virtual string InstanceId {get;set;}
     }
 }
