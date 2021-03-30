@@ -28,10 +28,9 @@ namespace Xigadee
         #endregion
 
         /// <summary>
-        /// This method takes the Stripe postbacks and stores them for later processing.
+        /// This method takes the request parameter, validates it against the health check and outputs the statistics.
         /// </summary>
-        [HttpGet("{id}")]
-        public virtual Task<IActionResult> Output(Guid id)
+        protected virtual Task<IActionResult> Output(Guid id)
         {
             if (!_config.Enabled
                 || id != _config.Id
