@@ -8,6 +8,11 @@
     <AssemblyName>Xigadee.AspNetCore50</AssemblyName>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Xigadee.AspNetCore50.xml</DocumentationFile>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+  
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>

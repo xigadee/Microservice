@@ -343,12 +343,12 @@ namespace Xigadee
         /// <param name="services">The services.</param>
         protected virtual void ConfigureController(IServiceCollection services)
         {
-            PipelineExtensionsExecute(XigadeeAspNetPipelineExtensionScope.BeforeController, (ext, scope) => ext.ConfigureServices(scope, services));
+            PipelineExtensionsExecute(XigadeeAspNetPipelineExtensionScope.BeforeController, (e, scope) => e.ConfigureServices(scope, services));
 
             if (Context.PipelineComponentTryGet<IAspNetPipelineController>(out var ext))
                 ext.ConfigureControllerOptions(services);
 
-            PipelineExtensionsExecute(XigadeeAspNetPipelineExtensionScope.AfterController, (ext, scope) => ext.ConfigureServices(scope, services));
+            PipelineExtensionsExecute(XigadeeAspNetPipelineExtensionScope.AfterController, (e, scope) => e.ConfigureServices(scope, services));
         }
         #endregion
 
@@ -455,7 +455,7 @@ namespace Xigadee
         protected virtual void ConfigureUseEndpoints(IApplicationBuilder app)
         {
             PipelineExtensionsExecute(XigadeeAspNetPipelineExtensionScope.BeforeController
-                , (ext, scope) => ext.ConfigureUseEndpoints(scope, app));
+                , (e, scope) => e.ConfigureUseEndpoints(scope, app));
 
             if (Context.PipelineComponentTryGet<IAspNetPipelineController>(out var ext))
                 ext.ConfigureUseEndpoints(app);
@@ -463,7 +463,7 @@ namespace Xigadee
             app.UseEndpoints(endpoints => ConfigureUseEndpoints(app, endpoints));
 
             PipelineExtensionsExecute(XigadeeAspNetPipelineExtensionScope.AfterController
-                , (ext, scope) => ext.ConfigureUseEndpoints(scope, app));
+                , (e, scope) => e.ConfigureUseEndpoints(scope, app));
 
         }
 
@@ -475,13 +475,13 @@ namespace Xigadee
         protected virtual void ConfigureUseEndpoints(IApplicationBuilder app, IEndpointRouteBuilder endpoints)
         {
             PipelineExtensionsExecute(XigadeeAspNetPipelineExtensionScope.BeforeController
-                , (ext, scope) => ext.ConfigureUseEndpoints(scope, app, endpoints));
+                , (e, scope) => e.ConfigureUseEndpoints(scope, app, endpoints));
 
             if (Context.PipelineComponentTryGet<IAspNetPipelineController>(out var ext))
                 ext.ConfigureUseEndpoints(app, endpoints);
 
             PipelineExtensionsExecute(XigadeeAspNetPipelineExtensionScope.AfterController
-                , (ext, scope) => ext.ConfigureUseEndpoints(scope, app, endpoints));
+                , (e, scope) => e.ConfigureUseEndpoints(scope, app, endpoints));
         }
         #endregion
 
