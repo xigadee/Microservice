@@ -20,19 +20,19 @@
         <dependency id="Microsoft.AspNetCore.Hosting.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
         <dependency id="Microsoft.AspNetCore.Hosting.Server.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
         <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.AspNetCore.Http.Features" version="2.2.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Http.Features" version="5.0.4" exclude="Build,Analyzers" />
         <dependency id="Microsoft.AspNetCore.Authentication" version="2.2.0" exclude="Build,Analyzers" />
         <dependency id="Microsoft.AspNetCore.Mvc" version="2.2.0" exclude="Build,Analyzers" />
         <dependency id="Microsoft.AspNetCore.Routing.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.Extensions.Configuration.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.Extensions.FileProviders.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Configuration.Abstractions" version="5.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="5.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.FileProviders.Abstractions" version="5.0.0" exclude="Build,Analyzers" />
         <dependency id="Microsoft.Extensions.Logging.Abstractions" version="5.0.0" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.Extensions.Primitives" version="2.2.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Primitives" version="5.0.0" exclude="Build,Analyzers" />
 
-        <dependency id="Microsoft.IdentityModel.Tokens" version="6.8.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.IdentityModel.Tokens" version="6.9.0" exclude="Build,Analyzers" />
         <dependency id="System.Diagnostics.DiagnosticSource" version="5.0.1" exclude="Build,Analyzers" />
-        <dependency id="System.IdentityModel.Tokens.Jwt" version="6.8.0" exclude="Build,Analyzers" />
+        <dependency id="System.IdentityModel.Tokens.Jwt" version="6.9.0" exclude="Build,Analyzers" />
 
         <dependency id="Xigadee" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
       </group>

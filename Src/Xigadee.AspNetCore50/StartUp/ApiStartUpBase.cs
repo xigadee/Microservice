@@ -8,7 +8,7 @@ namespace Xigadee
     /// This class is used by all services for the application.
     /// </summary>
     /// <typeparam name="CTX">The application context type.</typeparam>
-    public abstract class ApiStartupBase<CTX> : ApiStartUpRoot<CTX, AspNetCore5HostingContainer>
+    public class ApiStartupBase<CTX> : ApiStartUpRootTemp<CTX, AspNetCore5HostingContainer>
         where CTX : ApiStartUpContext, new()
     {
         #region A=>Constructor
@@ -17,23 +17,21 @@ namespace Xigadee
         /// </summary>
         /// <param name="env">The web host environment.</param>
         /// <param name="hEnv">The host environment</param>
-        protected ApiStartupBase(IWebHostEnvironment whEnv, IHostEnvironment hEnv, IConfiguration cfg) : base(new AspNetCore5HostingContainer(whEnv, hEnv, cfg))
+        public ApiStartupBase(IWebHostEnvironment whEnv, IHostEnvironment hEnv, IConfiguration cfg) : base(new AspNetCore5HostingContainer(whEnv, hEnv, cfg))
         {
         }
         #endregion
 
-
-        #region B7. ConfigureAddMvc(IServiceCollection services)
+        #region B=>ConfigureServices(IServiceCollection services)
         /// <summary>
-        /// Configures the add MVC service.
+        /// Configures the services.
         /// </summary>
         /// <param name="services">The services.</param>
-        protected override void ConfigureAddMvc(IServiceCollection services)
+        /// <returns>Returns the new service provider.</returns>
+        public virtual void ConfigureServices(IServiceCollection services)
         {
-            //services.AddMvcCore();
-            services.AddMvc();
+            var rs = base.ConfigureServicesBase(services);
         }
         #endregion
-
     }
 }

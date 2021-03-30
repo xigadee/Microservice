@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Xigadee;
 
 namespace Tests.Xigadee.AspNetCore50.Server
 {
@@ -20,7 +21,7 @@ namespace Tests.Xigadee.AspNetCore50.Server
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.UseStartup<ApiStartupBase<StartupContext>>();
                 });
     }
 }

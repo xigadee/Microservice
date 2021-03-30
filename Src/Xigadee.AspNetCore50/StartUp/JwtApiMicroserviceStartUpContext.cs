@@ -1,19 +1,14 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 namespace Xigadee
 {
-    #region JwtApiMicroserviceStartUpContext
     /// <summary>
     /// This is the default start up context.
     /// </summary>
     public abstract class JwtApiMicroserviceStartUpContext : ApiStartUpContext
     {
+
         #region 2b.Bind()
         /// <summary>
         /// Creates and binds specific configuration components required by the application.
@@ -26,6 +21,16 @@ namespace Xigadee
             if (!string.IsNullOrEmpty(BindNameSecurityJwt))
                 Configuration.Bind(BindNameSecurityJwt, SecurityJwt);
         }
+        #endregion
+
+        #region PipelineSecuritySet()
+        /// <summary>
+        /// Set the Jwt authentication extension.
+        /// </summary>
+        protected override void PipelineSecuritySet()
+        {
+            PipelineComponentSet<IAspNetPipelineSecurityAuthentication>(new JwtXigadeeAspNetPipelineSecurityAuthentication(SecurityJwt));
+        } 
         #endregion
 
         #region SecurityJwt
@@ -62,23 +67,25 @@ namespace Xigadee
             base.Connect(lf);
 
             UserSecurityModule.Logger = lf.CreateLogger<IApiUserSecurityModule>();
+
         }
         #endregion
 
+        #region UserSecurityModule
         /// <summary>
         /// Gets or sets the user security module that is used to manages the security entities and user logic.
         /// </summary>
         [RegisterAsSingleton(typeof(IApiUserSecurityModule))]
         [RepositoriesProcess]
         public IApiUserSecurityModule UserSecurityModule { get; set; }
+        #endregion
 
+        #region UserSecurityModuleCreate()
         /// <summary>
         /// Users the security module create.
         /// </summary>
         /// <returns></returns>
         protected abstract IApiUserSecurityModule UserSecurityModuleCreate();
-
+        #endregion
     }
-    #endregion
-
 }

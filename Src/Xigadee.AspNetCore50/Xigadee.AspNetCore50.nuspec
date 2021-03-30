@@ -15,27 +15,18 @@
     <copyright>Copyright © Xigadee 2017-2021</copyright>
     <tags>Xigadee Microservice AspNetCore</tags>
     <dependencies>
-      <group targetFramework=".NETCoreApp2.2">
+      <group targetFramework="net5.0">
 
-        <dependency id="Microsoft.AspNetCore.App" version="2.2.0" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.AspNetCore.Hosting.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.AspNetCore.Hosting.Server.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.AspNetCore.Http.Features" version="2.2.0" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.Extensions.Configuration.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.Extensions.FileProviders.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.Extensions.Hosting.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.Extensions.Logging.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.Extensions.Primitives" version="2.2.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" version="5.0.4" exclude="Build,Analyzers" />
 
         <dependency id="Xigadee" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
+        <dependency id="Xigadee.AspNetCore.Abstractions" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
       </group>
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Release\netcoreapp2.2\Xigadee.AspNetCore.dll" target="lib\netcoreapp2.2\" />
-    <file src="bin\Release\netcoreapp2.2\Xigadee.AspNetCore.pdb" target="lib\netcoreapp2.2\" />
-    <file src="bin\Release\netcoreapp2.2\Xigadee.AspNetCore.xml" target="lib\netcoreapp2.2\" />
+    <file src="bin\Release\net5.0\Xigadee.AspNetCore50.dll" target="lib\net5.0\" />
+    <file src="bin\Release\net5.0\Xigadee.AspNetCore50.pdb" target="lib\net5.0\" />
+    <file src="bin\Release\net5.0\Xigadee.AspNetCore50.xml" target="lib\net5.0\" />
   </files>
 </package>
