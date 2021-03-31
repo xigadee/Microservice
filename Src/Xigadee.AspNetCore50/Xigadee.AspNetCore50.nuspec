@@ -18,8 +18,6 @@
       <group targetFramework="net5.0">
 
         <dependency id="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" version="5.0.4" exclude="Build,Analyzers" />
-
-        <dependency id="Xigadee" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
         <dependency id="Xigadee.AspNetCore.Abstractions" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
       </group>
     </dependencies>
