@@ -16,7 +16,8 @@ namespace Xigadee
     /// <summary>
     /// This is the standard api controller configuration.
     /// </summary>
-    public class XigadeeAspNetPipelineController : XigadeeAspNetPipelineComponentBase, IAspNetPipelineController
+    public class XigadeeAspNetPipelineController : XigadeeAspNetPipelineComponentBase, 
+        IAspNetPipelineController, IAspNetPipelineSupportsUseEndpoints
     {
         protected Type[] _types = null;
 
@@ -54,7 +55,7 @@ namespace Xigadee
 
         }
 
-        public virtual void ConfigureUseEndpoints(IApplicationBuilder app, IEndpointRouteBuilder endpoints)
+        public void ConfigureUseEndpoints(IApplicationBuilder app, IEndpointRouteBuilder endpoints, XigadeeAspNetPipelineExtensionScope? scope = null)
         {
             endpoints.MapControllers();
         }

@@ -1,11 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,7 +13,7 @@ namespace Xigadee
     /// <summary>
     /// This is the root context it contains shared functionality within the .NET Standard capabilities.
     /// </summary>
-    public abstract class ApiStartUpContextRoot<HE>: IApiStartupContextBase, IHostedService
+    public abstract class ApiStartUpContextRoot<HE> : IApiStartupContextBase, IHostedService
         where HE : HostingContainerBase
     {
         #region Id
@@ -51,6 +50,19 @@ namespace Xigadee
         /// </summary>
         public HE Host { get; protected set; }
         #endregion
+        #region PipelineExtensions
+        /// <summary>
+        /// These are the specific extensions such as HealthCheck that are inserted outside of the standard ASP.NET controller flow.
+        /// </summary>
+        public List<IAspNetPipelineExtension> PipelineExtensions { get; } = new List<IAspNetPipelineExtension>();
+        #endregion
+
+        #region PipelineComponents
+        /// <summary>
+        /// This is the internal list of supported pipeline extensions.
+        /// </summary>
+        public Dictionary<Type, IAspNetPipelineComponent> PipelineComponents { get; } = new Dictionary<Type, IAspNetPipelineComponent>();
+        #endregion        
 
         #region ConfigHealthCheck
         /// <summary>
@@ -107,7 +119,7 @@ namespace Xigadee
         /// <summary>
         /// Initializes the context.
         /// </summary>
-        /// <param name="env">The hosting environment.</param>
+        /// <param name="cont">The hosting container.</param>
         public virtual void Initialize(HE cont)
         {
             Host = cont;
@@ -121,6 +133,7 @@ namespace Xigadee
         {
             Build();
             Bind();
+            Pipeline();
         }
         #endregion
         #region 1.Build()
@@ -134,46 +147,39 @@ namespace Xigadee
         /// <summary>
         /// Creates and binds specific configuration components required by the application.
         /// </summary>
-        protected virtual void Bind()
+        protected abstract void Bind();
+        #endregion
+
+        #region 3.Pipeline()
+        /// <summary>
+        /// This method sets the pipeline components and extensions.
+        /// </summary>
+        protected virtual void Pipeline()
         {
-            ConfigApplication = new ConfigApplication();
-            BindConfigApplication();
+            PipelineComponentsSet();
 
-            ConfigMicroservice = new ConfigMicroservice();
-            BindConfigMicroservice();
+            PipelineSecuritySet();
 
-            ConfigHealthCheck = new ConfigHealthCheck();
-            BindConfigHealthCheck();
-
-            ServiceIdentitySet();
+            PipelineExtensionsSet();
         }
         #endregion
-        #region 2.A BindConfigApplication()
+        #region 3.A PipelineComponentsSet()
         /// <summary>
-        /// This in the application config binding.
+        /// This method is used to set the pipeline extensions for the context.
         /// </summary>
-        protected abstract void BindConfigApplication();
+        protected abstract void PipelineComponentsSet();
         #endregion
-        #region 2.B BindConfigMicroservice()
+        #region 3.B PipelineSecuritySet()
         /// <summary>
-        /// This is the microservice config binding.
+        /// This method is used to set the pipeline extensions for the context.
         /// </summary>
-        protected abstract void BindConfigMicroservice();
+        protected virtual void PipelineSecuritySet() { }
         #endregion
-        #region 2.C BindConfigHealthCheck()
+        #region 3.C PipelineExtensionsSet()
         /// <summary>
-        /// This is the config health check creation and binding.
+        /// This method is used to set the pipeline extensions for the context.
         /// </summary>
-        protected abstract void BindConfigHealthCheck();
-
-        #endregion
-        #region 2.D ServiceIdentitySet()
-        /// <summary>
-        /// This method sets the service identity for the application.
-        /// This is primarily used for logging and contains the various parameters needed
-        /// to identity this instance when debugging and logging.
-        /// </summary>
-        protected abstract void ServiceIdentitySet();
+        protected virtual void PipelineExtensionsSet() { }
         #endregion
 
         #region CXB => ModulesCreate(IServiceCollection services)
@@ -193,6 +199,8 @@ namespace Xigadee
         public virtual void Connect(ILoggerFactory lf)
         {
             Logger = lf.CreateLogger<IApiStartupContextBase>();
+            //Set the logger for the pipeline extensions.
+            PipelineComponents.ForEach(ext => ext.Value.Logger = Logger);
         }
         #endregion
 
@@ -215,5 +223,54 @@ namespace Xigadee
         }
         #endregion
 
+        #region PipelineComponents ...
+        /// <summary>
+        /// Specifies if the model supports a specific interface.
+        /// </summary>
+        /// <typeparam name="I">This is the interface type.</typeparam>
+        /// <returns>Returns true if the incoming model supported this interface.</returns>
+        public bool SupportsPipelineComponent<I>() where I : IAspNetPipelineComponent
+            => PipelineComponents.ContainsKey(typeof(I));
+        /// <summary>
+        /// This method gets the pipeline extension.
+        /// </summary>
+        /// <typeparam name="I">The interface type.</typeparam>
+        /// <returns>Retuns the extension class.</returns>
+        public I PipelineComponentGet<I>() where I : IAspNetPipelineComponent
+            => (I)PipelineComponents[typeof(I)];
+        /// <summary>
+        /// This method is used to try and get the extension.
+        /// </summary>
+        /// <typeparam name="I">The extension type.</typeparam>
+        /// <param name="extension"></param>
+        /// <returns></returns>
+        public bool PipelineComponentTryGet<I>(out I extension) where I : IAspNetPipelineComponent
+        {
+            extension = default(I);
+
+            if (SupportsPipelineComponent<I>())
+            {
+                extension = PipelineComponentGet<I>();
+                return true;
+            }
+
+            return false;
+        }
+        /// <summary>
+        /// This method sets a specific pipeline extension.
+        /// </summary>
+        /// <typeparam name="I">The extension type.</typeparam>
+        /// <param name="extension">The class that implements the extension.</param>
+        protected void PipelineComponentSet<I>(I extension) where I : IAspNetPipelineComponent
+            => PipelineComponents[typeof(I)] = extension;
+        #endregion
+
+        #region Statistics
+        /// <summary>
+        /// This is a copy of the last issues Microservice statistics.
+        /// </summary>
+        [RegisterAsSingleton]
+        public StatisticsHolder Statistics { get; private set; } = new StatisticsHolder();
+        #endregion
     }
 }

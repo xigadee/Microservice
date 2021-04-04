@@ -1,15 +1,11 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Internal;
-using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -19,9 +15,9 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="CTX">The startup context.</typeparam>
     /// <typeparam name="HE">The hosting environment.</typeparam>
-    public abstract class ApiStartUpRoot<CTX,HE>
+    public abstract class ApiStartUpRoot<CTX, HE>
         where CTX : ApiStartUpContextRoot<HE>, new()
-        where HE: HostingContainerBase
+        where HE : HostingContainerBase
     {
         #region A=>Constructor
         /// <summary>
@@ -53,7 +49,7 @@ namespace Xigadee
             ContextCreate();
 
             ContextInitialize();
-        } 
+        }
         #endregion
         #region A1. LoggerProviderCreate()
         /// <summary>
@@ -83,13 +79,13 @@ namespace Xigadee
         protected virtual void ContextInitialize() => Context.Initialize(Host);
         #endregion
 
-        #region B=>ConfigureServices(IServiceCollection services)
+        #region B=>ConfigureServices/ConfigureServicesRoot(IServiceCollection services)
         /// <summary>
         /// Configures the services.
         /// </summary>
         /// <param name="services">The services.</param>
         /// <returns>Returns the new service provider.</returns>
-        public virtual IServiceProvider ConfigureServices(IServiceCollection services)
+        protected virtual void ConfigureServicesRoot(IServiceCollection services)
         {
             ConfigureOptions(services);
 
@@ -104,11 +100,7 @@ namespace Xigadee
 
             ConfigureSecurityAuthorization(services);
 
-            //ConfigureCustomRouting()
-            //ConfigureAddMvc(services);
-
-            // Add framework services
-            return services.BuildServiceProvider();
+            ConfigureController(services);
         }
         #endregion
         #region B1. ConfigureOptions(IServiceCollection services)
@@ -158,7 +150,6 @@ namespace Xigadee
         protected virtual void MicroserviceCreate()
         {
             Pipeline = new MicroservicePipeline();
-
         }
         #endregion
         #region B3b. MicroserviceDataCollectionConnect()
@@ -289,7 +280,15 @@ namespace Xigadee
         /// <summary>
         /// Creates and configures the Xigadee microservice pipeline.
         /// </summary>
-        protected virtual void MicroserviceConfigure() { }
+        protected virtual void MicroserviceConfigure()
+        {
+            Pipeline.AdjustPolicyTaskManagerForDebug();
+
+            Pipeline.AdjustCommunicationPolicyForSingleListenerClient();
+
+            Pipeline.Service.Events.StatisticsIssued += (object sender, StatisticsEventArgs e) => Context.Statistics.Load(e?.Statistics);
+
+        }
         #endregion
         #region B3d. MicroserviceHostedServiceCreate()
         /// <summary>
@@ -316,25 +315,29 @@ namespace Xigadee
         /// Configures the authentication, i.e. services.AddJwtAuthentication(Context.SecurityJwt);
         /// </summary>
         /// <param name="services">The services.</param>
-        protected abstract void ConfigureSecurityAuthentication(IServiceCollection services);
+        protected virtual void ConfigureSecurityAuthentication(IServiceCollection services)
+        {
+            if (Context.PipelineComponentTryGet<IAspNetPipelineSecurityAuthentication>(out var ext))
+                ext.ConfigureSecurityAuthentication(services);
+        }
         #endregion
         #region B6. ConfigureSecurityAuthorization(IServiceCollection services)
         /// <summary>
         /// Configures the authorization. i.e. services.AddAuthorization(options =>
         /// </summary>
         /// <param name="services">The services.</param>
-        protected abstract void ConfigureSecurityAuthorization(IServiceCollection services);
+        protected virtual void ConfigureSecurityAuthorization(IServiceCollection services)
+        {
+            if (Context.PipelineComponentTryGet<IAspNetPipelineSecurityAuthorization>(out var ext))
+                ext.ConfigureSecurityAuthorization(services);
+        }
         #endregion
-        #region B7. ConfigureAddMvc(IServiceCollection services)
+        #region B7. ConfigureController(IServiceCollection services)
         /// <summary>
         /// Configures the add MVC service.
         /// </summary>
         /// <param name="services">The services.</param>
-        protected virtual void ConfigureAddMvc(IServiceCollection services)
-        {
-            //services.AddMvcCore();
-            services.AddMvc();
-        }
+        protected abstract void ConfigureController(IServiceCollection services);
         #endregion
 
         #region C=>Configure(IApplicationBuilder app)
@@ -355,7 +358,6 @@ namespace Xigadee
             ConfigureSecurity(app);
 
             ConfigureUseEndpoints(app);
-
         }
         #endregion
         #region C1. ConfigurePipeline(IApplicationBuilder app)
@@ -363,8 +365,21 @@ namespace Xigadee
         /// Configures the ASP.NET pipeline.
         /// </summary>
         /// <param name="app">The application.</param>
-        protected abstract void ConfigurePipeline(IApplicationBuilder app);
+        protected virtual void ConfigurePipeline(IApplicationBuilder app)
+        {
+            PipelineExtensionsExecute(XigadeeAspNetPipelineExtensionScope.BeforeController
+                , (ext, scope) => ext.ConfigurePipeline(scope, app));
 
+            IAspNetPipelineController exte = null;
+            if (Context.PipelineComponentTryGet(out exte))
+                exte.ConfigurePipeline(app);
+
+            PipelineExtensionsExecute(XigadeeAspNetPipelineExtensionScope.AfterController
+                , (ext, scope) => ext.ConfigurePipeline(scope, app));
+
+            exte?.ConfigurePipelineComplete(app);
+
+        }
         #endregion
         #region C2. ConfigureLogging(IApplicationBuilder app)
         /// <summary>
@@ -397,7 +412,7 @@ namespace Xigadee
         #endregion
         #region C3. ContextConnect(IApplicationBuilder app, ILoggerFactory loggerFactory) -> CXC ->
         /// <summary>
-        /// Override this method to configure the UseMvc command, or to stop it being set.
+        /// This method connects the context to the logging infrastructure.
         /// </summary>
         /// <param name="app">The application.</param>
         /// <param name="loggerFactory">The logger factory.</param>
@@ -411,29 +426,21 @@ namespace Xigadee
         /// Override this method to set authentication using app.UseAuthentication();
         /// </summary>
         /// <param name="app">The application.</param>
-        protected abstract void ConfigureSecurity(IApplicationBuilder app);
-        #endregion
-        #region C5. ConfigureCustomRouting(IApplicationBuilder app)
-        /// <summary>
-        /// Override this method to configure the UseMvc command, or to stop it being set.
-        /// </summary>
-        /// <param name="app">The application.</param>
-        protected virtual void ConfigureCustomRouting(IApplicationBuilder app)
+        protected virtual void ConfigureSecurity(IApplicationBuilder app)
         {
-            if (Context.ConfigHealthCheck?.Enabled ?? false)
-            {
-                //This sets the path to direct incoming callback requests to the middle-ware.
-                app.Map($"/{HealthCheckPath}", (a) => a.Run(d => HealthCheck(d)));
-            }
+            if (Context.PipelineComponentTryGet<IAspNetPipelineSecurityAuthentication>(out var exte))
+                exte.ConfigureSecurityAuthentication(app);
+
+            if (Context.PipelineComponentTryGet<IAspNetPipelineSecurityAuthorization>(out var exto))
+                exto.ConfigureSecurityAuthorization(app);
         }
         #endregion
-        #region C6. ConfigureUseEndpoints(IApplicationBuilder app
+        #region C5. ConfigureUseEndpoints(IApplicationBuilder app
         /// <summary>
         /// Use this section to configure the routing
         /// </summary>
-        /// <param name="app"></param>
+        /// <param name="app">The application builder.</param>
         protected abstract void ConfigureUseEndpoints(IApplicationBuilder app);
-
         #endregion
 
         #region LoggerFactory
@@ -464,45 +471,18 @@ namespace Xigadee
         /// </summary>
         public MicroserviceHostedService HostedService { get; protected set; }
         #endregion
-        #region HealthCheck(HttpContext context)
+
+        #region PipelineExtensionsExecute ...
         /// <summary>
-        /// Process an incoming health check request.
+        /// This helper method filters the extensions that support the specific scope and calls the action.
         /// </summary>
-        /// <param name="context">The HTTP context.</param>
-        protected virtual async Task HealthCheck(HttpContext context)
+        /// <param name="scope">The scope to filter on.</param>
+        /// <param name="execute">The execute action.</param>
+        protected virtual void PipelineExtensionsExecute(XigadeeAspNetPipelineExtensionScope scope, Action<IAspNetPipelineExtension, XigadeeAspNetPipelineExtensionScope> execute)
         {
-            try
-            {
-                if (context.Request.QueryString.HasValue)
-                {
-                    var query = QueryHelpers.ParseQuery(context.Request.QueryString.Value);
-
-                    string id = query.Keys.FirstOrDefault(k => string.Equals("id", k, StringComparison.InvariantCultureIgnoreCase));
-
-                    if (id != null && Context.ConfigHealthCheck.Validate(query[id]))
-                    {
-                        context.Response.StatusCode = 200;
-                        await context.Response.WriteAsync(HealthCheckOutput);
-                        return;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Context?.Logger.LogInformation(ex, $"Health check failed.");
-            }
-
-            context.Response.StatusCode = 404;
+            foreach (var extension in Context.PipelineExtensions.Where(p => p.Supported(scope)))
+                execute(extension, scope);
         }
-
-        /// <summary>
-        /// This is the default healthcheck path 'healthcheck'. You can override this if needed.
-        /// </summary>
-        protected string HealthCheckPath { get; set; } = "healthcheck";
-        /// <summary>
-        /// Gets the heartbeat output that is sent back to the polling client.
-        /// </summary>
-        protected virtual string HealthCheckOutput => $"{Context.ConfigApplication?.Name} => {DateTime.UtcNow:s} @ {Context.Id}";
         #endregion
     }
 }

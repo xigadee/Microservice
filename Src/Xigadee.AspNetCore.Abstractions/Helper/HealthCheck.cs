@@ -17,6 +17,15 @@ namespace Xigadee
         /// Gets or sets the ID, used to identify a valid request.
         /// </summary>
         public Guid? Id { get; set; }
+
+        /// <summary>
+        /// Specifies that we should show the Microservice statistics are part of the healthcheck.
+        /// </summary>
+        public bool ShowStatistics { get; set; }
+        /// <summary>
+        /// This is the path to register the healthcheck under. If this is null or empty, then this will be registered under healthcheck.
+        /// </summary>
+        public string Path { get; set; }
     }
 
     /// <summary>

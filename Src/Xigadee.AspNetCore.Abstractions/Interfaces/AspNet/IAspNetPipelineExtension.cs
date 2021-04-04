@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System;
 
 namespace Xigadee
@@ -9,13 +7,8 @@ namespace Xigadee
     /// <summary>
     /// This interface is implemented by components that add in to the pipeline between the standard controller declarations.
     /// </summary>
-    public interface IAspNetPipelineExtension
+    public interface IAspNetPipelineExtension: IAspNetPipelineComponent
     {
-        /// <summary>
-        /// The system logger.
-        /// </summary>
-        ILogger Logger { get; set; }
-
         /// <summary>
         /// Specifies whether it is enabled and should be registered.
         /// </summary>
@@ -43,28 +36,31 @@ namespace Xigadee
         /// <summary>
         /// This method is called through the main pipeline process.
         /// </summary>
-        /// <param name="scope"></param>
-        /// <param name="app"></param>
+        /// <param name="scope">The scope to check.</param>
+        /// <param name="app">The application builder.</param>
         void ConfigurePipeline(XigadeeAspNetPipelineExtensionScope scope, IApplicationBuilder app);
 
         /// <summary>
         /// This is the pipeline components.
         /// </summary>
-        /// <param name="app"></param>
-        void ConfigureUseEndpoints(XigadeeAspNetPipelineExtensionScope scope, IApplicationBuilder app);
-
-        /// <summary>
-        /// Configures the pipeline interaction.
-        /// </summary>
+        /// <param name="scope">The scope to check.</param>
         /// <param name="app">The application builder.</param>
-        /// <param name="endpoints">The endpoints.</param>
-        void ConfigureUseEndpoints(XigadeeAspNetPipelineExtensionScope scope, IApplicationBuilder app, IEndpointRouteBuilder endpoints);
+        void ConfigureUseEndpoints(XigadeeAspNetPipelineExtensionScope scope, IApplicationBuilder app);
     }
 
+    /// <summary>
+    /// This is the pipeline application scope.
+    /// </summary>
     [Flags]
     public enum XigadeeAspNetPipelineExtensionScope
     {
+        /// <summary>
+        /// Before the controller declarations
+        /// </summary>
         BeforeController = 1,
+        /// <summary>
+        /// After the controller declarations.
+        /// </summary>
         AfterController = 2
     }
 }

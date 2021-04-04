@@ -25,6 +25,5 @@ namespace Xigadee
             Statistics = statistics;
             LastUpdate = DateTime.UtcNow;
         }
-
     }
 }
