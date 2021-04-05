@@ -11,5 +11,10 @@ namespace Xigadee
         /// Gets or sets the logger.
         /// </summary>
         ILogger Logger { get; set; }
+
+        /// <summary>
+        /// This is the host environment.
+        /// </summary>
+        HostingContainerBase Host { get; set; }
     }
 }

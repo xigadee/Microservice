@@ -26,8 +26,6 @@ namespace Xigadee
             _types = types;
         }
 
-        protected bool IsProduction { get; } = false;
-
         public virtual void ConfigureControllerOptions(IServiceCollection services)
         {
             //Add the default API controller options.
@@ -39,6 +37,16 @@ namespace Xigadee
 
         public virtual void ConfigurePipeline(IApplicationBuilder app)
         {
+            if (Host?.IsDevelopment()??false)
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+                app.UseHsts();
+            }
+
             app.UseHttpsRedirection();
 
         }

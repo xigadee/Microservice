@@ -36,5 +36,10 @@ namespace Xigadee
         /// This is the unique id of the instance.
         /// </summary>
         public virtual string InstanceId {get;set;}
+        /// <summary>
+        /// Specifies whether this is a development instance.
+        /// </summary>
+        /// <returns></returns>
+        public abstract bool IsDevelopment();
     }
 }

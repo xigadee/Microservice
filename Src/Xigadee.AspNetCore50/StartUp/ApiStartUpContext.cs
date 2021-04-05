@@ -153,6 +153,7 @@ namespace Xigadee
         public void PipelineExtensionRegister(IAspNetPipelineExtension extension)
         {
             extension.Logger = Logger;
+            extension.Host = Host;
             PipelineExtensions.Add(extension);
         }
         #endregion

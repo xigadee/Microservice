@@ -200,7 +200,11 @@ namespace Xigadee
         {
             Logger = lf.CreateLogger<IApiStartupContextBase>();
             //Set the logger for the pipeline extensions.
-            PipelineComponents.ForEach(ext => ext.Value.Logger = Logger);
+            PipelineComponents.ForEach(ext =>
+            {
+                ext.Value.Logger = Logger;
+                ext.Value.Host = Host;
+            });
         }
         #endregion
 
@@ -262,7 +266,10 @@ namespace Xigadee
         /// <typeparam name="I">The extension type.</typeparam>
         /// <param name="extension">The class that implements the extension.</param>
         protected void PipelineComponentSet<I>(I extension) where I : IAspNetPipelineComponent
-            => PipelineComponents[typeof(I)] = extension;
+        {
+            extension.Host = Host;
+            PipelineComponents[typeof(I)] = extension;
+        }
         #endregion
 
         #region Statistics

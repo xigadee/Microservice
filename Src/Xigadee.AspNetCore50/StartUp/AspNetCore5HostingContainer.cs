@@ -48,7 +48,11 @@ namespace Xigadee
         /// This is the application name.
         /// </summary>
         public override string ApplicationName => HostEnvironment?.ApplicationName;
+        /// <summary>
+        /// Specifies whether this is a development instance.
+        /// </summary>
+        /// <returns></returns>
+        public override bool IsDevelopment() => HostEnvironment?.IsDevelopment() ?? false;
 
-        
     }
 }
