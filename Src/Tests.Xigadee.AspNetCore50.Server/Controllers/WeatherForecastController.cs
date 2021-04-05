@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace Tests.Xigadee.AspNetCore50
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("[controller]")]
+    [Produces("application/json")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]

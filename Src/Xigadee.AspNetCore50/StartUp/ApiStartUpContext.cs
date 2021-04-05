@@ -37,13 +37,10 @@ namespace Xigadee
         /// </summary>
         protected override void Bind()
         {
-            ConfigApplication = new ConfigApplication();
             BindConfigApplication();
 
-            ConfigMicroservice = new ConfigMicroservice();
             BindConfigMicroservice();
 
-            ConfigHealthCheck = new ConfigHealthCheck();
             BindConfigHealthCheck();
 
             ServiceIdentitySet();
@@ -143,7 +140,8 @@ namespace Xigadee
         {
             //Set the default Api settings.
             if (ConfigHealthCheck?.Enabled ?? false)
-                PipelineExtensionRegister(new HealthCheckExtension(ConfigHealthCheck, Id, ConfigApplication?.Name ?? ""));
+                PipelineExtensionRegister(new HealthCheckExtension(ConfigHealthCheck, Id
+                    , ConfigApplication?.Name ?? "", () => Statistics.Statistics));
         }
         #endregion
 

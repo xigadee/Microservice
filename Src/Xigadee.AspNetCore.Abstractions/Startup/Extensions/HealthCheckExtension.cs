@@ -80,11 +80,12 @@ namespace Xigadee
         {
             if (ConfigHealthCheck?.Enabled ?? false)
             {
+                if (ConfigHealthCheck?.ShowStatistics ?? false)
+                    app.Map($"/{Path}/statistics", (a) => a.Run(d => Process(d, HealthCheckOutputType.Statistics)));
+
                 //This sets the path to direct incoming callback requests to the middle-ware.
                 app.Map($"/{Path}", (a) => a.Run(d => Process(d, HealthCheckOutputType.Version)));
 
-                if (ConfigHealthCheck?.ShowStatistics ?? false)
-                    app.Map($"/{Path}/Statistics", (a) => a.Run(d => Process(d, HealthCheckOutputType.Statistics)));
             }
         }
         #endregion
@@ -97,9 +98,9 @@ namespace Xigadee
         /// <param name="type">The HTTP context.</param>
         private async Task Process(HttpContext context, HealthCheckOutputType type)
         {
-            int statusOut = 404;
             try
             {
+                context.Response.StatusCode = 404;
                 if (!context.Request.QueryString.HasValue)
                     return;
 
@@ -112,22 +113,20 @@ namespace Xigadee
                 switch (type)
                 {
                     case HealthCheckOutputType.Version:
-                        statusOut = await HealthCheckOutputWriteVersion(context);
-                        break;
+                        await HealthCheckOutputWriteVersion(context);
+                        return;
                     case HealthCheckOutputType.Statistics:
-                        statusOut = await HealthCheckOutputWriteStatistics(context);
+                        await HealthCheckOutputWriteStatistics(context);
+                        return;
+                    default:
                         break;
                 }
             }
             catch (Exception ex)
             {
-                Logger?.LogInformation(ex, $"Health check failed.");
+                Logger?.LogWarning(ex, $"Health check failed.");
+                context.Response.StatusCode = 500;
             }
-            finally
-            {
-                context.Response.StatusCode = statusOut;
-            }
-
         }
         #endregion
 
@@ -137,10 +136,11 @@ namespace Xigadee
         /// </summary>
         /// <param name="context">The Http context.</param>
         /// <returns>Returns the https status.</returns>
-        protected virtual async Task<int> HealthCheckOutputWriteVersion(HttpContext context)
+        protected virtual async Task HealthCheckOutputWriteVersion(HttpContext context)
         {
-            await context.Response.WriteAsync(HealthCheckOutput);
-            return 200;
+            context.Response.StatusCode = 200;
+            context.Response.ContentType = "text/markdown";
+            await context.Response.WriteAsync(HealthCheckOutput, Encoding.UTF8);
         } 
         #endregion
         #region HealthCheckOutputWriteStatistics(HttpContext context)
@@ -149,16 +149,28 @@ namespace Xigadee
         /// </summary>
         /// <param name="context">The Http context.</param>
         /// <returns>Returns the https status.</returns>
-        protected virtual async Task<int> HealthCheckOutputWriteStatistics(HttpContext context)
+        protected virtual async Task HealthCheckOutputWriteStatistics(HttpContext context)
         {
-            var stats = Statistics?.Invoke();
-            if (stats == null)
-                return 404;
+            try
+            {
+                var stats = Statistics?.Invoke();
+                if (stats == null)
+                {
+                    context.Response.StatusCode = 400;
+                    return;
+                }
 
-            var json = JsonConvert.SerializeObject(stats);
+                var json = JsonConvert.SerializeObject(stats);
 
-            await context.Response.WriteAsync(json, Encoding.UTF8);
-            return 200;
+                context.Response.StatusCode = 200;
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync(json, Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error retrieving statistics.");
+                context.Response.StatusCode = 500;
+            }
         } 
         #endregion
 
