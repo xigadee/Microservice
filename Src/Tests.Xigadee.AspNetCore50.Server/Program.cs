@@ -12,6 +12,7 @@ namespace Tests.Xigadee.AspNetCore50.Server
                 //.UseContentRoot(Directory.GetCurrentDirectory())
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.ConfigureKestrel(k => k.AddServerHeader = false);
                     webBuilder.UseStartupXigadee<StartupContext>();
                 })
             .Build()

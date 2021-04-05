@@ -14,7 +14,7 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.10.0" />
   </ItemGroup>
 
-    <PropertyGroup>
+  <PropertyGroup>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Tests.Xigadee.AspNetCore50.Server.xml</DocumentationFile>
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>  
