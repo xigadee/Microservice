@@ -31,5 +31,12 @@ namespace Tests.Xigadee.AspNetCore50.Server
 
             return usm;
         }
+
+        protected override void PipelineExtensionsSet()
+        {
+            base.PipelineExtensionsSet();
+
+            PipelineExtensionRegister(new SwaggerPipelineExtension());
+        }
     }
 }

@@ -129,7 +129,7 @@ namespace Xigadee
         protected override void PipelineComponentsSet()
         {
             //Set the default Api settings.
-            PipelineComponentSet<IAspNetPipelineController>(new XigadeeAspNetPipelineController());
+            PipelineComponentSet<IAspNetPipelineController>(new XigadeeAspNetPipelineController(GetType()));
         }
         #endregion
         #region 3.C PipelineExtensionsSet()
