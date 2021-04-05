@@ -10,9 +10,14 @@
 
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.1.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.10.0" />
-
   </ItemGroup>
+
+    <PropertyGroup>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Tests.Xigadee.AspNetCore50.Server.xml</DocumentationFile>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>  
 
   <ItemGroup>
     <ProjectReference Include="..\Tests.Xigadee.AspNetCore50.Common\Tests.Xigadee.AspNetCore50.Common.csproj" />

@@ -1,5 +1,14 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using System.Globalization;
+using System.IO;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Localization;
+using Swashbuckle.AspNetCore.Annotations;
 using Xigadee;
 
 namespace Tests.Xigadee.AspNetCore50.Server
@@ -13,11 +22,27 @@ namespace Tests.Xigadee.AspNetCore50.Server
 
         public string Path => "/swagger/v1/swagger.json";
 
-        public string Name => "My API V1";
+        public string Name => "Xigadee.AspNetCore50 Test API";
 
         public override void ConfigureServices(XigadeeAspNetPipelineExtensionScope scope, IServiceCollection services)
         {
-            services.AddSwaggerGen();
+            //See: https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/master/test/WebSites/Basic/Startup.cs#L39
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1",
+                    new OpenApiInfo
+                    {
+                        Title = Name,
+                        Version = "v1",
+                        Description = "A sample API for testing Swashbuckle",
+                        TermsOfService = new Uri("http://xigadee.org")
+                    }
+                );
+
+                c.IncludeXmlComments(System.IO.Path.Combine(AppContext.BaseDirectory, "Tests.Xigadee.AspNetCore50.Server.xml"));
+
+                c.EnableAnnotations();
+            });
         }
 
         public override void ConfigurePipeline(XigadeeAspNetPipelineExtensionScope scope, IApplicationBuilder app)
