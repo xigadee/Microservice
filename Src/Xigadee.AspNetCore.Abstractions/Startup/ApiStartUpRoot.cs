@@ -136,6 +136,8 @@ namespace Xigadee
 
             MicroserviceConfigure();
 
+            MicroserviceStatisticsConfigure();
+
             MicroserviceHostedServiceCreate();
 
             services.AddSingleton<IHostedService>(HostedService);
@@ -287,11 +289,18 @@ namespace Xigadee
             Pipeline.AdjustPolicyTaskManagerForDebug();
 
             Pipeline.AdjustCommunicationPolicyForSingleListenerClient();
-
+        }
+        #endregion
+        #region B3d. MicroserviceStatisticsConfigure()
+        /// <summary>
+        /// Creates and configures the Xigadee microservice pipeline.
+        /// </summary>
+        protected virtual void MicroserviceStatisticsConfigure()
+        {
             Pipeline.Service.Events.StatisticsIssued += (object sender, StatisticsEventArgs e) => Host?.StatisticsHolder?.Load(e?.Statistics);
         }
         #endregion
-        #region B3d. MicroserviceHostedServiceCreate()
+        #region B3e. MicroserviceHostedServiceCreate()
         /// <summary>
         /// Creates and configures the Xigadee microservice pipeline.
         /// </summary>
