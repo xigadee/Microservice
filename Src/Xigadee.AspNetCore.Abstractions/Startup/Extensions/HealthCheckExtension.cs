@@ -25,30 +25,6 @@ namespace Xigadee
         } 
         #endregion
 
-        #region Validate(string id)
-        /// <summary>
-        /// Validates the incoming Id.
-        /// </summary>
-        /// <param name="id">The incoming id.</param>
-        /// <returns>Returns true if matched.</returns>
-        public bool Validate(string id)
-        {
-            if (Config == null)
-                return false;
-
-            if (!Config.Enabled)
-                return false;
-
-            if (!Config.Id.HasValue && string.IsNullOrEmpty(id))
-                return true;
-
-            Guid value;
-            if (!Guid.TryParse(id, out value))
-                return false;
-
-            return Config.Id.Value == value;
-        }
-        #endregion
 
         #region ConfigurePipeline(XigadeeAspNetPipelineExtensionScope scope, IApplicationBuilder app)
         /// <summary>
@@ -87,7 +63,7 @@ namespace Xigadee
                 var query = QueryHelpers.ParseQuery(context.Request.QueryString.Value);
                 string id = query.Keys.FirstOrDefault(k => string.Equals("id", k, StringComparison.InvariantCultureIgnoreCase));
 
-                if (id == null && !Validate(query[id]))
+                if (string.IsNullOrWhiteSpace(id) || !Validate(query[id]))
                     return;
 
                 switch (type)
@@ -107,6 +83,30 @@ namespace Xigadee
                 Logger?.LogWarning(ex, $"Health check failed.");
                 context.Response.StatusCode = 500;
             }
+        }
+        #endregion
+        #region Validate(string id)
+        /// <summary>
+        /// Validates the incoming Id.
+        /// </summary>
+        /// <param name="id">The incoming id.</param>
+        /// <returns>Returns true if matched.</returns>
+        public bool Validate(string id)
+        {
+            if (Config == null)
+                return false;
+
+            if (!Config.Enabled)
+                return false;
+
+            if (!Config.Id.HasValue && string.IsNullOrEmpty(id))
+                return true;
+
+            Guid value;
+            if (!Guid.TryParse(id, out value))
+                return false;
+
+            return Config.Id.Value == value;
         }
         #endregion
 
