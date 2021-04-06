@@ -51,7 +51,7 @@ namespace Xigadee
 
         }
 
-        public void ConfigurePipelineComplete(IApplicationBuilder app)
+        public virtual void ConfigurePipelineComplete(IApplicationBuilder app)
         {
             app.UseRouting();
 
