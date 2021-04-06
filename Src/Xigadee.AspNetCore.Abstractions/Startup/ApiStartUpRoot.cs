@@ -150,6 +150,8 @@ namespace Xigadee
         protected virtual void MicroserviceCreate()
         {
             Pipeline = new MicroservicePipeline();
+
+            Host.MicroserviceId = Pipeline.Service.Id;
         }
         #endregion
         #region B3b. MicroserviceDataCollectionConnect()
@@ -286,8 +288,7 @@ namespace Xigadee
 
             Pipeline.AdjustCommunicationPolicyForSingleListenerClient();
 
-            Pipeline.Service.Events.StatisticsIssued += (object sender, StatisticsEventArgs e) => Context.Statistics.Load(e?.Statistics);
-
+            Pipeline.Service.Events.StatisticsIssued += (object sender, StatisticsEventArgs e) => Host?.StatisticsHolder?.Load(e?.Statistics);
         }
         #endregion
         #region B3d. MicroserviceHostedServiceCreate()

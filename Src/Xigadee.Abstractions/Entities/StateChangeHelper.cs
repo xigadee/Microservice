@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Xigadee
@@ -31,5 +32,23 @@ namespace Xigadee
 
             entity.StateChanges.Add(sc);
         }
+
+        /// <summary>
+        /// This method checks whether a state change has previously existed.
+        /// </summary>
+        /// <param name="sm">The state machine entity.</param>
+        /// <param name="state">The state to check for.</param>
+        /// <returns>Returns true if the change exists.</returns>
+        public static bool StateChangeExists(this IEntityState sm, string state)
+            => sm.State == state || (sm.StateChanges?.Exists(sc => sc.StateNew == state) ?? false);
+        /// <summary>
+        /// This extension method returns the last state change.
+        /// </summary>
+        /// <param name="sm">The state machine entity.</param>
+        /// <param name="condition">The optional condition used to select a set of states. If this is null or not supplied, the last state change based on date is returned</param>
+        /// <returns>Returns the last state change or null if there are no changes, or none match the condition.</returns>
+        public static StateChangeHistory LastStateChange(this IEntityState sm, Func<StateChangeHistory, bool> condition = null)
+            => sm.StateChanges?.OrderBy(s => s.TimeStamp).LastOrDefault(s => condition?.Invoke(s) ?? true);
+
     }
 }

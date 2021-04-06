@@ -13,37 +13,17 @@ namespace Xigadee
     /// <summary>
     /// This extension is used to return the healthcheck string.
     /// </summary>
-    public class HealthCheckExtension : XigadeeAspNetPipelineExtensionBase
+    public class HealthCheckExtension : XigadeeAspNetPipelineExtensionBase<ConfigHealthCheck>
     {
         #region Constructor
         /// <summary>
         /// This is the default constructor.
         /// </summary>
         /// <param name="config">The configuration.</param>
-        /// <param name="id">The microservice id.</param>
-        /// <param name="name">The optional application name.</param>
-        /// <param name="statistics">This is the function to retrieve the latest statistics from the Microservice.</param>
-        public HealthCheckExtension(ConfigHealthCheck config, Guid id, string name, Func<MicroserviceStatistics> statistics = null)
+        public HealthCheckExtension(ConfigHealthCheck config):base(config)
         {
-            ConfigHealthCheck = config;
-            Id = id;
-            Name = string.IsNullOrEmpty(name) ? GetType().Assembly.GetName().Name : name;
-            Statistics = statistics;
         } 
         #endregion
-
-        /// <summary>
-        /// This function can be used to retrieve the latest statistics from the Microservice.
-        /// </summary>
-        public virtual Func<MicroserviceStatistics> Statistics { get; set; }
-        /// <summary>
-        /// This is the config health check settings.
-        /// </summary>
-        public virtual ConfigHealthCheck ConfigHealthCheck { get; }
-        /// <summary>
-        /// Specifies whether the extension is enabled.
-        /// </summary>
-        public override bool Enabled => ConfigHealthCheck?.Enabled ?? false;
 
         #region Validate(string id)
         /// <summary>
@@ -53,20 +33,20 @@ namespace Xigadee
         /// <returns>Returns true if matched.</returns>
         public bool Validate(string id)
         {
-            if (ConfigHealthCheck == null)
+            if (Config == null)
                 return false;
 
-            if (!ConfigHealthCheck.Enabled)
+            if (!Config.Enabled)
                 return false;
 
-            if (!ConfigHealthCheck.Id.HasValue && string.IsNullOrEmpty(id))
+            if (!Config.Id.HasValue && string.IsNullOrEmpty(id))
                 return true;
 
             Guid value;
             if (!Guid.TryParse(id, out value))
                 return false;
 
-            return ConfigHealthCheck.Id.Value == value;
+            return Config.Id.Value == value;
         }
         #endregion
 
@@ -78,9 +58,9 @@ namespace Xigadee
         /// <param name="app">The application builder.</param>
         public override void ConfigurePipeline(XigadeeAspNetPipelineExtensionScope scope, IApplicationBuilder app)
         {
-            if (ConfigHealthCheck?.Enabled ?? false)
+            if (Config?.Enabled ?? false)
             {
-                if (ConfigHealthCheck?.ShowStatistics ?? false)
+                if (Config?.ShowStatistics ?? false)
                     app.Map($"/{Path}/statistics", (a) => a.Run(d => Process(d, HealthCheckOutputType.Statistics)));
 
                 //This sets the path to direct incoming callback requests to the middle-ware.
@@ -153,8 +133,8 @@ namespace Xigadee
         {
             try
             {
-                var stats = Statistics?.Invoke();
-                if (stats == null)
+                var stats = Host.StatisticsHolder;
+                if (stats?.Statistics == null)
                 {
                     context.Response.StatusCode = 400;
                     return;
@@ -175,23 +155,14 @@ namespace Xigadee
         #endregion
 
         /// <summary>
-        /// The microservice instance id.
-        /// </summary>
-        public Guid Id { get; }
-        /// <summary>
-        /// The application name.
-        /// </summary>
-        public string Name { get; }
-
-        /// <summary>
         /// This is the default healthcheck path 'healthcheck'. You can override this if needed.
         /// </summary>
-        private string Path => string.IsNullOrWhiteSpace(ConfigHealthCheck?.Path)?"healthcheck": (ConfigHealthCheck.Path.Trim().ToLowerInvariant());
+        private string Path => string.IsNullOrWhiteSpace(Config?.Path)?"healthcheck": (Config.Path.Trim().ToLowerInvariant());
 
         /// <summary>
         /// Gets the heartbeat output that is sent back to the polling client.
         /// </summary>
-        protected virtual string HealthCheckOutput => $"{Name} => {DateTime.UtcNow:s} @ {Id}";
+        protected virtual string HealthCheckOutput => $"{Host.ApplicationName} => {DateTime.UtcNow:s} @ {Host.InstanceId ?? Host.MicroserviceId?.ExternalServiceId}";
 
     }
 

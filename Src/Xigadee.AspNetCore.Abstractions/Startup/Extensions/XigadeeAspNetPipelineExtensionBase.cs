@@ -2,9 +2,35 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This is the base pipeline extension.
+    /// </summary>
+    /// <typeparam name="CFG">The generic configuration type.</typeparam>
+    public abstract class XigadeeAspNetPipelineExtensionBase<CFG> : XigadeeAspNetPipelineExtensionBase
+        where CFG : ConfigPipelineBase
+    {
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="config"></param>
+        protected XigadeeAspNetPipelineExtensionBase(CFG config)
+        {
+            Config = config ?? throw new ArgumentNullException(nameof(config));
+        }
+        /// <summary>
+        /// This is the default configuration for the extension.
+        /// </summary>
+        protected virtual CFG Config { get; }
+        /// <summary>
+        /// This is the enabled flag that is inherited from the configuration.
+        /// </summary>
+        public override bool Enabled => Config.Enabled;
+    }
+
     /// <summary>
     /// This base class can be used to create a pipeline component extension.
     /// </summary>

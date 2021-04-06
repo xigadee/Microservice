@@ -6,13 +6,8 @@ namespace Xigadee
     /// This class handles health check. Basically you pass a predefined Guid to the function, and it will return a response indicating that 
     /// the system is active. This is used by applications such as Application Insight to poll the service.
     /// </summary>
-    public class ConfigHealthCheck
+    public class ConfigHealthCheck:ConfigPipelineBase
     {
-        /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="ConfigHealthCheck"/> is enabled.
-        /// </summary>
-        public bool Enabled { get; set; }
-
         /// <summary>
         /// Gets or sets the ID, used to identify a valid request.
         /// </summary>

@@ -22,6 +22,9 @@ namespace Xigadee
         /// <param name="statistics">The stats.</param>
         public void Load(MicroserviceStatistics statistics)
         {
+            if (statistics == null)
+                return;
+
             Statistics = statistics;
             LastUpdate = DateTime.UtcNow;
         }

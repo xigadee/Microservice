@@ -140,8 +140,7 @@ namespace Xigadee
         {
             //Set the default Api settings.
             if (ConfigHealthCheck?.Enabled ?? false)
-                PipelineExtensionRegister(new HealthCheckExtension(ConfigHealthCheck, Id
-                    , ConfigApplication?.Name ?? "", () => Statistics.Statistics));
+                PipelineExtensionRegister(new HealthCheckExtension(ConfigHealthCheck));
         }
         #endregion
 
@@ -157,6 +156,5 @@ namespace Xigadee
             PipelineExtensions.Add(extension);
         }
         #endregion
-
     }
 }

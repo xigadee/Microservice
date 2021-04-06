@@ -41,5 +41,14 @@ namespace Xigadee
         /// </summary>
         /// <returns></returns>
         public abstract bool IsDevelopment();
+
+        /// <summary>
+        /// This is the current system statistics.
+        /// </summary>
+        public virtual StatisticsHolder StatisticsHolder { get; set; } = new StatisticsHolder();
+        /// <summary>
+        /// This is the microservice id.
+        /// </summary>
+        public virtual MicroserviceId MicroserviceId { get; set; }
     }
 }
