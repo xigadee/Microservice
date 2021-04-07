@@ -8,6 +8,17 @@ namespace Xigadee
     /// </summary>
     public abstract class JwtApiMicroserviceStartUpContext : ApiStartUpContext
     {
+        #region SecurityJwt
+        /// <summary>
+        /// Gets the bind name for SecurityJwt.
+        /// </summary>
+        protected virtual string BindNameSecurityJwt => "SecurityJwt";
+        /// <summary>
+        /// Gets or sets the JWT security settings.
+        /// </summary>
+        [RegisterAsSingleton]
+        public ConfigAuthenticationJwt SecurityJwt { get; set; }
+        #endregion
 
         #region 2b.Bind()
         /// <summary>
@@ -31,18 +42,6 @@ namespace Xigadee
         {
             PipelineComponentSet<IAspNetPipelineSecurityAuthentication>(new JwtXigadeeAspNetPipelineSecurityAuthentication(SecurityJwt));
         } 
-        #endregion
-
-        #region SecurityJwt
-        /// <summary>
-        /// Gets the bind name for SecurityJwt.
-        /// </summary>
-        protected virtual string BindNameSecurityJwt => "SecurityJwt";
-        /// <summary>
-        /// Gets or sets the JWT security settings.
-        /// </summary>
-        [RegisterAsSingleton]
-        public ConfigAuthenticationJwt SecurityJwt { get; set; }
         #endregion
 
         #region CXB => ModulesCreate(IServiceCollection services)

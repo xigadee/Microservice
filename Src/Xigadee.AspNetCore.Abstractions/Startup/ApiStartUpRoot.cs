@@ -132,6 +132,8 @@ namespace Xigadee
         {
             MicroserviceCreate();
 
+            MicroserviceIdentitySet();
+
             MicroserviceDataCollectionConnect();
 
             MicroserviceConfigure();
@@ -153,7 +155,14 @@ namespace Xigadee
         {
             Pipeline = new MicroservicePipeline();
 
-            Host.MicroserviceId = Pipeline.Service.Id;
+        }
+        /// <summary>
+        /// This method sets the Microservice identity in the Host container.
+        /// This is needed are pipeline create overrides do not set this.
+        /// </summary>
+        protected virtual void MicroserviceIdentitySet()
+        {
+            Host.MicroserviceId = Pipeline?.Service?.Id;
         }
         #endregion
         #region B3b. MicroserviceDataCollectionConnect()
