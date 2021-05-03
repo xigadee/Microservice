@@ -57,11 +57,44 @@ namespace Xigadee
         ) 
             :base(uri, authHandlers, clientCert, manualCertValidation, transportOverride)
         {
-            mKeyMapper = keyMapper ?? RepositoryKeyManager.Resolve<K>();
+            MappersSet(keyMapper, transportUriMapper);
+        }
 
-            mUriMapper = transportUriMapper ?? new TransportUriMapper<K>(mKeyMapper, uri, typeof(E).Name.ToLowerInvariant());
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        public ApiProviderAsyncV2(ConnectionContext context
+            , RepositoryKeyManager<K> keyMapper = null
+            , TransportUriMapper<K> transportUriMapper = null
+        )
+            : base(context)
+        {
+            MappersSet(keyMapper, transportUriMapper);
         }
         #endregion
+
+        /// <summary>
+        /// This method sets the default mappers for the application.
+        /// </summary>
+        /// <param name="keyMapper">The entity key mapper.</param>
+        /// <param name="transportUriMapper">The entity transport mapper.</param>
+        protected virtual void MappersSet(RepositoryKeyManager<K> keyMapper, TransportUriMapper<K> transportUriMapper)
+        {
+            mKeyMapper = keyMapper ?? DefaultKeyMapper();
+
+            mUriMapper = transportUriMapper ?? DefaultTransportUriMapper();
+        }
+        /// <summary>
+        /// This method returns the default key mapper for the entity key.
+        /// </summary>
+        /// <returns>Returns an instance of the mapper.</returns>
+        protected virtual RepositoryKeyManager<K> DefaultKeyMapper() => RepositoryKeyManager.Resolve<K>();
+        /// <summary>
+        /// This method sets the default transport Uri Mapper.
+        /// </summary>
+        /// <returns>Returns the transport mapper.</returns>
+        protected virtual TransportUriMapper<K> DefaultTransportUriMapper() 
+            => new TransportUriMapper<K>(mKeyMapper, Context.Uri, typeof(E).Name.ToLowerInvariant());
 
         #region Create(E entity, RepositorySettings options = null)
         /// <summary>
