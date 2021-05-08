@@ -39,8 +39,14 @@ namespace Xigadee
         /// <summary>
         /// This is the constructor.
         /// </summary>
-        public ModuleStartStopAttribute()
+        public ModuleStartStopAttribute(bool autoConnect = false)
         {
+            AutoConnect = autoConnect;
         }
+
+        /// <summary>
+        /// This property specifies that the container should autoconnect the module.
+        /// </summary>
+        public bool AutoConnect { get; }
     }
 }

@@ -172,7 +172,7 @@ namespace Xigadee
 
         #region ModuleStartStopExtract()
         /// <summary>
-        /// This method examines the context and extracts any singleton declarations.
+        /// This method examines the context and extracts any start/stop declarations.
         /// </summary>
         /// <returns>Returns the list of declarations.</returns>
         public IEnumerable<IApiModuleService> ModuleStartStopExtract()

@@ -14,22 +14,28 @@ namespace Xigadee
         where C:class
     {
         /// <summary>
+        /// This is the application environment context.
+        /// </summary>
+        protected virtual C Context { get; set; }
+
+        /// <summary>
         /// This method can be used to connect the module to the relevant application services.
         /// </summary>
         /// <param name="context">The application context. This will throw an exception if this is not set.</param>
         /// <param name="logger">The optional logger.</param>
-        public virtual void Connect(C context, ILogger logger = null)
+        public override void Connect(IApiStartupContextBase context, ILogger logger)
         {
-            Context = context ?? throw new ArgumentNullException(nameof(context));
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
 
-            if (logger != null)
-                Logger = logger;
+            base.Connect(context, logger);
+
+            if (context is C)
+                Context = (C)context;
+            else
+                throw new ArgumentOutOfRangeException(nameof(context), $"{ErrString()} {nameof(context)} is not of type {typeof(C).Name}");
+
         }
-
-        /// <summary>
-        /// This is the application environment context.
-        /// </summary>
-        protected virtual C Context { get; set; }
     }
 
     /// <summary>
@@ -43,20 +49,25 @@ namespace Xigadee
         public ILogger Logger { get; set; }
 
         /// <summary>
+        /// This method can be used to connect the module to the relevant application services.
+        /// </summary>
+        /// <param name="context">The application context. This will throw an exception if this is not set.</param>
+        /// <param name="logger">The optional logger.</param>
+        public virtual void Connect(IApiStartupContextBase context, ILogger logger)
+        {
+            if (logger != null)
+                Logger = logger;
+        }
+
+        /// <summary>
         /// This method is called to start a service when it is registered for a service call.
         /// </summary>
-        public virtual Task Start(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
+        public virtual Task Start(CancellationToken cancellationToken) => Task.CompletedTask;
 
         /// <summary>
         /// This method is called to stop a registered service.
         /// </summary>
-        public virtual Task Stop(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
+        public virtual Task Stop(CancellationToken cancellationToken) => Task.CompletedTask;
 
         /// <summary>
         /// This helper method returns a short name for the module and the current line number.

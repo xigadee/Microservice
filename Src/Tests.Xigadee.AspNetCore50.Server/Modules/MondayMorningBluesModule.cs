@@ -13,6 +13,7 @@ namespace Tests.Xigadee
         [RepositoryLoad]
         public IRepositoryAsync<Guid, MondayMorningBlues> RepositoryMondayMorningBlues { get; set; }
 
+        
         public override Task Start(CancellationToken cancellationToken)
         {
             return base.Start(cancellationToken);
