@@ -65,24 +65,28 @@ namespace Xigadee
         /// </summary>
         Create = 1,
         /// <summary>
+        /// This method is called the load the context.
+        /// </summary>
+        Load = 2,
+        /// <summary>
         /// Autoconnect the module to the context before it starts.
         /// </summary>
-        Connect = 2,
+        Connect = 4,
         /// <summary>
         /// This mode starts the service.
         /// </summary>
-        Start = 4,
+        Start = 8,
         /// <summary>
         /// This mode stops the service.
         /// </summary>
-        Stop = 8,
+        Stop = 16,
         /// <summary>
         /// This is the default behaviour.
         /// </summary>
-        StartStop = 12,
+        StartStop = 24,
         /// <summary>
         /// This option ensures all steps are executed.
         /// </summary>
-        All = 15
+        All = 31
     }
 }

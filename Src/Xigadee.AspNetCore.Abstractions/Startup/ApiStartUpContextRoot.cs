@@ -183,12 +183,17 @@ namespace Xigadee
         protected virtual void PipelineExtensionsSet() { }
         #endregion
 
-        #region CXB => ModulesCreate(IServiceCollection services)
+        #region CXB => ModulesCreate/Load(IServiceCollection services)
         /// <summary>
         /// Connects the application components and registers the relevant services.
         /// </summary>
         /// <param name="services">The services.</param>
         public virtual void ModulesCreate(IServiceCollection services) => Directives.ModulesCreate();
+        /// <summary>
+        /// Connects the application components and registers the relevant services.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        public virtual void ModulesLoad(IServiceCollection services) => Directives.ModulesLoad();
         #endregion
         #region CXC => Connect(ILoggerFactory lf)
         /// <summary>

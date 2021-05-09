@@ -91,6 +91,8 @@ namespace Xigadee
 
             ContextModulesCreate(services);
 
+            ContextModulesLoad(services);
+
             if (Context.UseMicroservice)
                 ConfigureMicroserviceHostedService(services);
 
@@ -118,10 +120,12 @@ namespace Xigadee
         /// Calls the context to create and register any modules and services respectively.
         /// </summary>
         /// <param name="services">The services.</param>
-        protected virtual void ContextModulesCreate(IServiceCollection services)
-        {
-            Context.ModulesCreate(services);
-        }
+        protected virtual void ContextModulesCreate(IServiceCollection services) => Context.ModulesCreate(services);
+        /// <summary>
+        /// Calls the context to create and register any modules and services respectively.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        protected virtual void ContextModulesLoad(IServiceCollection services) => Context.ModulesLoad(services);
         #endregion
         #region B3. ConfigureMicroserviceHostedService(IServiceCollection services)
         /// <summary>
@@ -143,6 +147,7 @@ namespace Xigadee
             MicroserviceHostedServiceCreate();
 
             services.AddSingleton<IHostedService>(HostedService);
+
             //Add the context so that it can inform modules of the start up.
             services.AddSingleton<IHostedService>(Context);
         }
@@ -154,7 +159,6 @@ namespace Xigadee
         protected virtual void MicroserviceCreate()
         {
             Pipeline = new MicroservicePipeline();
-
         }
         /// <summary>
         /// This method sets the Microservice identity in the Host container.

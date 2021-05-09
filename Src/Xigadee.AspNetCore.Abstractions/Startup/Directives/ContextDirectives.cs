@@ -200,14 +200,26 @@ namespace Xigadee
                     serv = ServiceHarnessHelper.DefaultCreator(mt)() as IApiModuleService;
 
                     setmi.Invoke(_ctx, new object[] { serv });
-
-                    //OK load the module.
-                    serv.Load(_ctx);
-
                 }
             }
         }
         #endregion
+        #region ModulesLoad()
+        /// <summary>
+        /// This method will connect any module set for automatic connection to the main context.
+        /// It will also create a default logger based on the module type.
+        /// </summary>
+        /// <param name="lf">The logging factory.</param>
+        public void ModulesLoad()
+        {
+            foreach (var mi in ModuleStartStopExtractMethodInfo(ModuleStartStopMode.Load))
+            {
+                var serv = ContextDirectives.miInvoke(_ctx, mi);
+                serv.Load(_ctx);
+            }
+        }
+        #endregion
+
         #region ModulesConnect(ILoggerFactory lf)
         /// <summary>
         /// This method will connect any module set for automatic connection to the main context.
@@ -243,7 +255,7 @@ namespace Xigadee
         /// This method examines the context and extracts any start/stop declarations.
         /// </summary>
         /// <returns>Returns the list of declarations.</returns>
-        public IEnumerable<MethodInfo> ModuleStartStopExtractMethodInfo(ModuleStartStopMode mode)
+        private IEnumerable<MethodInfo> ModuleStartStopExtractMethodInfo(ModuleStartStopMode mode)
         {
             //Filter for the attribute types that we wish to get.
             var results = GetAttributeData(attrFilterStartStop);
@@ -282,7 +294,7 @@ namespace Xigadee
         /// This method examines the context and extracts any start/stop declarations.
         /// </summary>
         /// <returns>Returns the list of declarations.</returns>
-        public IEnumerable<IApiModuleService> ModuleStartStopExtract(ModuleStartStopMode mode)
+        private IEnumerable<IApiModuleService> ModuleStartStopExtract(ModuleStartStopMode mode)
         {
             foreach (var mi in ModuleStartStopExtractMethodInfo(mode))
             {

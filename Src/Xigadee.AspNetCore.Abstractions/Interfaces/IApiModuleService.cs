@@ -12,18 +12,18 @@ namespace Xigadee
         /// <summary>
         /// This method is used to trigger a load after auto-creation.
         /// </summary>
-        /// <param name="context">The application context. This will throw an exception if this is not set.</param>
+        /// <param name="context">The application context. An exception will be thrown if this is null.</param>
         void Load(IApiStartupContextBase context);
 
         /// <summary>
         /// This method connects the module to the relevant shared context services.
         /// </summary>
-        /// <param name="context">The application context. This will throw an exception if this is not set.</param>
+        /// <param name="context">The application context. An exception will be thrown if this is null.</param>
         /// <param name="logger">The application logger.</param>
         void Connect(IApiStartupContextBase context, ILogger logger);
 
         /// <summary>
-        /// This method is called to start a service when it is registered for a service call.
+        /// This method is called to start a service when it is registered as part of the Microservice..
         /// </summary>
         Task Start(CancellationToken cancellationToken);
 
