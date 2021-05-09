@@ -4,8 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xigadee;
 
-namespace Tests.Xigadee.AspNetCore50.Server
+namespace Tests.Xigadee.AspNetCore50
 {
+    /// <summary>
+    /// This is the test context.
+    /// </summary>
     public class StartupContext : JwtApiMicroserviceStartUpContext
     {
         protected override IApiUserSecurityModule UserSecurityModuleCreate()
@@ -38,5 +41,13 @@ namespace Tests.Xigadee.AspNetCore50.Server
 
             PipelineExtensionRegister(new SwaggerPipelineExtension());
         }
+
+        /// <summary>
+        /// This is the test module.
+        /// </summary>
+        [RegisterAsSingleton]
+        [RepositoriesProcess]
+        [ModuleStartStop(ModuleStartStopMode.All)]
+        public MondayMorningBluesModule ModuleMondayMorningBlues { get; set; }
     }
 }

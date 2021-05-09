@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Localization;
 using Swashbuckle.AspNetCore.Annotations;
 using Xigadee;
 
-namespace Tests.Xigadee.AspNetCore50.Server
+namespace Tests.Xigadee.AspNetCore50
 {
     /// <summary>
     /// This class is used to insert the swagger definition.

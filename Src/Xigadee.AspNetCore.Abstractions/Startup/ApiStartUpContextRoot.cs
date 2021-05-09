@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace Xigadee
 {
@@ -187,9 +188,7 @@ namespace Xigadee
         /// Connects the application components and registers the relevant services.
         /// </summary>
         /// <param name="services">The services.</param>
-        public virtual void ModulesCreate(IServiceCollection services)
-        {
-        }
+        public virtual void ModulesCreate(IServiceCollection services) => Directives.ModulesCreate();
         #endregion
         #region CXC => Connect(ILoggerFactory lf)
         /// <summary>
@@ -206,6 +205,8 @@ namespace Xigadee
                 ext.Value.Logger = Logger;
                 ext.Value.Host = Host;
             });
+
+            Directives.ModulesConnect(lf);
         }
         #endregion
 
@@ -214,30 +215,12 @@ namespace Xigadee
         /// This override starts any registered module that have the start stop attribute set in the context.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public virtual Task StartAsync(CancellationToken cancellationToken) =>
-            Task.WhenAll(Directives.ModuleStartStopExtract().Select(m => StartAsyncComponent(m, cancellationToken)));
-        /// <summary>
-        /// This method is used to start a specific component.
-        /// </summary>
-        /// <param name="m"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        protected virtual Task StartAsyncComponent(IApiModuleService m, CancellationToken cancellationToken) => m.Start(cancellationToken);
-
+        public virtual Task StartAsync(CancellationToken cancellationToken) => Directives.ModulesStart(cancellationToken);
         /// <summary>
         /// This method stops any modules that have been marked for start stop.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public virtual Task StopAsync(CancellationToken cancellationToken) =>
-            Task.WhenAll(Directives.ModuleStartStopExtract().Select(m => StopAsyncComponent(m, cancellationToken)));
-        /// <summary>
-        /// This method is used to stop a specific component.
-        /// </summary>
-        /// <param name="m"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        protected virtual Task StopAsyncComponent(IApiModuleService m, CancellationToken cancellationToken) => m.Stop(cancellationToken);
-
+        public virtual Task StopAsync(CancellationToken cancellationToken) => Directives.ModulesStop(cancellationToken);
         #endregion
 
         #region PipelineComponents ...

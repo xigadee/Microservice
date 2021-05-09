@@ -79,6 +79,10 @@ namespace Xigadee
         /// <summary>
         /// This is the default behaviour.
         /// </summary>
-        StartStop = 12
+        StartStop = 12,
+        /// <summary>
+        /// This option ensures all steps are executed.
+        /// </summary>
+        All = 15
     }
 }

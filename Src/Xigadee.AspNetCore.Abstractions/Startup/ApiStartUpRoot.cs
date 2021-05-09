@@ -435,10 +435,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="app">The application.</param>
         /// <param name="loggerFactory">The logger factory.</param>
-        protected virtual void ContextConnect(IApplicationBuilder app, ILoggerFactory loggerFactory)
-        {
-            Context.Connect(loggerFactory);
-        }
+        protected virtual void ContextConnect(IApplicationBuilder app, ILoggerFactory loggerFactory) => Context.Connect(loggerFactory);
         #endregion
         #region C4. ConfigureSecurity(IApplicationBuilder app)
         /// <summary>

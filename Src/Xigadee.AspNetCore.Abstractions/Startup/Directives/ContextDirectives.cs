@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+
 namespace Xigadee
 {
     /// <summary>
@@ -51,7 +55,7 @@ namespace Xigadee
         /// </summary>
         /// <param name="attrFilter">The specific filter.</param>
         /// <returns>Returns the list of data.</returns>
-        public IEnumerable<(CustomAttributeData[], MethodInfo)> GetAttributeData(Func<CustomAttributeData, bool> attrFilter)
+        public IEnumerable<(CustomAttributeData[] attr , MethodInfo mi)> GetAttributeData(Func<CustomAttributeData, bool> attrFilter)
             => GetAttributeData(_ctx.GetType(), attrFilter);
         #endregion
         #region GetAttributeData(Type oType, Func<CustomAttributeData, bool> attrFilter)
@@ -170,27 +174,158 @@ namespace Xigadee
         }
         #endregion
 
-        #region ModuleStartStopExtract()
+        #region ModulesCreate()
+        /// <summary>
+        /// This metod will create and set any module set for automatic creation.
+        /// </summary>
+        public void ModulesCreate()
+        {
+            foreach (var mi in ModuleStartStopExtractMethodInfo(ModuleStartStopMode.Create))
+            {
+                var serv = ContextDirectives.miInvoke(this._ctx, mi);
+                if (serv == null)
+                {
+                    var set = mi.DeclaringType.GetProperties().FirstOrDefault(m => m.GetMethod == mi);
+                    var setmi = set?.SetMethod;
+                    var takesArg = mi.GetParameters().Length == 1;
+                    var noReturn = mi.ReturnType == typeof(void);
+
+                    //OK, we need to create the module here.
+                    var mt = mi.ReturnType;
+                    var parentRestrictions = mt.IsAbstract || !mt.IsClass;
+
+                    if (parentRestrictions)
+                        throw new ArgumentOutOfRangeException($"{nameof(ModulesCreate)}: Cannot create module: {mt.Name} is abstract or is not a class.");
+
+                    serv = ServiceHarnessHelper.DefaultCreator(mt)() as IApiModuleService;
+
+                    setmi.Invoke(_ctx, new object[] { serv });
+
+                    //OK load the module.
+                    serv.Load(_ctx);
+
+                }
+            }
+        }
+        #endregion
+        #region ModulesConnect(ILoggerFactory lf)
+        /// <summary>
+        /// This method will connect any module set for automatic connection to the main context.
+        /// It will also create a default logger based on the module type.
+        /// </summary>
+        /// <param name="lf">The logging factory.</param>
+        public void ModulesConnect(ILoggerFactory lf)
+        {
+            foreach (var mi in ModuleStartStopExtractMethodInfo(ModuleStartStopMode.Connect))
+            {
+                var serv = ContextDirectives.miInvoke(_ctx, mi);
+                serv.Connect(_ctx, lf.CreateLogger(mi.ReturnType));
+            }
+        }
+        #endregion
+
+        #region ModulesStart(CancellationToken cancellationToken)
+        /// <summary>
+        /// This module will start any module marked for automatic start.
+        /// </summary>
+        public Task ModulesStart(CancellationToken cancellationToken) => Task.WhenAll(ModuleStartStopExtract(ModuleStartStopMode.Start).Select(m => m.Start(cancellationToken))); 
+        #endregion
+        #region ModulesStop(CancellationToken cancellationToken)
+        /// <summary>
+        /// This method will stop any module set to stop automatically.
+        /// </summary>
+        /// <returns></returns>
+        public Task ModulesStop(CancellationToken cancellationToken) => Task.WhenAll(ModuleStartStopExtract(ModuleStartStopMode.Stop).Select(m => m.Stop(cancellationToken))); 
+        #endregion
+
+        #region ModuleStartStopExtractMethodInfo(ModuleStartStopMode mode)
         /// <summary>
         /// This method examines the context and extracts any start/stop declarations.
         /// </summary>
         /// <returns>Returns the list of declarations.</returns>
-        public IEnumerable<IApiModuleService> ModuleStartStopExtract()
+        public IEnumerable<MethodInfo> ModuleStartStopExtractMethodInfo(ModuleStartStopMode mode)
         {
             //Filter for the attribute types that we wish to get.
             var results = GetAttributeData(attrFilterStartStop);
 
             foreach (var result in results)
             {
-                var mi = result.Item2;
-                var obj = mi.Invoke(_ctx, new object[] { });
+                if (result.attr.Length == 0)
+                    continue;
 
-                if (obj is IApiModuleService)
-                    yield return obj as IApiModuleService;
+                var attrMode = ModuleStartStopAttributeModeExtract(result.attr[0]);
+                if (!attrMode.HasValue || (attrMode.Value & mode) == 0)
+                    continue;
+
+                yield return result.mi;
             }
 
             yield break;
         }
+        private static ModuleStartStopMode? ModuleStartStopAttributeModeExtract(CustomAttributeData data)
+        {
+            if (data.AttributeType != typeof(ModuleStartStopAttribute))
+                return null;
+
+            if (data.ConstructorArguments.Count != 1)
+                return null;
+
+            var arg = data.ConstructorArguments[0];
+            if (arg.ArgumentType != typeof(ModuleStartStopMode))
+                return null;
+
+            return (ModuleStartStopMode)arg.Value;
+        }
+        #endregion
+        #region ModuleStartStopExtract(ModuleStartStopMode mode)
+        /// <summary>
+        /// This method examines the context and extracts any start/stop declarations.
+        /// </summary>
+        /// <returns>Returns the list of declarations.</returns>
+        public IEnumerable<IApiModuleService> ModuleStartStopExtract(ModuleStartStopMode mode)
+        {
+            foreach (var mi in ModuleStartStopExtractMethodInfo(mode))
+            {
+                var obj = miInvoke(_ctx, mi);
+
+                if (obj != null)
+                    yield return obj;
+            }
+
+            yield break;
+        }
+
+        /// <summary>
+        /// This function extracts a module from it's property definition.
+        /// </summary>
+        public static Func<object, MethodInfo, IApiModuleService> miInvoke = (parent, mi) =>
+        {
+            var obj = mi.Invoke(parent, new object[] { });
+
+            if (obj is IApiModuleService)
+                return obj as IApiModuleService;
+
+            return null;
+        };
+
+        /// <summary>
+        /// This function extracts a module from it's property definition.
+        /// </summary>
+        public static Func<object, MethodInfo, IApiModuleService> miInvokeCreate = (parent, mi) =>
+        {
+            var obj = mi.Invoke(parent, new object[] { });
+
+            if (obj is IApiModuleService)
+                return obj as IApiModuleService;
+
+            //OK we need to create the module using the default constructor.
+            var rt = mi.ReturnType;
+
+
+
+            return null;
+        };
+
         #endregion
     }
 }

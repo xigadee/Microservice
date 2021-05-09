@@ -19,6 +19,19 @@ namespace Xigadee
         protected virtual C Context { get; set; }
 
         /// <summary>
+        /// This method sets the specific context.
+        /// </summary>
+        /// <param name="context"></param>
+        public override void Load(IApiStartupContextBase context)
+        {
+            base.Load(context);
+
+            if (context is C)
+                Context ??= (C)context;
+            else
+                throw new ArgumentOutOfRangeException(nameof(context), $"{ErrString()} {nameof(context)} is not of type {typeof(C).Name}");
+        }
+        /// <summary>
         /// This method can be used to connect the module to the relevant application services.
         /// </summary>
         /// <param name="context">The application context. This will throw an exception if this is not set.</param>
@@ -31,10 +44,9 @@ namespace Xigadee
             base.Connect(context, logger);
 
             if (context is C)
-                Context = (C)context;
+                Context ??= (C)context;
             else
                 throw new ArgumentOutOfRangeException(nameof(context), $"{ErrString()} {nameof(context)} is not of type {typeof(C).Name}");
-
         }
     }
 
@@ -49,6 +61,20 @@ namespace Xigadee
         public ILogger Logger { get; set; }
 
         /// <summary>
+        /// This is the base context definition.
+        /// </summary>
+        public IApiStartupContextBase ContextBase { get; set; }
+
+        /// <summary>
+        /// This is the load method. This is called after the module has been automatically created.
+        /// </summary>
+        /// <param name="context">The application context. This will throw an exception if this is not set.</param>
+        public virtual void Load(IApiStartupContextBase context)
+        {
+            ContextBase ??= context;
+        }
+
+        /// <summary>
         /// This method can be used to connect the module to the relevant application services.
         /// </summary>
         /// <param name="context">The application context. This will throw an exception if this is not set.</param>
@@ -57,6 +83,8 @@ namespace Xigadee
         {
             if (logger != null)
                 Logger = logger;
+
+            ContextBase ??= context;
         }
 
         /// <summary>
@@ -79,5 +107,7 @@ namespace Xigadee
             [CallerMemberName] string memberName = "",
             [CallerLineNumber] int sourceLineNumber = 0) =>
             $"{GetType().Name}/{memberName}@{sourceLineNumber}";
+
+
     }
 }

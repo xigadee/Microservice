@@ -23,6 +23,10 @@
     <ProjectReference Include="..\Tests.Xigadee.AspNetCore50.Common\Tests.Xigadee.AspNetCore50.Common.csproj" />
     <ProjectReference Include="..\Tests.Xigadee.Common\Tests.Xigadee.Common.csproj" />
     <ProjectReference Include="..\Xigadee.AspNetCore50\Xigadee.AspNetCore50.csproj" />
+  </ItemGroup>  
+
+  <ItemGroup>
+    <Folder Include="Config\" />
   </ItemGroup>
 
 </Project>
