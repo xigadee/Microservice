@@ -39,14 +39,46 @@ namespace Xigadee
         /// <summary>
         /// This is the constructor.
         /// </summary>
-        public ModuleStartStopAttribute(bool autoConnect = false)
+        public ModuleStartStopAttribute(ModuleStartStopMode mode = ModuleStartStopMode.StartStop)
         {
-            AutoConnect = autoConnect;
+            Mode = mode;
         }
 
         /// <summary>
         /// This property specifies that the container should autoconnect the module.
         /// </summary>
-        public bool AutoConnect { get; }
+        public ModuleStartStopMode Mode { get; }
+    }
+
+    /// <summary>
+    /// THis enumeration is used to specify the start stop mode for the Module.
+    /// </summary>
+    [Flags]
+    public enum ModuleStartStopMode
+    {
+        /// <summary>
+        /// No additional features.
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// Create the module automatically. This requires a parameterless constructor.
+        /// </summary>
+        Create = 1,
+        /// <summary>
+        /// Autoconnect the module to the context before it starts.
+        /// </summary>
+        Connect = 2,
+        /// <summary>
+        /// This mode starts the service.
+        /// </summary>
+        Start = 4,
+        /// <summary>
+        /// This mode stops the service.
+        /// </summary>
+        Stop = 8,
+        /// <summary>
+        /// This is the default behaviour.
+        /// </summary>
+        StartStop = 12
     }
 }
