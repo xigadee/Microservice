@@ -14,7 +14,7 @@ namespace Xigadee
     /// <summary>
     /// This is the root context it contains shared functionality within the .NET Standard capabilities.
     /// </summary>
-    public abstract class ApiStartUpContextRoot<HE> : IApiStartupContextBase, IHostedService
+    public abstract partial class ApiStartUpContextRoot<HE> : IApiStartupContextBase, IHostedService
         where HE : HostingContainerBase
     {
         #region Id
@@ -34,16 +34,7 @@ namespace Xigadee
         /// </summary>
         public ApiStartUpContextRoot()
         {
-            Directives = new ContextDirectives(this);
         }
-        #endregion
-        #region Directives
-        /// <summary>
-        /// This collection contains the list of repository directives for the context.
-        /// This can be used to populate the repositories and run time from a central method.
-        /// Useful when you want to set as memory backed for testing.
-        /// </summary>
-        public ContextDirectives Directives { get; }
         #endregion
         #region Host
         /// <summary>
@@ -188,12 +179,12 @@ namespace Xigadee
         /// Connects the application components and registers the relevant services.
         /// </summary>
         /// <param name="services">The services.</param>
-        public virtual void ModulesCreate(IServiceCollection services) => Directives.ModulesCreate();
+        public virtual void ModulesCreate(IServiceCollection services) => AttributeModulesCreate();
         /// <summary>
         /// Connects the application components and registers the relevant services.
         /// </summary>
         /// <param name="services">The services.</param>
-        public virtual void ModulesLoad(IServiceCollection services) => Directives.ModulesLoad();
+        public virtual void ModulesLoad(IServiceCollection services) => AttributeModulesLoad();
         #endregion
         #region CXC => Connect(ILoggerFactory lf)
         /// <summary>
@@ -211,7 +202,7 @@ namespace Xigadee
                 ext.Value.Host = Host;
             });
 
-            Directives.ModulesConnect(lf);
+            AttributeModulesConnect(lf);
         }
         #endregion
 
@@ -220,12 +211,12 @@ namespace Xigadee
         /// This override starts any registered module that have the start stop attribute set in the context.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public virtual Task StartAsync(CancellationToken cancellationToken) => Directives.ModulesStart(cancellationToken);
+        public virtual Task StartAsync(CancellationToken cancellationToken) => AttributeModulesStart(cancellationToken);
         /// <summary>
         /// This method stops any modules that have been marked for start stop.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public virtual Task StopAsync(CancellationToken cancellationToken) => Directives.ModulesStop(cancellationToken);
+        public virtual Task StopAsync(CancellationToken cancellationToken) => AttributeModulesStop(cancellationToken);
         #endregion
 
         #region PipelineComponents ...

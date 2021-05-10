@@ -329,7 +329,7 @@ namespace Xigadee
         /// <param name="services">The services.</param>
         protected virtual void ConfigureSingletons(IServiceCollection services)
         {
-            Context.Directives.SingletonRegistrationsExtract()
+            Context.AttributeSingletonRegistrationsExtract()
                 .ForEach((a) => services.AddSingleton(a.sType, a.service));
         }
         #endregion
