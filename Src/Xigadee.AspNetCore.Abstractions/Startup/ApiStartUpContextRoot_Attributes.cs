@@ -124,7 +124,7 @@ namespace Xigadee
         /// This method examines the context and extracts any singleton declarations.
         /// </summary>
         /// <returns>Returns the list of declarations.</returns>
-        protected virtual RepositoryDirectiveCollection AttributeRepositoryProcessExtract()
+        public virtual RepositoryDirectiveCollection AttributeRepositoryProcessExtract()
         {
             var coll = new RepositoryDirectiveCollection();
 
