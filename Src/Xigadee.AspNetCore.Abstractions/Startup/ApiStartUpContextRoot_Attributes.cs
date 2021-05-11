@@ -7,27 +7,37 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 namespace Xigadee
 {
+    //Attributes
     public abstract partial class ApiStartUpContextRoot<HE>
     {
         #region Declarations
-        //Filter for the attribute types that we wish to get.
-        readonly Func<CustomAttributeData, bool> attrFilterRepoRoot = (d) =>
+        /// <summary>
+        /// Filter for the Repositories process attribute types that we wish to get.
+        /// </summary>
+        protected readonly Func<CustomAttributeData, bool> attrFilterRepoRoot = (d) =>
             d.AttributeType == typeof(RepositoriesProcessAttribute) ||
             d.AttributeType == typeof(StopRepositoriesProcessAttribute)
             ;
 
-        readonly Func<CustomAttributeData, bool> attrFilterRepoClass = (d) =>
+        /// <summary>
+        /// Filter for the repository load attribute.
+        /// </summary>
+        protected readonly Func<CustomAttributeData, bool> attrFilterRepoClass = (d) =>
             d.AttributeType == typeof(RepositoryLoadAttribute)
             //|| d.AttributeType == typeof(StopRepositoriesProcessAttribute)
             ;
 
-        //Filter for the attribute types that we wish to get.
-        readonly Func<CustomAttributeData, bool> attrFilterStartStop = (d) =>
+        /// <summary>
+        /// Filter for the attribute types that we wish to get. 
+        /// </summary>
+        protected readonly Func<CustomAttributeData, bool> attrFilterStartStop = (d) =>
             d.AttributeType == typeof(ModuleStartStopAttribute)
             ;
 
-        //Filter for the attribute types that we wish to get.
-        readonly Func<CustomAttributeData, bool> attrFilterSingleton = (d) =>
+        /// <summary>
+        /// Filter for the attribute types that we wish to get.
+        /// </summary>
+        protected readonly Func<CustomAttributeData, bool> attrFilterSingleton = (d) =>
             d.AttributeType == typeof(RegisterAsSingletonAttribute) ||
             d.AttributeType == typeof(DoNotRegisterAsSingletonAttribute)
             ;
@@ -164,35 +174,47 @@ namespace Xigadee
         /// </summary>
         protected virtual void AttributeModulesCreate()
         {
-            foreach (var mi in AttributeModuleStartStopExtractMethodInfo(ModuleStartStopMode.Create))
-            {
-                var serv = MethodInfoInvokeContext(mi);
+            var resultP = GetType()
+                .GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                .Where((m) => m.CustomAttributes.Contains((a) => attrFilterStartStop(a)))
+                //.ToArray()
+                ;
 
-                if (serv == null)
-                    AttributeModulesCreate(mi);
-            }
+            foreach (var pi in resultP)
+                AttributeModuleCreate(pi);
         }
         /// <summary>
         /// This method create a specific instance of the module using its parameterless constructor or a constructor only containing optional parameters.
         /// </summary>
-        /// <param name="mi">The method info that points to the module property.</param>
-        protected virtual void AttributeModulesCreate(MethodInfo mi)
+        /// <param name="pi">The property info that points to the module property.</param>
+        protected virtual bool AttributeModuleCreate(PropertyInfo pi)
         {
-            var set = mi.DeclaringType.GetProperties().FirstOrDefault(m => m.GetMethod == mi);
-            var setmi = set?.SetMethod;
-            var takesArg = mi.GetParameters().Length == 1;
-            var noReturn = mi.ReturnType == typeof(void);
+            var attr = pi.CustomAttributes.Where(attrFilterStartStop).ToArray();
 
-            //OK, we need to create the module here.
-            var mt = mi.ReturnType;
-            var parentRestrictions = mt.IsAbstract || !mt.IsClass;
+            if (attr.Length == 0)
+                return false;
 
-            if (parentRestrictions)
-                throw new ArgumentOutOfRangeException($"{nameof(AttributeModulesCreate)}: Cannot create module: {mt.Name} is abstract or is not a class.");
+            var attrMode = AttributeModuleStartStopAttributeModeExtract(attr[0]);
+            if (!attrMode.HasValue || (attrMode.Value & ModuleStartStopMode.Create) == 0)
+                return false;
 
-            var serv = ServiceHarnessHelper.DefaultCreator(mt)() as IApiModuleService;
+            var mi = pi.GetMethod;
+            if (mi == null)
+                return false;
 
-            setmi.Invoke(this, new object[] { serv });
+            var serv = MethodInfoInvokeContext(mi);
+            if (serv != null)
+                return false;
+
+            var sm = pi.SetMethod;
+            if (sm == null)
+                return false;
+
+            serv = ServiceHarnessHelper.DefaultCreator(mi.ReturnType)() as IApiModuleService;
+
+            sm.Invoke(this, new object[] { serv });
+
+            return true;
         }
         #endregion
         #region AttributeModulesLoad()
@@ -278,7 +300,13 @@ namespace Xigadee
 
             yield break;
         }
-        private static ModuleStartStopMode? AttributeModuleStartStopAttributeModeExtract(CustomAttributeData data)
+
+        /// <summary>
+        /// This method extracts the start stop mode from the attribute.
+        /// </summary>
+        /// <param name="data">The incoming data.</param>
+        /// <returns>Returns the extracted mode or null if not set.</returns>
+        protected virtual ModuleStartStopMode? AttributeModuleStartStopAttributeModeExtract(CustomAttributeData data)
         {
             if (data.AttributeType != typeof(ModuleStartStopAttribute))
                 return null;
@@ -310,11 +338,12 @@ namespace Xigadee
 
             yield break;
         }
+
         /// <summary>
-        /// 
+        /// This method invokes the method for this context.
         /// </summary>
-        /// <param name="mi"></param>
-        /// <returns></returns>
+        /// <param name="mi">The method infor to invoke.</param>
+        /// <returns>Returns the specific module service.</returns>
         protected virtual IApiModuleService MethodInfoInvokeContext(MethodInfo mi)
         {
             var obj = mi.Invoke(this, new object[] { });
