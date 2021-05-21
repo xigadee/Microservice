@@ -36,6 +36,26 @@ namespace Xigadee
         /// This is the service identity for the Api.
         /// </summary>
         IApiServiceIdentity ServiceIdentity { get; }
+
+        /// <summary>
+        /// This is the Xigadee service pipeline.
+        /// </summary>
+        MicroservicePipeline MicroservicePipeline { get; set; }
+        /// <summary>
+        /// This is the microservice hosted service.
+        /// </summary>
+        MicroserviceHostedService MicroserviceHostedService { get; set; }
+
+        #region LoggerFactory
+        /// <summary>
+        /// Gets or sets the logger factory.
+        /// </summary>
+        ILoggerFactory LoggerFactory { get; set; }
+        /// <summary>
+        /// This is the logger provider for the application.
+        /// </summary>
+        ApplicationLoggerProvider LoggerProvider { get; set; }
+        #endregion
     }
 
     /// <summary>

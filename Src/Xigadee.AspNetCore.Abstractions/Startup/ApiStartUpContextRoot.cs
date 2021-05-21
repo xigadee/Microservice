@@ -271,5 +271,29 @@ namespace Xigadee
         [RegisterAsSingleton]
         public StatisticsHolder Statistics { get; private set; } = new StatisticsHolder();
         #endregion
+
+        #region Pipeline
+        /// <summary>
+        /// Gets the pipeline used to configure the Microservice.
+        /// </summary>
+        public MicroservicePipeline MicroservicePipeline { get; set; }
+        #endregion
+        #region Service
+        /// <summary>
+        /// Gets the Microservice ASP.NET Core hosted service.
+        /// </summary>
+        public MicroserviceHostedService MicroserviceHostedService { get; set; }
+        #endregion
+
+        #region LoggerFactory
+        /// <summary>
+        /// Gets or sets the logger factory.
+        /// </summary>
+        public ILoggerFactory LoggerFactory { get; set; }
+        /// <summary>
+        /// This is the logger provider for the application.
+        /// </summary>
+        public ApplicationLoggerProvider LoggerProvider { get; set; }
+        #endregion
     }
 }

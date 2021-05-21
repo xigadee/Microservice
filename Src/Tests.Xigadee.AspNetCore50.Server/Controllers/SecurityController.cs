@@ -11,6 +11,9 @@ using Tests.Xigadee.AspNetCore50;
 using Xigadee;
 namespace Tests.Xigadee.AspNetCore50
 {
+    /// <summary>
+    /// This is the core security controller that provides session functionality.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class SecurityController : ApiControllerBase
@@ -37,6 +40,10 @@ namespace Tests.Xigadee.AspNetCore50
         #endregion
 
         #region SessionCreate()
+        /// <summary>
+        /// This method creates a session.
+        /// </summary>
+        /// <returns></returns>
         [Route("sessioncreate")]
         [HttpPost()]
         public virtual async Task<IActionResult> SessionCreate()

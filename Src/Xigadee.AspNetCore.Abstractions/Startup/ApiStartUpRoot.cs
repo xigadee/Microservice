@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -44,32 +43,32 @@ namespace Xigadee
         /// </summary>
         protected virtual void Initialize()
         {
-            LoggerProviderCreate();
-
             ContextCreate();
+
+            LoggerProviderCreate();
 
             ContextInitialize();
         }
         #endregion
-        #region A1. LoggerProviderCreate()
-        /// <summary>
-        /// This method creates the LoggerProvider to allow processes such as the Microservice to connect
-        /// their logging systems early.
-        /// </summary>
-        protected virtual void LoggerProviderCreate()
-        {
-            LoggerProvider = new ApplicationLoggerProvider();
-            //This method tells the provider to hold messages internally until the release method is called.
-            LoggerProvider.Hold();
-        }
-        #endregion
-        #region A2. ContextCreate()
+        #region A1. ContextCreate()
         /// <summary>
         /// Initializes the context
         /// </summary>
         protected virtual void ContextCreate()
         {
             Context = new CTX();
+        }
+        #endregion
+        #region A2. LoggerProviderCreate()
+        /// <summary>
+        /// This method creates the LoggerProvider to allow processes such as the Microservice to connect
+        /// their logging systems early.
+        /// </summary>
+        protected virtual void LoggerProviderCreate()
+        {
+            Context.LoggerProvider = new ApplicationLoggerProvider();
+            //This method tells the provider to hold messages internally until the release method is called.
+            Context.LoggerProvider.Hold();
         }
         #endregion
         #region A3. ContextInitialize() -> CXA ->
@@ -146,7 +145,7 @@ namespace Xigadee
 
             MicroserviceHostedServiceCreate();
 
-            services.AddSingleton<IHostedService>(HostedService);
+            services.AddSingleton<IHostedService>(Context.MicroserviceHostedService);
 
             //Add the context so that it can inform modules of the start up.
             services.AddSingleton<IHostedService>(Context);
@@ -158,7 +157,7 @@ namespace Xigadee
         /// </summary>
         protected virtual void MicroserviceCreate()
         {
-            Pipeline = new MicroservicePipeline();
+            Context.MicroservicePipeline = new MicroservicePipeline();
         }
         /// <summary>
         /// This method sets the Microservice identity in the Host container.
@@ -166,7 +165,7 @@ namespace Xigadee
         /// </summary>
         protected virtual void MicroserviceIdentitySet()
         {
-            Host.MicroserviceId = Pipeline?.Service?.Id;
+            Host.MicroserviceId = Context.MicroservicePipeline?.Service?.Id;
         }
         #endregion
         #region B3b. MicroserviceDataCollectionConnect()
@@ -176,7 +175,7 @@ namespace Xigadee
         protected virtual void MicroserviceDataCollectionConnect()
         {
             //This method pipes the incoming data collection events to the ASP.NET Core logger.
-            Pipeline.OnDataCollection(MicroserviceOnDataCollection);
+            Context.MicroservicePipeline.OnDataCollection(MicroserviceOnDataCollection);
         }
         /// <summary>
         /// This method is called when a collection event is raised withing the Microservice.
@@ -199,7 +198,7 @@ namespace Xigadee
                     break;
                 case DataCollectionSupport.Logger:
                     if (MicroserviceOnDataCollection_Logger(ctx, ev, out LogEventApplication lev))
-                        LoggerProvider.AddLogEventToQueue(lev);
+                        Context.LoggerProvider.AddLogEventToQueue(lev);
                     break;
                 default:
                     MicroserviceOnDataCollection_Other(ctx, ev);
@@ -299,9 +298,9 @@ namespace Xigadee
         /// </summary>
         protected virtual void MicroserviceConfigure()
         {
-            Pipeline.AdjustPolicyTaskManagerForDebug();
+            Context.MicroservicePipeline.AdjustPolicyTaskManagerForDebug();
 
-            Pipeline.AdjustCommunicationPolicyForSingleListenerClient();
+            Context.MicroservicePipeline.AdjustCommunicationPolicyForSingleListenerClient();
         }
         #endregion
         #region B3d. MicroserviceStatisticsConfigure()
@@ -310,7 +309,7 @@ namespace Xigadee
         /// </summary>
         protected virtual void MicroserviceStatisticsConfigure()
         {
-            Pipeline.Service.Events.StatisticsIssued += (object sender, StatisticsEventArgs e) => Host?.StatisticsHolder?.Load(e?.Statistics);
+            Context.MicroservicePipeline.Service.Events.StatisticsIssued += (object sender, StatisticsEventArgs e) => Host?.StatisticsHolder?.Load(e?.Statistics);
         }
         #endregion
         #region B3e. MicroserviceHostedServiceCreate()
@@ -319,7 +318,7 @@ namespace Xigadee
         /// </summary>
         protected virtual void MicroserviceHostedServiceCreate()
         {
-            HostedService = new MicroserviceHostedService(Pipeline);
+            Context.MicroserviceHostedService = new MicroserviceHostedService(Context.MicroservicePipeline);
         }
         #endregion
         #region B4. ConfigureSingletons(IServiceCollection services)
@@ -370,13 +369,13 @@ namespace Xigadee
         /// <param name="app">The application.</param>
         public virtual void Configure(IApplicationBuilder app)
         {
-            LoggerFactory = app.ApplicationServices.GetService<ILoggerFactory>();
+            Context.LoggerFactory = app.ApplicationServices.GetService<ILoggerFactory>();
 
             ConfigurePipeline(app);
 
             ConfigureLogging(app);
 
-            ContextConnect(app, LoggerFactory);
+            ContextConnect(app, Context.LoggerFactory);
 
             ConfigureSecurity(app);
 
@@ -411,15 +410,15 @@ namespace Xigadee
         /// <param name="app">The application.</param>
         protected virtual void ConfigureLogging(IApplicationBuilder app)
         {
-            ConfigureLoggingSubscribers(app, LoggerProvider);
+            ConfigureLoggingSubscribers(app, Context.LoggerProvider);
 
             //Add our default logger with the default configuration.
-            LoggerFactory.AddProvider(LoggerProvider);
+            Context.LoggerFactory.AddProvider(Context.LoggerProvider);
 
             //This method releases any held messages.
             //These messages were initially held while the logging infrastructure was being set up.
             //This is to ensure that we don't loose our initial set up logging.
-            LoggerProvider.Release();
+            Context.LoggerProvider.Release();
         }
         #endregion
         #region C2a. ConfigureLoggingSubscribers(IApplicationBuilder app, ApplicationLoggerProvider provider)
@@ -463,33 +462,11 @@ namespace Xigadee
         protected abstract void ConfigureUseEndpoints(IApplicationBuilder app);
         #endregion
 
-        #region LoggerFactory
-        /// <summary>
-        /// Gets or sets the logger factory.
-        /// </summary>
-        protected ILoggerFactory LoggerFactory { get; set; }
-        /// <summary>
-        /// This is the logger provider for the application.
-        /// </summary>
-        protected ApplicationLoggerProvider LoggerProvider { get; set; }
-        #endregion
         #region Context
         /// <summary>
         /// Gets or sets the Api application context.
         /// </summary>
         public CTX Context { get; protected set; }
-        #endregion
-        #region Pipeline
-        /// <summary>
-        /// Gets the pipeline used to configure the Microservice.
-        /// </summary>
-        public MicroservicePipeline Pipeline { get; protected set; }
-        #endregion
-        #region Service
-        /// <summary>
-        /// Gets the Microservice ASP.NET Core hosted service.
-        /// </summary>
-        public MicroserviceHostedService HostedService { get; protected set; }
         #endregion
 
         #region PipelineExtensionsExecute ...
