@@ -47,7 +47,7 @@ namespace Xigadee
             {
                 var httpRs = await CallApiClientBase(method, uri, model, adjustIn, adjustOut, requestmodelSerializer);
 
-                await ProcessResponse(response, httpRs, responsemodelDeserializer, errorObjectDeserializer ?? DefaultErrorObjectDeserializer);
+                await ProcessResponse(response, httpRs, responsemodelDeserializer, errorObjectDeserializer ?? Context.DefaultErrorObjectDeserializer);
 
                 //Maps any additional properties or adjustments to the response.
                 mapOut?.Invoke(httpRs, response);
@@ -93,7 +93,7 @@ namespace Xigadee
             {
                 var httpRs = await CallApiClientBase(method, uri, content, adjustIn, adjustOut);
 
-                await ProcessResponse(response, httpRs, responsemodelDeserializer, errorObjectDeserializer ?? DefaultErrorObjectDeserializer);
+                await ProcessResponse(response, httpRs, responsemodelDeserializer, errorObjectDeserializer ?? Context.DefaultErrorObjectDeserializer);
 
                 //Maps any additional properties to the response.
                 mapOut?.Invoke(httpRs, response);

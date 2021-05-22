@@ -44,16 +44,18 @@ namespace Xigadee
         /// <param name="clientCert">The client certificate to connect to the remote party.</param>
         /// <param name="manualCertValidation">The certificate validation function.</param>
         /// <param name="transportOverride">The transport serializer collection.</param>
+        /// <param name="defaultErrorObjectDeserializer">This is the optional deserializer used to format error responses from the remote API.</param>
         protected ApiProviderBase(Uri uri
             , IEnumerable<IApiProviderAuthBase> authHandlers = null
             , X509Certificate clientCert = null
             , Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> manualCertValidation = null
             , IEnumerable<TransportSerializer> transportOverride = null
+            , Func<HttpContent, Task<object>> defaultErrorObjectDeserializer = null
             )
         {
             Context = new ConnectionContext();
 
-            Configure(uri, authHandlers, clientCert, manualCertValidation, transportOverride);
+            Configure(uri, authHandlers, clientCert, manualCertValidation, transportOverride, defaultErrorObjectDeserializer);
 
         }
         #endregion
@@ -192,13 +194,6 @@ namespace Xigadee
 
             return Task.FromResult(result);
         }
-        #endregion
-
-        #region DefaultErrorObjectDeserializer
-        /// <summary>
-        /// This property contains the default error object deserializer. If this is set, it will be used to deserialize incoming error objects.
-        /// </summary>
-        protected Func<HttpContent, Task<object>> DefaultErrorObjectDeserializer { get; set; } 
         #endregion
     }
 }

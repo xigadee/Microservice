@@ -4,6 +4,7 @@ using System.Net.Security;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 
 namespace Xigadee
 {
@@ -73,6 +74,10 @@ namespace Xigadee
             /// This is the value set for the x-api-version header. If this is null, the header will be skipped.
             /// </summary>
             public string ApiVersion { get; set; }
+            /// <summary>
+            /// This is the default error object deserializer.
+            /// </summary>
+            public Func<HttpContent, Task<object>> DefaultErrorObjectDeserializer { get; set; } = ApiProviderHelper.ToErrorObject;
         }
         #endregion
 
@@ -99,11 +104,12 @@ namespace Xigadee
         /// <param name="clientCert">The client certificate to connect to the remote party.</param>
         /// <param name="manualCertValidation">The certificate validation function.</param>
         /// <param name="transportOverride">The transport serializer collection.</param>
+        /// <param name="defaultErrorObjectDeserializer">This is the optional deserializer used to format error responses from the remote API.</param>
         public virtual void Configure(Uri uri, string jwtToken
             , X509Certificate clientCert = null
             , Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> manualCertValidation = null
-            , IEnumerable<TransportSerializer> transportOverride = null) 
-            => Configure(uri, new[] { new JwtAuthProvider(jwtToken) }, clientCert, manualCertValidation, transportOverride);
+            , IEnumerable<TransportSerializer> transportOverride = null, Func<HttpContent, Task<object>> defaultErrorObjectDeserializer = null) 
+            => Configure(uri, new[] { new JwtAuthProvider(jwtToken) }, clientCert, manualCertValidation, transportOverride, defaultErrorObjectDeserializer);
 
         /// <summary>
         /// This method can be used to change the context parameters.
@@ -113,11 +119,13 @@ namespace Xigadee
         /// <param name="clientCert">The SSL client certificate to use when connecting to the remote party.</param>
         /// <param name="manualCertValidation">The certificate validation function.</param>
         /// <param name="transportOverride">The transport serializer collection.</param>
+        /// <param name="defaultErrorObjectDeserializer">This is the optional deserializer used to format error responses from the remote API.</param>
         public virtual void Configure(Uri uri
             , IEnumerable<IApiProviderAuthBase> authHandlers = null
             , X509Certificate clientCert = null
             , Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> manualCertValidation = null
             , IEnumerable<TransportSerializer> transportOverride = null
+            , Func<HttpContent, Task<object>> defaultErrorObjectDeserializer = null
             )
         {
             if (ContextIsInherited)
@@ -159,6 +167,9 @@ namespace Xigadee
             Context.UserAgent = UserAgentGet();
             Context.AssemblyVersion = AssemblyVersionGet();
             Context.ApiVersion = ApiVersionGet();
+
+            if (defaultErrorObjectDeserializer != null)
+                Context.DefaultErrorObjectDeserializer = defaultErrorObjectDeserializer;
         } 
         #endregion
     }

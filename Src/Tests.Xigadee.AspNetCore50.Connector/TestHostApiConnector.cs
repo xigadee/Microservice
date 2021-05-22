@@ -19,7 +19,6 @@ namespace Tests.Xigadee.AspNetCore50
         /// </summary>
         public TestHostApiConnector() : base()
         {
-            DefaultErrorObjectDeserializer = ApiProviderHelper.ToErrorObject;
         }
         /// <summary>
         /// This is the default constructor.
@@ -36,7 +35,6 @@ namespace Tests.Xigadee.AspNetCore50
             , IEnumerable<TransportSerializer> transportOverride = null)
             : base(uri, authHandlers ?? new List<IApiProviderAuthBase>(), clientCert, manualCertValidation, transportOverride)
         {
-            DefaultErrorObjectDeserializer = ApiProviderHelper.ToErrorObject;
         }
         #endregion
 
