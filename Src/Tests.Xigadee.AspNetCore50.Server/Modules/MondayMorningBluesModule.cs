@@ -28,15 +28,7 @@ namespace Tests.Xigadee.AspNetCore50
         [RepositoryLoad]
         public IRepositoryAsync<Guid, MondayMorningBlues> RepositoryMondayMorningBlues { get; set; }
 
-        /// <summary>
-        /// This method is used to connect the module to the underlying system components.
-        /// </summary>
-        /// <param name="context">The application context.</param>
-        /// <param name="logger">The specific module logger.</param>
-        public override void Connect(IApiStartupContextBase context, ILogger logger)
-        {
-            base.Connect(context, logger);
-        }
+
         /// <summary>
         /// This is the override for starting the module.
         /// </summary>

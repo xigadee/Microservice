@@ -123,10 +123,23 @@ namespace Xigadee
         /// </summary>
         public virtual void Initialize()
         {
+            LoggingProviderSet();
             Build();
             Bind();
             Pipeline();
         }
+        #endregion
+
+        #region 0.LoggingProviderSet()
+        /// <summary>
+        /// This method sets the logging provider.
+        /// </summary>
+        protected virtual void LoggingProviderSet()
+        {
+            LoggerProvider = new ApplicationLoggerProvider();
+            //This method tells the provider to hold messages internally until the release method is called.
+            LoggerProvider.Hold();
+        } 
         #endregion
         #region 1.Build()
         /// <summary>
@@ -184,7 +197,7 @@ namespace Xigadee
         /// Connects the application components and registers the relevant services.
         /// </summary>
         /// <param name="services">The services.</param>
-        public virtual void ModulesLoad(IServiceCollection services) => AttributeModulesLoad();
+        public virtual void ModulesLoad(IServiceCollection services) => AttributeModulesLoad(services);
         #endregion
         #region CXC => Connect(ILoggerFactory lf)
         /// <summary>

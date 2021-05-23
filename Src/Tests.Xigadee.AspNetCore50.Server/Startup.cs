@@ -24,15 +24,7 @@ namespace Tests.Xigadee.AspNetCore50
 
         }
 
-        #region MicroserviceConfigure()
-        /// <summary>
-        /// This method configures the Microservice for the application.
-        /// </summary>
-        protected override void MicroserviceConfigure()
-        {
-            base.MicroserviceConfigure();
-        }
-        #endregion
+
 
 
 

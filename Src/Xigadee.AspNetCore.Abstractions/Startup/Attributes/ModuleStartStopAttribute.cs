@@ -41,24 +41,28 @@ namespace Xigadee
         /// </summary>
         Load = 2,
         /// <summary>
+        /// This setting is for module that need to configure the Microservice before it is started.
+        /// </summary>
+        MicroserviceConfigure = 4,
+        /// <summary>
         /// Autoconnect the module to the context before it starts.
         /// </summary>
-        Connect = 4,
+        Connect = 8,
         /// <summary>
         /// This mode starts the service.
         /// </summary>
-        Start = 8,
+        Start = 16,
         /// <summary>
         /// This mode stops the service.
         /// </summary>
-        Stop = 16,
+        Stop = 32,
         /// <summary>
         /// This is the default behaviour.
         /// </summary>
-        StartStop = 24,
+        StartStop = 48,
         /// <summary>
         /// This option ensures all steps are executed.
         /// </summary>
-        All = 31
+        All = 63
     }
 }

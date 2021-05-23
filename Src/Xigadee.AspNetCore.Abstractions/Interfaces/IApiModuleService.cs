@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Xigadee
@@ -13,14 +14,19 @@ namespace Xigadee
         /// This method is used to trigger a load after auto-creation.
         /// </summary>
         /// <param name="context">The application context. An exception will be thrown if this is null.</param>
-        void Load(IApiStartupContextBase context);
+        /// <param name="services">The service collection.</param>
+        void Load(IApiStartupContextBase context, IServiceCollection services);
+
+        /// <summary>
+        /// This method is used to configure the Microservice before it is started.
+        /// </summary>
+        void MicroserviceConfigure();
 
         /// <summary>
         /// This method connects the module to the relevant shared context services.
         /// </summary>
-        /// <param name="context">The application context. An exception will be thrown if this is null.</param>
-        /// <param name="logger">The application logger.</param>
-        void Connect(IApiStartupContextBase context, ILogger logger);
+        /// <param name="logger">The application logger for the module.</param>
+        void Connect(ILogger logger);
 
         /// <summary>
         /// This method is called to start a service when it is registered as part of the Microservice..

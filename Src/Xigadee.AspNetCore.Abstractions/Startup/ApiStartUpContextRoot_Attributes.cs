@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 namespace Xigadee
 {
@@ -41,6 +42,14 @@ namespace Xigadee
             d.AttributeType == typeof(RegisterAsSingletonAttribute) ||
             d.AttributeType == typeof(DoNotRegisterAsSingletonAttribute)
             ;
+
+        /// <summary>
+        /// Filter for the attribute types that we wish to get.
+        /// </summary>
+        protected readonly Func<CustomAttributeData, bool> attrFilterConfigurationSet = (d) =>
+            d.AttributeType == typeof(ConfigurationSetAttribute) ||
+            d.AttributeType == typeof(DoNotConfigurationSetAttribute)
+            ;
         #endregion
 
         #region AttributeDataGet(Func<CustomAttributeData, bool> attrFilter)
@@ -77,6 +86,48 @@ namespace Xigadee
         }
         #endregion
 
+        #region AttributeConfigurationSetExtract()
+        /// <summary>
+        /// This method examines the context and extracts any singleton declarations.
+        /// </summary>
+        /// <returns>Returns the list of declarations.</returns>
+        public virtual IEnumerable<(Type sType, object service)> AttributeConfigurationSetExtract()
+        {
+            //Filter for the attribute types that we wish to get.
+            var results = AttributeDataGet(attrFilterSingleton);
+
+            foreach (var result in results)
+            {
+                var attrs = result.Item1.ToList();
+
+                if (attrs.Contains((a) => a.AttributeType == typeof(DoNotRegisterAsSingletonAttribute)))
+                {
+                    //TODO: OK, as we may have multiple attributes, with deny set for a specific registration type, 
+                    //we need to filter out the ones registered and then adjust the collection.
+                    continue;
+                }
+
+                //Is the stop attribute defined, if so skip.
+                if (attrs.Count == 0)
+                    continue;
+
+                //Ok, extract the object and return the type. We may return multiple registrations for a single property.
+                object item = result.Item2.Invoke(this, new object[] { });
+
+                if (item != null)
+                    foreach (CustomAttributeData ad in attrs)
+                    {
+                        //OK, we know this is a SingletonRegistrationAttribute, so we just need to get the constructor parameter
+                        if (ad.ConstructorArguments.Count == 0 || ad.ConstructorArguments[0].Value == null)
+                            yield return (result.Item2.ReturnType, item);
+                        else
+                            yield return ((Type)ad.ConstructorArguments[0].Value, item);
+                    }
+            }
+
+            yield break;
+        }
+        #endregion
         #region AttributeSingletonRegistrationsExtract()
         /// <summary>
         /// This method examines the context and extracts any singleton declarations.
@@ -217,23 +268,48 @@ namespace Xigadee
             return true;
         }
         #endregion
-        #region AttributeModulesLoad()
+        #region AttributeModulesLoad(IServiceCollection services)
         /// <summary>
         /// This method will load any modules set for automatic connection to the main context.
         /// </summary>
-        protected virtual void AttributeModulesLoad()
+        /// <param name="services">The service collection.</param>
+        protected virtual void AttributeModulesLoad(IServiceCollection services)
         {
             foreach (var mi in AttributeModuleStartStopExtractMethodInfo(ModuleStartStopMode.Load))
-                AttributeModuleLoad(mi);
+                AttributeModuleLoad(services, mi);
         }
         /// <summary>
         /// This method will load any module set for automatic connection to the main context.
         /// </summary>
+        /// <param name="services">The service collection.</param>
         /// <param name="mi">The context method info.</param>
-        protected virtual void AttributeModuleLoad(MethodInfo mi)
+        protected virtual void AttributeModuleLoad(IServiceCollection services, MethodInfo mi)
         {
             var serv = MethodInfoInvokeContext(mi);
-            serv.Load(this);
+            serv.Load(this, services);
+        }
+        #endregion
+        #region AttributeModulesConnect(ILoggerFactory lf)
+        /// <summary>
+        /// This method will connect any module set for automatic connection to the main context.
+        /// It will also create a default logger based on the module type.
+        /// </summary>
+        /// <param name="lf">The logging factory.</param>
+        protected virtual void AttributeModulesMicroserviceConfigure(ILoggerFactory lf)
+        {
+            foreach (var mi in AttributeModuleStartStopExtractMethodInfo(ModuleStartStopMode.MicroserviceConfigure))
+                AttributeModuleConnect(mi, lf);
+        }
+        /// <summary>
+        /// This method will connect a specific module to the main context.
+        /// It will also create a default logger based on the module type.
+        /// </summary>
+        /// <param name="mi">The context method info.</param>
+        /// <param name="lf">The logging factory.</param>
+        protected virtual void AttributeModuleMicroserviceConfigure(MethodInfo mi, ILoggerFactory lf)
+        {
+            var serv = MethodInfoInvokeContext(mi);
+            serv.Connect(lf.CreateLogger(mi.ReturnType));
         }
         #endregion
         #region AttributeModulesConnect(ILoggerFactory lf)
@@ -256,7 +332,7 @@ namespace Xigadee
         protected virtual void AttributeModuleConnect(MethodInfo mi, ILoggerFactory lf)
         {
             var serv = MethodInfoInvokeContext(mi);
-            serv.Connect(this, lf.CreateLogger(mi.ReturnType));
+            serv.Connect(lf.CreateLogger(mi.ReturnType));
         }
         #endregion
 

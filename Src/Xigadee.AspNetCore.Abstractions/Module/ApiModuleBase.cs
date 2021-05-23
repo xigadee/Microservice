@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using System;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Xigadee
 {
@@ -21,10 +22,11 @@ namespace Xigadee
         /// <summary>
         /// This method sets the specific context.
         /// </summary>
-        /// <param name="context"></param>
-        public override void Load(IApiStartupContextBase context)
+        /// <param name="context">The application context.</param>
+        /// <param name="services">The application service collection.</param>
+        public override void Load(IApiStartupContextBase context, IServiceCollection services)
         {
-            base.Load(context);
+            base.Load(context, services);
 
             if (context is C)
                 Context ??= (C)context;
@@ -34,19 +36,10 @@ namespace Xigadee
         /// <summary>
         /// This method can be used to connect the module to the relevant application services.
         /// </summary>
-        /// <param name="context">The application context. This will throw an exception if this is not set.</param>
         /// <param name="logger">The optional logger.</param>
-        public override void Connect(IApiStartupContextBase context, ILogger logger)
+        public override void Connect(ILogger logger)
         {
-            if (context == null)
-                throw new ArgumentNullException(nameof(context));
-
-            base.Connect(context, logger);
-
-            if (context is C)
-                Context ??= (C)context;
-            else
-                throw new ArgumentOutOfRangeException(nameof(context), $"{ErrString()} {nameof(context)} is not of type {typeof(C).Name}");
+            base.Connect(logger);
         }
     }
 
@@ -64,27 +57,37 @@ namespace Xigadee
         /// This is the base context definition.
         /// </summary>
         public IApiStartupContextBase ContextBase { get; set; }
+        /// <summary>
+        /// This is the application service collection.
+        /// </summary>
+        public IServiceCollection Services { get; set; }
 
         /// <summary>
         /// This is the load method. This is called after the module has been automatically created.
         /// </summary>
         /// <param name="context">The application context. This will throw an exception if this is not set.</param>
-        public virtual void Load(IApiStartupContextBase context)
+        /// <param name="services">The application service collection.</param>
+        public virtual void Load(IApiStartupContextBase context, IServiceCollection services)
         {
             ContextBase ??= context;
+            Services ??= services;
+        }
+
+        /// <summary>
+        /// This method can be used to configure the Microservice before it is started.
+        /// </summary>
+        public virtual void MicroserviceConfigure()
+        {
         }
 
         /// <summary>
         /// This method can be used to connect the module to the relevant application services.
         /// </summary>
-        /// <param name="context">The application context. This will throw an exception if this is not set.</param>
         /// <param name="logger">The optional logger.</param>
-        public virtual void Connect(IApiStartupContextBase context, ILogger logger)
+        public virtual void Connect(ILogger logger)
         {
             if (logger != null)
                 Logger = logger;
-
-            ContextBase ??= context;
         }
 
         /// <summary>
@@ -107,6 +110,7 @@ namespace Xigadee
             [CallerMemberName] string memberName = "",
             [CallerLineNumber] int sourceLineNumber = 0) =>
             $"{GetType().Name}/{memberName}@{sourceLineNumber}";
+
 
 
     }
