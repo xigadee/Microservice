@@ -198,6 +198,11 @@ namespace Xigadee
         /// </summary>
         /// <param name="services">The services.</param>
         public virtual void ModulesLoad(IServiceCollection services) => AttributeModulesLoad(services);
+        /// <summary>
+        /// This method is used to call the module that need to configure the Microservice before it starts.
+        /// </summary>
+        public virtual void ModulesMicroserviceConfigure() => AttributeModulesMicroserviceConfigure();
+
         #endregion
         #region CXC => Connect(ILoggerFactory lf)
         /// <summary>

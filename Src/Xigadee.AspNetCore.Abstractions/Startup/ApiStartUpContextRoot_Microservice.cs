@@ -186,7 +186,7 @@ namespace Xigadee
 
             MicroservicePipeline.AdjustCommunicationPolicyForSingleListenerClient();
 
-            
+            ModulesMicroserviceConfigure();
         }
         #endregion
         #region B3d. MicroserviceStatisticsConfigure()

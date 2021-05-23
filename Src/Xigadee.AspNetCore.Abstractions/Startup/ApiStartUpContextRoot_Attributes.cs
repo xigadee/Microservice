@@ -289,16 +289,16 @@ namespace Xigadee
             serv.Load(this, services);
         }
         #endregion
-        #region AttributeModulesConnect(ILoggerFactory lf)
+        #region AttributeModulesMicroserviceConfigure(ILoggerFactory lf)
         /// <summary>
         /// This method will connect any module set for automatic connection to the main context.
         /// It will also create a default logger based on the module type.
         /// </summary>
         /// <param name="lf">The logging factory.</param>
-        protected virtual void AttributeModulesMicroserviceConfigure(ILoggerFactory lf)
+        protected virtual void AttributeModulesMicroserviceConfigure()
         {
             foreach (var mi in AttributeModuleStartStopExtractMethodInfo(ModuleStartStopMode.MicroserviceConfigure))
-                AttributeModuleConnect(mi, lf);
+                AttributeModuleMicroserviceConfigure(mi);
         }
         /// <summary>
         /// This method will connect a specific module to the main context.
@@ -306,10 +306,10 @@ namespace Xigadee
         /// </summary>
         /// <param name="mi">The context method info.</param>
         /// <param name="lf">The logging factory.</param>
-        protected virtual void AttributeModuleMicroserviceConfigure(MethodInfo mi, ILoggerFactory lf)
+        protected virtual void AttributeModuleMicroserviceConfigure(MethodInfo mi)
         {
             var serv = MethodInfoInvokeContext(mi);
-            serv.Connect(lf.CreateLogger(mi.ReturnType));
+            serv.MicroserviceConfigure();
         }
         #endregion
         #region AttributeModulesConnect(ILoggerFactory lf)
