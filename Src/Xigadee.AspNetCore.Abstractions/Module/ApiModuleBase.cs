@@ -108,10 +108,6 @@ namespace Xigadee
         /// <returns>Returns the debug string.</returns>
         public string ErrString(
             [CallerMemberName] string memberName = "",
-            [CallerLineNumber] int sourceLineNumber = 0) =>
-            $"{GetType().Name}/{memberName}@{sourceLineNumber}";
-
-
-
+            [CallerLineNumber] int sourceLineNumber = 0) => $"{GetType().Name}/{memberName}@{sourceLineNumber}";
     }
 }
