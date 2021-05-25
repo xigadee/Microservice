@@ -82,11 +82,23 @@ namespace Xigadee
         #endregion
         #region C3. ContextConnect(IApplicationBuilder app, ILoggerFactory loggerFactory) -> CXC ->
         /// <summary>
-        /// This method connects the context to the logging infrastructure.
+        /// Connects the application components and registers the relevant services.
         /// </summary>
         /// <param name="app">The application.</param>
-        /// <param name="loggerFactory">The logger factory.</param>
-        protected virtual void ContextConnect(IApplicationBuilder app, ILoggerFactory loggerFactory) { }
+        /// <param name="lf">The logger factory.</param>
+        public virtual void ContextConnect(IApplicationBuilder app, ILoggerFactory lf)
+        {
+            Logger = lf.CreateLogger<IApiStartupContextBase>();
+
+            //Set the logger for the pipeline extensions.
+            PipelineComponents.ForEach(ext =>
+            {
+                ext.Value.Logger = Logger;
+                ext.Value.Host = Host;
+            });
+
+            AttributeModulesConnect(lf);
+        }
         #endregion
         #region C4. ConfigureSecurity(IApplicationBuilder app)
         /// <summary>

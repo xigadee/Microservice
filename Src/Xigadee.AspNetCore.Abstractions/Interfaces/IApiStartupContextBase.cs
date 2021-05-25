@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Builder;
 
 namespace Xigadee
 {
@@ -14,7 +15,7 @@ namespace Xigadee
         /// Connects the application components and registers the relevant services.
         /// </summary>
         /// <param name="lf">The logger factory.</param>
-        void Connect(ILoggerFactory lf);
+        void ContextConnect(IApplicationBuilder app, ILoggerFactory lf);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IApiStartupContext" /> interface.

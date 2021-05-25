@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Reflection;
+using Microsoft.AspNetCore.Builder;
 
 namespace Xigadee
 {
@@ -204,25 +205,7 @@ namespace Xigadee
         public virtual void ModulesMicroserviceConfigure() => AttributeModulesMicroserviceConfigure();
 
         #endregion
-        #region CXC => Connect(ILoggerFactory lf)
-        /// <summary>
-        /// Connects the application components and registers the relevant services.
-        /// </summary>
-        /// <param name="lf">The logger factory.</param>
-        public virtual void Connect(ILoggerFactory lf)
-        {
-            Logger = lf.CreateLogger<IApiStartupContextBase>();
 
-            //Set the logger for the pipeline extensions.
-            PipelineComponents.ForEach(ext =>
-            {
-                ext.Value.Logger = Logger;
-                ext.Value.Host = Host;
-            });
-
-            AttributeModulesConnect(lf);
-        }
-        #endregion
 
         #region StartAsync/StopAsync
         /// <summary>

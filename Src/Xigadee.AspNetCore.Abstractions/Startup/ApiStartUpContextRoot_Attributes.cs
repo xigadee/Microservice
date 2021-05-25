@@ -305,7 +305,6 @@ namespace Xigadee
         /// It will also create a default logger based on the module type.
         /// </summary>
         /// <param name="mi">The context method info.</param>
-        /// <param name="lf">The logging factory.</param>
         protected virtual void AttributeModuleMicroserviceConfigure(MethodInfo mi)
         {
             var serv = MethodInfoInvokeContext(mi);
