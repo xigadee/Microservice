@@ -29,6 +29,8 @@ namespace Xigadee
 
             MicroserviceConfigure();
 
+            ModulesMicroserviceConfigure();
+
             MicroserviceStatisticsConfigure();
 
             MicroserviceHostedServiceCreate(services);
@@ -185,8 +187,6 @@ namespace Xigadee
             MicroservicePipeline.AdjustPolicyTaskManagerForDebug();
 
             MicroservicePipeline.AdjustCommunicationPolicyForSingleListenerClient();
-
-            ModulesMicroserviceConfigure();
         }
         #endregion
         #region B3d. MicroserviceStatisticsConfigure()
