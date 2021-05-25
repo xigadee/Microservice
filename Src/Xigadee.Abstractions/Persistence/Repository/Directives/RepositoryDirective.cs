@@ -11,16 +11,16 @@ namespace Xigadee
         /// <summary>
         /// This is the key type,
         /// </summary>
-        public Type TypeKey { get; }
+        public Type TypeKey { get; set;  }
         /// <summary>
         /// This is the entity type.
         /// </summary>
-        public Type TypeEntity { get; }
+        public Type TypeEntity { get; set; }
 
         /// <summary>
         /// This is the generic repository type, IRepositoryAsync
         /// </summary>
-        public Type RepositoryType { get; }
+        public Type RepositoryType { get; set; }
     }
     /// <summary>
     /// This is the root directive class that holds the reference to the actual property that needs to be set.
