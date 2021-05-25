@@ -15,7 +15,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class ApiProviderAsyncV2<K, E>: ApiProviderBase, IRepositoryAsync<K, E>
+    public class ApiProviderAsyncV2<K, E>: ApiProviderBase, IRepositoryAsync<K, E>, IRepositoryBase//, IRepositoryAsyncServer<K, E>
         where K : IEquatable<K>
     {
         #region Declarations
@@ -503,5 +503,22 @@ namespace Xigadee
         }
         #endregion
 
+
+        /// <summary>
+        /// This is the generic repository type, i.e. IRepositoryAsyncServer
+        /// </summary>
+        public Type RepositoryServerType { get; } = typeof(IRepositoryAsync<K, E>);
+        /// <summary>
+        /// This is the generic repository type, i.e. IRepository K,E
+        /// </summary>
+        public Type RepositoryType { get; } = typeof(IRepositoryAsync<K, E>);
+        /// <summary>
+        /// This is the entity type.
+        /// </summary>
+        public Type TypeEntity { get; } = typeof(E);
+        /// <summary>
+        /// This is the key type,
+        /// </summary>
+        public Type TypeKey { get; } = typeof(K);
     }
 }
