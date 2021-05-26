@@ -15,7 +15,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class ApiProviderAsyncV2<K, E>: ApiProviderBase, IRepositoryAsync<K, E>, IRepositoryBase//, IRepositoryAsyncServer<K, E>
+    public partial class ApiProviderAsyncV2<K, E>: ApiProviderBase, IRepositoryAsync<K, E>, IRepositoryBase
         where K : IEquatable<K>
     {
         #region Declarations
@@ -83,6 +83,12 @@ namespace Xigadee
             mKeyMapper = keyMapper ?? DefaultKeyMapper();
 
             mUriMapper = transportUriMapper ?? DefaultTransportUriMapper();
+
+            var res = EntityHintHelper.Resolve<E>();
+
+            //Key maker
+            KeyMaker = ((e) => res.Id<K>(e));
+            VersionPolicy = res.VersionPolicyGet<E>();
         }
         /// <summary>
         /// This method returns the default key mapper for the entity key.
@@ -107,12 +113,18 @@ namespace Xigadee
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Post);
 
+            OnBeforeCreateEvent(entity);
+
             using (var content = EntitySerialize(entity))
             {
-                return await CallClient<K, E>(uri, options
+                var rs = await CallClient<K, E>(uri, options
                     , content: content
                     , deserializer: EntityDeserialize
                     , mapOut: (rs, holder) => ExtractHeaders(rs, holder));
+
+                OnAfterCreateEvent(rs);
+
+                return rs;
             }
         }
         #endregion
@@ -128,9 +140,15 @@ namespace Xigadee
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Get, key);
 
-            return await CallClient<K, E>(uri, options
+            OnKeyEvent(KeyEventType.BeforeRead, key);
+
+            var rs = await CallClient<K, E>(uri, options
                 , deserializer: EntityDeserialize
                 , mapOut: (rs, holder) => ExtractHeaders(rs, holder));
+
+            OnAfterReadEvent(rs);
+
+            return rs;
         }
         #endregion
         #region ReadByRef(string refKey, string refValue, RepositorySettings options = null)
@@ -145,9 +163,15 @@ namespace Xigadee
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Get, refKey, refValue);
 
-            return await CallClient<K, E>(uri, options
+            OnKeyEvent(KeyEventType.BeforeRead, refType: refKey, refValue: refValue);
+
+            var rs = await CallClient<K, E>(uri, options
                 , deserializer: EntityDeserialize
                 , mapOut: (rs, holder) => ExtractHeaders(rs, holder));
+
+            OnAfterReadEvent(rs);
+
+            return rs;
         }
         #endregion
 
@@ -162,12 +186,18 @@ namespace Xigadee
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Put);
 
+            OnBeforeUpdateEvent(entity);
+
             using (var content = EntitySerialize(entity))
             {
-                return await CallClient<K, E>(uri, options
+                var rs = await CallClient<K, E>(uri, options
                     , content: content ?? throw new ArgumentNullException("content")
                     , deserializer: EntityDeserialize
                     , mapOut: (rs, holder) => ExtractHeaders(rs, holder));
+
+                OnAfterUpdateEvent(rs);
+
+                return rs;
             }
         }
         #endregion
@@ -183,9 +213,15 @@ namespace Xigadee
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Delete, key);
 
-            return await CallClient<K, Tuple<K, string>>(uri, options
+            OnKeyEvent(KeyEventType.BeforeDelete, key);
+
+            var rs = await CallClient<K, Tuple<K, string>>(uri, options
                 , deserializer: EntityDeserialize
                 , mapOut: (rs, holder) => ExtractHeaders(rs, holder));
+
+            OnAfterDeleteEvent(rs);
+
+            return rs;
         }
         #endregion
         #region DeleteByRef(string refKey, string refValue, RepositorySettings options = null)
@@ -200,9 +236,15 @@ namespace Xigadee
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Delete, refKey, refValue);
 
-            return await CallClient<K, Tuple<K, string>>(uri, options
+            OnKeyEvent(KeyEventType.BeforeDelete, refType: refKey, refValue: refValue);
+
+            var rs = await CallClient<K, Tuple<K, string>>(uri, options
                 , deserializer: EntityDeserialize
                 , mapOut: (rs, holder) => ExtractHeaders(rs, holder));
+
+            OnAfterDeleteEvent(rs);
+
+            return rs;
         }
         #endregion
 
@@ -217,9 +259,15 @@ namespace Xigadee
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Head, key);
 
-            return await CallClient<K, Tuple<K, string>>(uri, options
+            OnKeyEvent(KeyEventType.BeforeVersion, key);
+
+            var rs = await CallClient<K, Tuple<K, string>>(uri, options
                 , deserializer: EntityDeserialize
                 , mapOut: (rs, holder) => ExtractHeaders(rs, holder));
+
+            OnAfterVersionEvent(rs);
+
+            return rs;
         }
         #endregion
         #region VersionByRef(string refKey, string refValue, RepositorySettings options = null)
@@ -234,9 +282,15 @@ namespace Xigadee
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Head, refKey, refValue);
 
-            return await CallClient<K, Tuple<K, string>>(uri, options
+            OnKeyEvent(KeyEventType.BeforeVersion, refType: refKey, refValue: refValue);
+
+            var rs = await CallClient<K, Tuple<K, string>>(uri, options
                 , deserializer: EntityDeserialize
                 , mapOut: (rs, holder) => ExtractHeaders(rs, holder));
+
+            OnAfterVersionEvent(rs);
+
+            return rs;
         }
         #endregion
 
@@ -503,22 +557,5 @@ namespace Xigadee
         }
         #endregion
 
-
-        /// <summary>
-        /// This is the generic repository type, i.e. IRepositoryAsyncServer
-        /// </summary>
-        public Type RepositoryServerType { get; } = typeof(IRepositoryAsync<K, E>);
-        /// <summary>
-        /// This is the generic repository type, i.e. IRepository K,E
-        /// </summary>
-        public Type RepositoryType { get; } = typeof(IRepositoryAsync<K, E>);
-        /// <summary>
-        /// This is the entity type.
-        /// </summary>
-        public Type TypeEntity { get; } = typeof(E);
-        /// <summary>
-        /// This is the key type,
-        /// </summary>
-        public Type TypeKey { get; } = typeof(K);
     }
 }

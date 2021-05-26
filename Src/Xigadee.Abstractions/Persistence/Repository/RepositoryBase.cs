@@ -47,7 +47,6 @@ namespace Xigadee
         /// </summary>
         public event EventHandler<E> OnBeforeUpdate;
         #endregion
-
         #region OnAfterUpdate ...
         /// <summary>
         /// Occurs after an entity is created/attempted.
