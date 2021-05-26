@@ -120,12 +120,14 @@ namespace Xigadee
         }
         #endregion
 
+        #region AttributeConfigurationSetBind(string configName, object obj)
         /// <summary>
         /// This override is used to bind the specific attributes.
         /// </summary>
         /// <param name="configName"></param>
         /// <param name="obj"></param>
-        public override void AttributeConfigurationSetBind(string configName, object obj) => Configuration.Bind(configName, obj);
+        public override void AttributeConfigurationSetBind(string configName, object obj) => Configuration.Bind(configName, obj); 
+        #endregion
 
 
         #region 3.A PipelineComponentsSet()
