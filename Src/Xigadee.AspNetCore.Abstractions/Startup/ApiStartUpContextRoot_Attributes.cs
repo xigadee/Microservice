@@ -21,6 +21,14 @@ namespace Xigadee
             ;
 
         /// <summary>
+        /// This definition is used to pull out the configuration module settings.
+        /// </summary>
+        protected readonly Func<CustomAttributeData, bool> attrFilterConfiguration = (d) =>
+            d.AttributeType == typeof(ConfigurationSetAttribute) ||
+            d.AttributeType == typeof(DoNotConfigurationSetAttribute)
+            ;
+
+        /// <summary>
         /// Filter for the repository load attribute.
         /// </summary>
         protected readonly Func<CustomAttributeData, bool> attrFilterRepoClass = (d) =>
@@ -430,6 +438,69 @@ namespace Xigadee
         }
 
 
+        #endregion
+
+        //Configuration
+        #region BindAttributesConfigurationSet()
+        /// <summary>
+        /// This method reads the ConfigurationSet Attributes and processes them.
+        /// </summary>
+        protected virtual void BindAttributesConfigurationSet()
+        {
+            var resultP = GetType()
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where((m) => m.CustomAttributes.Contains((a) => attrFilterConfiguration(a)))
+                .Select((m) => (m.CustomAttributes.Where(attrFilterConfiguration).ToArray(), m))
+                ;
+
+            foreach (var data in resultP)
+                AttributeConfigurationSet(data.Item1, data.m);
+        }
+
+        /// <summary>
+        /// This method is used to set the configuration for the specific attribute.
+        /// </summary>
+        /// <param name="aCol">The attribute data.</param>
+        /// <param name="pi">The property info.</param>
+        protected virtual void AttributeConfigurationSet(CustomAttributeData[] aCol, PropertyInfo pi)
+        {
+            if (aCol.Length == 0)
+                return;
+
+            if (Array.Exists(aCol, a => a.AttributeType == typeof(DoNotConfigurationSetAttribute)))
+                return;
+
+            var mi = pi.GetMethod;
+            var sm = pi.SetMethod;
+
+            //Read the existing value
+            var obj = mi.Invoke(this, new object[] { });
+            //If it is already set
+            if (obj == null)
+            {
+                //Create the default object.
+                obj = ServiceHarnessHelper.DefaultCreator(mi.ReturnType)();
+
+                //Set the default object in the class.
+                pi.SetMethod.Invoke(this, new object[] { obj });
+            }
+
+            //OK, create the config using an empty constructor.
+            var attr = aCol[0];
+
+            var configName = pi.Name;
+            //Bind to the incoming configute.
+            if (attr.ConstructorArguments.Count > 0)
+                configName = attr.ConstructorArguments[0].Value as string;
+
+            AttributeConfigurationSetBind(configName, obj);
+        }
+        /// <summary>
+        /// This method is used to specifically bind the config to the object
+        /// </summary>
+        /// <param name="configName">The configuration section name.</param>
+        /// <param name="obj">The object to bind the configuration to.</param>
+        public abstract void AttributeConfigurationSetBind(string configName, object obj); 
         #endregion
     }
 }

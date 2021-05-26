@@ -33,6 +33,8 @@ namespace Xigadee
         /// </summary>
         protected override void Bind()
         {
+            BindAttributesConfigurationSet();
+
             BindConfigApplication();
 
             BindConfigMicroservice();
@@ -117,6 +119,14 @@ namespace Xigadee
                 , Host.EnvironmentName);
         }
         #endregion
+
+        /// <summary>
+        /// This override is used to bind the specific attributes.
+        /// </summary>
+        /// <param name="configName"></param>
+        /// <param name="obj"></param>
+        public override void AttributeConfigurationSetBind(string configName, object obj) => Configuration.Bind(configName, obj);
+
 
         #region 3.A PipelineComponentsSet()
         /// <summary>

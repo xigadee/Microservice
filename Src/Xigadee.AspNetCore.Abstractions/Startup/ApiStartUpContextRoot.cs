@@ -206,7 +206,6 @@ namespace Xigadee
 
         #endregion
 
-
         #region StartAsync/StopAsync
         /// <summary>
         /// This override starts any registered module that have the start stop attribute set in the context.
