@@ -74,7 +74,7 @@ namespace Xigadee
             where P: IPipeline
         {     
             var channel = pipeline.ToMicroservice().Communication.RegisterChannel(
-                new Channel(channelId, ChannelDirection.Incoming, description, boundaryLoggingEnabled, internalOnly,isAutocreated: isAutocreated));
+                new Channel(channelId, ChannelDirection.Incoming, description, boundaryLoggingEnabled, internalOnly, isAutocreated: isAutocreated));
 
             if (partitions == null && autosetPartition01)
                 partitions = ListenerPartitionConfig.Init(0,1);

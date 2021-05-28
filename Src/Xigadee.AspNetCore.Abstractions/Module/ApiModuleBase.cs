@@ -8,16 +8,124 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Xigadee
 {
     /// <summary>
+    /// This is the base class for module that support standard module configuration.
+    /// </summary>
+    /// <typeparam name="CTX">The application context type.</typeparam>
+    /// <typeparam name="CNF">The application configuration type.</typeparam>
+    public abstract class ApiModuleBase<CTX,CNF> : ApiModuleBase<CTX>
+        where CTX : class
+        where CNF: IApiModuleConfigBase
+    {
+        /// <summary>
+        /// The connector configuration.
+        /// </summary>
+        protected abstract CNF Config { get; }
+
+        /// <summary>
+        /// Specifies whether the service is enabled. The default is false.
+        /// </summary>
+        public virtual bool Enabled => Config?.Enabled ?? false;
+
+        #region Service overrides
+        /// <summary>
+        /// This method sets the specific context.
+        /// </summary>
+        /// <param name="context">The application context.</param>
+        /// <param name="services">The application service collection.</param>
+        public override void Load(IApiStartupContextBase context, IServiceCollection services)
+        {
+            base.Load(context, services);
+
+            if (Enabled)
+                LoadInternal(Context);
+        }
+        /// <summary>
+        /// This method can be used to connect the module to the relevant application services.
+        /// </summary>
+        /// <param name="logger">The optional logger.</param>
+        public override void Connect(ILogger logger)
+        {
+            base.Connect(logger);
+
+            if (Enabled)
+                ConnectInternal(Context);
+        }
+        /// <summary>
+        /// This method can be used to configure the Microservice before it is started.
+        /// </summary>
+        public override void MicroserviceConfigure()
+        {
+            base.MicroserviceConfigure();
+
+            if (Enabled)
+                MicroserviceConfigureInternal();
+        }
+        /// <summary>
+        /// This method is called to start a service when it is registered for a service call.
+        /// </summary>
+        public override async Task Start(CancellationToken cancellationToken)
+        {
+            if (Enabled)
+            {
+                await base.Start(cancellationToken);
+
+                await StartInternal(cancellationToken);
+            }
+        }
+        /// <summary>
+        /// This method is called to stop a registered service.
+        /// </summary>
+        public override async Task Stop(CancellationToken cancellationToken)
+        {
+            if (Enabled)
+            {
+                await StopInternal(cancellationToken);
+
+                await base.Stop(cancellationToken);
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// This method is called to Load the service if it marked as enabled.
+        /// </summary>
+        /// <param name="context">The main context.</param>
+        protected virtual void LoadInternal(CTX context) { }
+
+        /// <summary>
+        /// This method is called to connect the service to the other services if enabled.
+        /// </summary>
+        /// <param name="context">The main context.</param>
+        protected virtual void ConnectInternal(CTX context) { }
+        /// <summary>
+        /// This override is called if the service is enabled.
+        /// </summary>
+        protected virtual void MicroserviceConfigureInternal() { }
+
+        /// <summary>
+        /// This method is called to start the service if it is enabled though config.
+        /// </summary>
+        /// <param name="cancellationToken">The token to cancel the process.</param>
+        protected virtual Task StartInternal(CancellationToken cancellationToken) => Task.CompletedTask;
+
+        /// <summary>
+        /// This is used to stop the service based on the config getting..
+        /// </summary>
+        /// <param name="cancellationToken">The token to cancel the process.</param>
+        protected virtual Task StopInternal(CancellationToken cancellationToken) => Task.CompletedTask;
+    }
+
+    /// <summary>
     /// This method can be used to connect the module to the other application services.
     /// </summary>
-    /// <typeparam name="C">The application context type.</typeparam>
-    public abstract class ApiModuleBase<C>: ApiModuleBase
-        where C:class
+    /// <typeparam name="CTX">The application context type.</typeparam>
+    public abstract class ApiModuleBase<CTX>: ApiModuleBase
+        where CTX:class
     {
         /// <summary>
         /// This is the application environment context.
         /// </summary>
-        protected virtual C Context { get; set; }
+        protected virtual CTX Context { get; set; }
 
         /// <summary>
         /// This method sets the specific context.
@@ -28,39 +136,38 @@ namespace Xigadee
         {
             base.Load(context, services);
 
-            if (context is C)
-                Context ??= (C)context;
+            if (context is CTX)
+                Context ??= (CTX)context;
             else
-                throw new ArgumentOutOfRangeException(nameof(context), $"{ErrString()} {nameof(context)} is not of type {typeof(C).Name}");
-        }
-        /// <summary>
-        /// This method can be used to connect the module to the relevant application services.
-        /// </summary>
-        /// <param name="logger">The optional logger.</param>
-        public override void Connect(ILogger logger)
-        {
-            base.Connect(logger);
+                throw new ArgumentOutOfRangeException(nameof(context), $"{ErrString()} {nameof(context)} is not of type {typeof(CTX).Name}");
         }
     }
 
     /// <summary>
     /// This is the base class for ApiModules
     /// </summary>
-    public abstract class ApiModuleBase: IApiModuleService
+    public abstract class ApiModuleBase: CommandBase, IApiModuleService
     {
+        /// <summary>
+        /// This is the internal flag that marks the module as active.
+        /// </summary>
+        protected virtual bool _isActive { get; set; }
+        /// <summary>
+        /// Specifies that the module is active.
+        /// </summary>
+        public virtual bool IsActive => _isActive;
         /// <summary>
         /// Gets or sets the logger.
         /// </summary>
-        public ILogger Logger { get; set; }
-
+        public virtual ILogger Logger { get; set; }
         /// <summary>
         /// This is the base context definition.
         /// </summary>
-        public IApiStartupContextBase ContextBase { get; set; }
+        public virtual IApiStartupContextBase ContextBase { get; set; }
         /// <summary>
         /// This is the application service collection.
         /// </summary>
-        public IServiceCollection Services { get; set; }
+        public virtual IServiceCollection Services { get; set; }
 
         /// <summary>
         /// This is the load method. This is called after the module has been automatically created.
@@ -76,8 +183,42 @@ namespace Xigadee
         /// <summary>
         /// This method can be used to configure the Microservice before it is started.
         /// </summary>
-        public virtual void MicroserviceConfigure()
+        public virtual void MicroserviceConfigure() => MicroserviceConnectCommand();
+
+        /// <summary>
+        /// This is the channel to attach the command.
+        /// </summary>
+        protected virtual string CommandChannelId => "command";
+        /// <summary>
+        /// This is the description for command attachment.
+        /// </summary>
+        protected virtual string CommandChannelDescription => $"Application Module {GetType().Name}";
+        /// <summary>
+        /// This method sepcifically sets the cmmand based on command properties.
+        /// </summary>
+        protected virtual void MicroserviceConnectCommand() => MicroserviceConnectCommand(CommandChannelId, CommandChannelDescription);
+        /// <summary>
+        /// THis method is used to connect the command to the relevant channel.
+        /// </summary>
+        /// <param name="channelId">THe incoming command channel id.</param>
+        /// <param name="channelDescription">The option description.</param>
+        protected virtual void MicroserviceConnectCommand(string channelId, string channelDescription = null)
         {
+            var comms = ContextBase.MicroservicePipeline?.ToMicroservice().Communication;
+            if (comms == null)
+            {
+                Logger.LogWarning($"{ErrString()} - could not attach command to Microservice as pipeline is not defined.");
+                return;
+            }
+
+            IPipelineChannelIncoming<MicroservicePipeline> pipe;
+            //If the channel does not exist, add the command to a new channel.
+            if (!comms.TryGet(channelId, ChannelDirection.Incoming, out var channel))
+                pipe = ContextBase.MicroservicePipeline.AddChannelIncoming(channelId, channelDescription ?? "This is the system channel used to hold system processes");
+            else
+                pipe = new ChannelPipelineIncoming<MicroservicePipeline>(ContextBase.MicroservicePipeline, channel);
+
+            pipe.AttachCommand(this);
         }
 
         /// <summary>
@@ -86,19 +227,25 @@ namespace Xigadee
         /// <param name="logger">The optional logger.</param>
         public virtual void Connect(ILogger logger)
         {
-            if (logger != null)
-                Logger = logger;
+            Logger ??= logger;
         }
 
         /// <summary>
         /// This method is called to start a service when it is registered for a service call.
         /// </summary>
-        public virtual Task Start(CancellationToken cancellationToken) => Task.CompletedTask;
-
+        public virtual Task Start(CancellationToken cancellationToken)
+        {
+            _isActive = true;
+            return Task.CompletedTask;
+        }
         /// <summary>
         /// This method is called to stop a registered service.
         /// </summary>
-        public virtual Task Stop(CancellationToken cancellationToken) => Task.CompletedTask;
+        public virtual Task Stop(CancellationToken cancellationToken)
+        {
+            _isActive = false;
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// This helper method returns a short name for the module and the current line number.
@@ -106,7 +253,7 @@ namespace Xigadee
         /// <param name="memberName">This is filled in by the compiler.</param>
         /// <param name="sourceLineNumber">This is populated by the compiler.</param>
         /// <returns>Returns the debug string.</returns>
-        public string ErrString(
+        public virtual string ErrString(
             [CallerMemberName] string memberName = "",
             [CallerLineNumber] int sourceLineNumber = 0) => $"{GetType().Name}/{memberName}@{sourceLineNumber}";
     }

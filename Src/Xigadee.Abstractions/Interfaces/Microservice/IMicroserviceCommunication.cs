@@ -37,5 +37,13 @@ namespace Xigadee
         /// <param name="sender">The sender.</param>
         /// <returns>Returns the sender.</returns>
         ISender RegisterSender(ISender sender);
+        /// <summary>
+        /// This method can be used to retrieve an existing channel.
+        /// </summary>
+        /// <param name="channelId">The channel id.</param>
+        /// <param name="direction">The channel direction.</param>
+        /// <param name="channel">The channel if it exists.</param>
+        /// <returns>Returns true if the channel is resolved.</returns>
+        bool TryGet(string channelId, ChannelDirection direction, out Channel channel);
     }
 }
