@@ -104,6 +104,7 @@ namespace Xigadee
             //Set the Microservice Identity
             string instanceId = System.Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID");
             string siteName = System.Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME");
+            string siteHostname = System.Environment.GetEnvironmentVariable("WEBSITE_HOSTNAME");
 
             var url = string.IsNullOrEmpty(siteName) ? "http://localhost" : $"https://{siteName}.azurewebsites.net/";
 
