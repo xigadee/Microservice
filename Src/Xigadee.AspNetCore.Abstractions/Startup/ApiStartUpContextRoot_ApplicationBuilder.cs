@@ -5,6 +5,9 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace Xigadee
 {
     //Application Builder
@@ -28,6 +31,13 @@ namespace Xigadee
             ConfigureSecurity(app);
 
             ConfigureUseEndpoints(app);
+
+            ModuleLifecycleChange(ApiModuleLifecycle.Connected);
+            if (_waitStart)
+            {
+                var t = Task.Run(async () => await AttributeModulesStart(CancellationToken.None));
+                t.Wait();
+            }
         }
         #endregion
         #region C1. ConfigurePipeline(IApplicationBuilder app)

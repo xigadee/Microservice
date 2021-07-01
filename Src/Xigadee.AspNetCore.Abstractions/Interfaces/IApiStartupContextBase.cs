@@ -18,7 +18,7 @@ namespace Xigadee
         void ContextConnect(IApplicationBuilder app, ILoggerFactory lf);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IApiStartupContext" /> interface.
+        /// Initializes and create the modules dynamically.
         /// </summary>
         /// <param name="services">The services.</param>
         void ModulesCreate(IServiceCollection services);

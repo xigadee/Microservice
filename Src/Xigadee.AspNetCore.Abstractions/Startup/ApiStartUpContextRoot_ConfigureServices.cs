@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 namespace Xigadee
 {
     //Configuration
@@ -20,13 +15,23 @@ namespace Xigadee
         /// <returns>Returns the new service provider.</returns>
         public virtual void ConfigureServices(IServiceCollection services)
         {
+            ModuleLifecycleChange(ApiModuleLifecycle.Initialized);
+
             ConfigureOptions(services);
+
+            ModuleLifecycleChange(ApiModuleLifecycle.Beginning);
 
             ModulesCreate(services);
 
+            ModuleLifecycleChange(ApiModuleLifecycle.Created);
+
             ModulesLoad(services);
 
+            ModuleLifecycleChange(ApiModuleLifecycle.Loaded);
+
             MicroserviceConfigure(services);
+
+            ModuleLifecycleChange(ApiModuleLifecycle.MicroserviceConfigured);
 
             ConfigureSingletons(services);
 

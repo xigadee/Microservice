@@ -58,6 +58,7 @@ namespace Xigadee
             d.AttributeType == typeof(ConfigurationSetAttribute) ||
             d.AttributeType == typeof(DoNotConfigurationSetAttribute)
             ;
+
         #endregion
 
         #region AttributeDataGet(Func<CustomAttributeData, bool> attrFilter)
@@ -347,8 +348,15 @@ namespace Xigadee
         /// <summary>
         /// This module will start any module marked for automatic start.
         /// </summary>
-        protected virtual Task AttributeModulesStart(CancellationToken cancellationToken) =>
-            Task.WhenAll(AttributeModuleStartStopExtract(ModuleStartStopMode.Start).Select(m => m.Start(cancellationToken)));
+        protected virtual async Task AttributeModulesStart(CancellationToken cancellationToken)
+        {
+            ModuleLifecycleChange(ApiModuleLifecycle.Starting);
+
+            await Task.WhenAll(AttributeModuleStartStopExtract(ModuleStartStopMode.Start).Select(m => m.Start(cancellationToken)));
+
+            ModuleLifecycleChange(ApiModuleLifecycle.Started);
+
+        }
         #endregion
         #region AttributeModulesStop(CancellationToken cancellationToken)
         /// <summary>

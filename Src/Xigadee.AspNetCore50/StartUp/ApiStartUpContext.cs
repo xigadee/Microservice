@@ -130,7 +130,6 @@ namespace Xigadee
         public override void AttributeConfigurationSetBind(string configName, object obj) => Configuration.Bind(configName, obj); 
         #endregion
 
-
         #region 3.A PipelineComponentsSet()
         /// <summary>
         /// This method is used to set the pipeline extensions for the context.

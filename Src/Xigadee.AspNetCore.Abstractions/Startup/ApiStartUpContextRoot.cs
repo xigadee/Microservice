@@ -18,6 +18,7 @@ namespace Xigadee
     public abstract partial class ApiStartUpContextRoot<HE> : IApiStartupContextBase, IHostedService
         where HE : HostingContainerBase
     {
+
         #region Id
         /// <summary>
         /// This is the unique service Id which is regenerated each time the service starts up.
@@ -42,6 +43,33 @@ namespace Xigadee
         /// This is the hosting container environment.
         /// </summary>
         public HE Host { get; protected set; }
+        #endregion
+
+        #region ModuleLifecycle
+        /// <summary>
+        /// This is the current lifecycle.
+        /// </summary>
+        protected ApiModuleLifecycle ModuleLifecycle { get; private set; } = ApiModuleLifecycle.Initialized;
+        /// <summary>
+        /// This event can be used to intercept the lifecycle changes.
+        /// </summary>
+        public event EventHandler<ApiModuleLifecycle> OnModuleLifecycleChange;
+        /// <summary>
+        /// This method is called to change the lifecycle state.
+        /// </summary>
+        /// <param name="newState">The new state.</param>
+        protected void ModuleLifecycleChange(ApiModuleLifecycle newState)
+        {
+            ModuleLifecycle = newState;
+            try
+            {
+                OnModuleLifecycleChange?.Invoke(this, newState);
+            }
+            catch (Exception)
+            {
+                //Nothing we can do here.
+            }
+        }
         #endregion
         #region PipelineExtensions
         /// <summary>
@@ -203,15 +231,22 @@ namespace Xigadee
         /// This method is used to call the module that need to configure the Microservice before it starts.
         /// </summary>
         public virtual void ModulesMicroserviceConfigure() => AttributeModulesMicroserviceConfigure();
-
         #endregion
 
         #region StartAsync/StopAsync
+        bool _waitStart = false;
         /// <summary>
         /// This override starts any registered module that have the start stop attribute set in the context.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public virtual Task StartAsync(CancellationToken cancellationToken) => AttributeModulesStart(cancellationToken);
+        public virtual Task StartAsync(CancellationToken cancellationToken)
+        {
+            _waitStart = ModuleLifecycle < ApiModuleLifecycle.Connected;
+            if (_waitStart)
+                return Task.CompletedTask;
+
+            return AttributeModulesStart(cancellationToken);
+        }
         /// <summary>
         /// This method stops any modules that have been marked for start stop.
         /// </summary>
