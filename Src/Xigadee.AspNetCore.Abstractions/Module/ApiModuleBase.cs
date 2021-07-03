@@ -294,7 +294,7 @@ namespace Xigadee
         /// </summary>
         public virtual Task Start(CancellationToken cancellationToken)
         {
-            _isActive = true;
+            ActiveChange(true);
             return Task.CompletedTask;
         }
         /// <summary>
@@ -302,7 +302,7 @@ namespace Xigadee
         /// </summary>
         public virtual Task Stop(CancellationToken cancellationToken)
         {
-            _isActive = false;
+            ActiveChange(false);
             return Task.CompletedTask;
         }
 
