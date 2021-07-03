@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -37,5 +38,15 @@ namespace Xigadee
         /// This method is called to stop a registered service.
         /// </summary>
         Task Stop(CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Specifies whether the module is active.
+        /// </summary>
+        bool IsActive { get; }
+
+        /// <summary>
+        /// This event is fired when the module active status is changed.
+        /// </summary>
+        event EventHandler<ApiModuleActiveEventArgs> OnActiveChange;
     }
 }

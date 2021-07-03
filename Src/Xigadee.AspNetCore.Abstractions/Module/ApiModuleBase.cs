@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics;
 
 namespace Xigadee
 {
@@ -144,18 +145,76 @@ namespace Xigadee
     }
 
     /// <summary>
+    /// This event class is fired when a CommandHarnessRequest object is generated.
+    /// </summary>
+    /// <seealso cref="System.EventArgs" />
+    [DebuggerDisplay("{IsActive} {Message}")]
+    public class ApiModuleActiveEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandHarnessEventArgs"/> class.
+        /// </summary>
+        /// <param name="active">The active status of the connection.</param>
+        /// <param name="reason">The status change reason.</param>
+        public ApiModuleActiveEventArgs(bool active, string reason = null)
+        {
+            Active = active;
+            Reason = reason;
+        }
+
+        /// <summary>
+        /// Gets the identifier.
+        /// </summary>
+        public bool Active { get; }
+        /// <summary>
+        /// The status change reason.
+        /// </summary>
+        public string Reason { get; }
+
+    }
+
+    /// <summary>
     /// This is the base class for ApiModules
     /// </summary>
     public abstract class ApiModuleBase: CommandBase, IApiModuleService
     {
         /// <summary>
+        /// This event fires when the active status of a module changes.
+        /// </summary>
+        public event EventHandler<ApiModuleActiveEventArgs> OnActiveChange;
+
+        /// <summary>
+        /// This method is used to change the active status.
+        /// </summary>
+        /// <param name="active">The boolean status.</param>
+        /// <param name="reason">The status change reason.</param>
+        protected virtual void ActiveChange(bool active, string reason = null)
+        {
+            var changed = _isActive ^ active;
+
+            _isActive = active;
+
+            try
+            {
+                if (changed)
+                    OnActiveChange?.Invoke(this, new ApiModuleActiveEventArgs(active, reason));
+            }
+            catch (Exception ex)
+            {
+                Logger?.LogError(ex, $"{ErrString()} uncaught event exception.");
+            }
+        }
+
+        /// <summary>
         /// This is the internal flag that marks the module as active.
         /// </summary>
-        protected virtual bool _isActive { get; set; }
+        private bool _isActive { get; set; }
+
         /// <summary>
         /// Specifies that the module is active.
         /// </summary>
         public virtual bool IsActive => _isActive;
+
         /// <summary>
         /// Gets or sets the logger.
         /// </summary>
