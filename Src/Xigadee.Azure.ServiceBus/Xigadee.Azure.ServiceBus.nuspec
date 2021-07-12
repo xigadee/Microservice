@@ -19,7 +19,7 @@
         <dependency id="Xigadee" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
         <dependency id="Microsoft.Azure.Management.ServiceBus" version="2.1.0" exclude="Build,Analyzers" />
         <dependency id="Microsoft.Azure.ServiceBus" version="5.1.2" exclude="Build,Analyzers" />
-        <dependency id="Newtonsoft.Json" version="12.0.3" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="13.0.1" exclude="Build,Analyzers" />
       </group>
     </dependencies>
   </metadata>

@@ -17,7 +17,6 @@
     <dependencies>
       <group targetFramework=".NETStandard2.0">
         <dependency id="Xigadee.Abstractions" version="{UpdateVersion.ps1.replace}" exclude="Build,Analyzers" />
-        <dependency id="Newtonsoft.Json" version="12.0.1" exclude="Build,Analyzers" />      
       </group>
     </dependencies>
   </metadata>

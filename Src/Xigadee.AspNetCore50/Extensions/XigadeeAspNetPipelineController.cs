@@ -32,7 +32,6 @@ namespace Xigadee
             var mvcBuilder = services.AddControllers();
 
             _types?.ForEach(t => mvcBuilder.AddApplicationPart(t.Assembly));
-
         }
 
         public virtual void ConfigurePipeline(IApplicationBuilder app)
@@ -63,7 +62,7 @@ namespace Xigadee
 
         }
 
-        public void ConfigureUseEndpoints(IApplicationBuilder app, IEndpointRouteBuilder endpoints, XigadeeAspNetPipelineExtensionScope? scope = null)
+        public virtual void ConfigureUseEndpoints(IApplicationBuilder app, IEndpointRouteBuilder endpoints, XigadeeAspNetPipelineExtensionScope? scope = null)
         {
             endpoints.MapControllers();
         }

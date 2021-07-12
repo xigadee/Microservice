@@ -9,7 +9,9 @@
         /// Gets or sets the name for the authentication method.
         /// </summary>
         public abstract string Name { get; set; }
-
+        /// <summary>
+        /// This is the display name for the authentication.
+        /// </summary>
         public virtual string DisplayName { get; set; } = "authentication";
 
         /// <summary>
