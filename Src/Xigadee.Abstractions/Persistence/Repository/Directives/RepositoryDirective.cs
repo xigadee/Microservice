@@ -4,10 +4,29 @@ using System.Reflection;
 namespace Xigadee
 {
     /// <summary>
+    /// THis abstract part allows classes to inherit from it.
+    /// </summary>
+    public abstract class RepositoryDirectiveBase
+    {
+        /// <summary>
+        /// This is the key type,
+        /// </summary>
+        public Type TypeKey { get; set;  }
+        /// <summary>
+        /// This is the entity type.
+        /// </summary>
+        public Type TypeEntity { get; set; }
+
+        /// <summary>
+        /// This is the generic repository type, IRepositoryAsync
+        /// </summary>
+        public Type RepositoryType { get; set; }
+    }
+    /// <summary>
     /// This is the root directive class that holds the reference to the actual property that needs to be set.
     /// </summary>
     [DebuggerDisplay("IRepositoryAsync<{TypeKey.Name},{TypeEntity.Name}>")]
-    public class RepositoryDirective
+    public class RepositoryDirective: RepositoryDirectiveBase
     {
         #region Constructor
         /// <summary>
@@ -44,20 +63,6 @@ namespace Xigadee
         /// This is the specific property.
         /// </summary>
         public PropertyInfo Property { get; }
-
-        /// <summary>
-        /// This is the key type,
-        /// </summary>
-        public Type TypeKey { get; }
-        /// <summary>
-        /// This is the entity type.
-        /// </summary>
-        public Type TypeEntity { get; }
-
-        /// <summary>
-        /// This is the generic repository type, IRepositoryAsync
-        /// </summary>
-        public Type RepositoryType { get; }
 
         /// <summary>
         /// This gets the repository.

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xigadee;
 
-namespace Tests.Xigadee
+namespace Tests.Xigadee.AspNetCore50
 {
     public class TestUser:User
     {

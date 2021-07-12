@@ -29,18 +29,4 @@ namespace Xigadee
         {
         }
     }
-
-    /// <summary>
-    /// This attribute is used to specify a module class that requires start stop support.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
-    public class ModuleStartStopAttribute : Attribute
-    {
-        /// <summary>
-        /// This is the constructor.
-        /// </summary>
-        public ModuleStartStopAttribute()
-        {
-        }
-    }
 }

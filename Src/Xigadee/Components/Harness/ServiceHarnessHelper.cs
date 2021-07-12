@@ -48,5 +48,41 @@ namespace Xigadee
                     );
         }
         #endregion
+
+        #region DefaultCreator<T>()
+        /// <summary>
+        /// This method checks whether the command supports a parameterless constructor, or a constructor with all optional parameters.
+        /// </summary>
+        /// <returns>Returns the command.</returns>
+        public static Func<object> DefaultCreator(Type t)
+        {
+            var constructor = t.GetConstructor(Type.EmptyTypes);
+
+            if (constructor != null)
+                return () => Activator.CreateInstance(t);
+
+            //Get the first constructor that supports all optional parameters (i.e. parameterless) with the least amount of parameters.
+            constructor = t
+                .GetConstructors()
+                .Where((c) => c.GetParameters().All((p) => p.IsOptional))
+                .OrderBy((c) => c.GetParameters().Count())
+                .FirstOrDefault();
+
+            if (constructor == null)
+                throw new ArgumentOutOfRangeException($"The object {t.Name} does not support a parameterless constructor, or a constructor with optional parameters. Please supply a specific creator function.");
+
+            //Create an array of all Type.Missing for each of the optional parameters.
+            var parameters = Enumerable
+                .Range(0, constructor.GetParameters().Count())
+                .Select((i) => Type.Missing).ToArray();
+
+            return () => Activator.CreateInstance(t
+                    , BindingFlags.CreateInstance | BindingFlags.Public | BindingFlags.Instance | BindingFlags.OptionalParamBinding
+                    , null
+                    , parameters
+                    , CultureInfo.CurrentCulture
+                    );
+        }
+        #endregion
     }
 }

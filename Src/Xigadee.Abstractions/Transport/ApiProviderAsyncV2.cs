@@ -15,7 +15,7 @@ namespace Xigadee
     /// </summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="E">The entity type.</typeparam>
-    public class ApiProviderAsyncV2<K, E>: ApiProviderBase, IRepositoryAsync<K, E>
+    public partial class ApiProviderAsyncV2<K, E>: ApiProviderBase, IRepositoryAsync<K, E>, IRepositoryBase
         where K : IEquatable<K>
     {
         #region Declarations
@@ -57,11 +57,50 @@ namespace Xigadee
         ) 
             :base(uri, authHandlers, clientCert, manualCertValidation, transportOverride)
         {
-            mKeyMapper = keyMapper ?? RepositoryKeyManager.Resolve<K>();
+            MappersSet(keyMapper, transportUriMapper);
+        }
 
-            mUriMapper = transportUriMapper ?? new TransportUriMapper<K>(mKeyMapper, uri, typeof(E).Name.ToLowerInvariant());
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        public ApiProviderAsyncV2(ConnectionContext context
+            , RepositoryKeyManager<K> keyMapper = null
+            , TransportUriMapper<K> transportUriMapper = null
+        )
+            : base(context)
+        {
+            MappersSet(keyMapper, transportUriMapper);
         }
         #endregion
+
+        /// <summary>
+        /// This method sets the default mappers for the application.
+        /// </summary>
+        /// <param name="keyMapper">The entity key mapper.</param>
+        /// <param name="transportUriMapper">The entity transport mapper.</param>
+        protected virtual void MappersSet(RepositoryKeyManager<K> keyMapper, TransportUriMapper<K> transportUriMapper)
+        {
+            mKeyMapper = keyMapper ?? DefaultKeyMapper();
+
+            mUriMapper = transportUriMapper ?? DefaultTransportUriMapper();
+
+            var res = EntityHintHelper.Resolve<E>();
+
+            //Key maker
+            KeyMaker = ((e) => res.Id<K>(e));
+            VersionPolicy = res.VersionPolicyGet<E>();
+        }
+        /// <summary>
+        /// This method returns the default key mapper for the entity key.
+        /// </summary>
+        /// <returns>Returns an instance of the mapper.</returns>
+        protected virtual RepositoryKeyManager<K> DefaultKeyMapper() => RepositoryKeyManager.Resolve<K>();
+        /// <summary>
+        /// This method sets the default transport Uri Mapper.
+        /// </summary>
+        /// <returns>Returns the transport mapper.</returns>
+        protected virtual TransportUriMapper<K> DefaultTransportUriMapper() 
+            => new TransportUriMapper<K>(mKeyMapper, Context.Uri, typeof(E).Name.ToLowerInvariant());
 
         #region Create(E entity, RepositorySettings options = null)
         /// <summary>
@@ -74,12 +113,18 @@ namespace Xigadee
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Post);
 
+            OnBeforeCreateEvent(entity);
+
             using (var content = EntitySerialize(entity))
             {
-                return await CallClient<K, E>(uri, options
+                var rs = await CallClient<K, E>(uri, options
                     , content: content
                     , deserializer: EntityDeserialize
                     , mapOut: (rs, holder) => ExtractHeaders(rs, holder));
+
+                OnAfterCreateEvent(rs);
+
+                return rs;
             }
         }
         #endregion
@@ -95,9 +140,15 @@ namespace Xigadee
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Get, key);
 
-            return await CallClient<K, E>(uri, options
+            OnKeyEvent(KeyEventType.BeforeRead, key);
+
+            var rs = await CallClient<K, E>(uri, options
                 , deserializer: EntityDeserialize
                 , mapOut: (rs, holder) => ExtractHeaders(rs, holder));
+
+            OnAfterReadEvent(rs);
+
+            return rs;
         }
         #endregion
         #region ReadByRef(string refKey, string refValue, RepositorySettings options = null)
@@ -112,9 +163,15 @@ namespace Xigadee
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Get, refKey, refValue);
 
-            return await CallClient<K, E>(uri, options
+            OnKeyEvent(KeyEventType.BeforeRead, refType: refKey, refValue: refValue);
+
+            var rs = await CallClient<K, E>(uri, options
                 , deserializer: EntityDeserialize
                 , mapOut: (rs, holder) => ExtractHeaders(rs, holder));
+
+            OnAfterReadEvent(rs);
+
+            return rs;
         }
         #endregion
 
@@ -129,12 +186,18 @@ namespace Xigadee
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Put);
 
+            OnBeforeUpdateEvent(entity);
+
             using (var content = EntitySerialize(entity))
             {
-                return await CallClient<K, E>(uri, options
+                var rs = await CallClient<K, E>(uri, options
                     , content: content ?? throw new ArgumentNullException("content")
                     , deserializer: EntityDeserialize
                     , mapOut: (rs, holder) => ExtractHeaders(rs, holder));
+
+                OnAfterUpdateEvent(rs);
+
+                return rs;
             }
         }
         #endregion
@@ -150,9 +213,15 @@ namespace Xigadee
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Delete, key);
 
-            return await CallClient<K, Tuple<K, string>>(uri, options
+            OnKeyEvent(KeyEventType.BeforeDelete, key);
+
+            var rs = await CallClient<K, Tuple<K, string>>(uri, options
                 , deserializer: EntityDeserialize
                 , mapOut: (rs, holder) => ExtractHeaders(rs, holder));
+
+            OnAfterDeleteEvent(rs);
+
+            return rs;
         }
         #endregion
         #region DeleteByRef(string refKey, string refValue, RepositorySettings options = null)
@@ -167,9 +236,15 @@ namespace Xigadee
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Delete, refKey, refValue);
 
-            return await CallClient<K, Tuple<K, string>>(uri, options
+            OnKeyEvent(KeyEventType.BeforeDelete, refType: refKey, refValue: refValue);
+
+            var rs = await CallClient<K, Tuple<K, string>>(uri, options
                 , deserializer: EntityDeserialize
                 , mapOut: (rs, holder) => ExtractHeaders(rs, holder));
+
+            OnAfterDeleteEvent(rs);
+
+            return rs;
         }
         #endregion
 
@@ -184,9 +259,15 @@ namespace Xigadee
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Head, key);
 
-            return await CallClient<K, Tuple<K, string>>(uri, options
+            OnKeyEvent(KeyEventType.BeforeVersion, key);
+
+            var rs = await CallClient<K, Tuple<K, string>>(uri, options
                 , deserializer: EntityDeserialize
                 , mapOut: (rs, holder) => ExtractHeaders(rs, holder));
+
+            OnAfterVersionEvent(rs);
+
+            return rs;
         }
         #endregion
         #region VersionByRef(string refKey, string refValue, RepositorySettings options = null)
@@ -201,9 +282,15 @@ namespace Xigadee
         {
             var uri = mUriMapper.MakeUri(HttpMethod.Head, refKey, refValue);
 
-            return await CallClient<K, Tuple<K, string>>(uri, options
+            OnKeyEvent(KeyEventType.BeforeVersion, refType: refKey, refValue: refValue);
+
+            var rs = await CallClient<K, Tuple<K, string>>(uri, options
                 , deserializer: EntityDeserialize
                 , mapOut: (rs, holder) => ExtractHeaders(rs, holder));
+
+            OnAfterVersionEvent(rs);
+
+            return rs;
         }
         #endregion
 

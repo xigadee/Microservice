@@ -1,22 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <PackageId>Xigadee.Azure.ApiManagement</PackageId>
-    <RootNamespace>Xigadee</RootNamespace>
-    <AssemblyName>Xigadee.Azure.ApiManagement</AssemblyName>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<PackageId>Xigadee.Azure.ApiManagement</PackageId>
+		<RootNamespace>Xigadee</RootNamespace>
+		<AssemblyName>Xigadee.Azure.ApiManagement</AssemblyName>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Xigadee.Azure.ApiManagement.xml</DocumentationFile>
-  </PropertyGroup>
+	<PropertyGroup>
+		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Xigadee.Azure.ApiManagement.xml</DocumentationFile>
+		<LangVersion>9.0</LangVersion>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Configuration\**" />
-    <EmbeddedResource Remove="Configuration\**" />
-    <None Remove="Configuration\**" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Configuration\**" />
+		<EmbeddedResource Remove="Configuration\**" />
+		<None Remove="Configuration\**" />
+	</ItemGroup>
 
   <ItemGroup>
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />

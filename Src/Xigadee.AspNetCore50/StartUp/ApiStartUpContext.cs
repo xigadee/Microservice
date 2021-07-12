@@ -1,12 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
+﻿using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 namespace Xigadee
 {
     /// <summary>
@@ -37,6 +33,8 @@ namespace Xigadee
         /// </summary>
         protected override void Bind()
         {
+            BindAttributesConfigurationSet();
+
             BindConfigApplication();
 
             BindConfigMicroservice();
@@ -106,6 +104,7 @@ namespace Xigadee
             //Set the Microservice Identity
             string instanceId = System.Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID");
             string siteName = System.Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME");
+            string siteHostname = System.Environment.GetEnvironmentVariable("WEBSITE_HOSTNAME");
 
             var url = string.IsNullOrEmpty(siteName) ? "http://localhost" : $"https://{siteName}.azurewebsites.net/";
 
@@ -120,6 +119,15 @@ namespace Xigadee
                 , instanceId
                 , Host.EnvironmentName);
         }
+        #endregion
+
+        #region AttributeConfigurationSetBind(string configName, object obj)
+        /// <summary>
+        /// This override is used to bind the specific attributes.
+        /// </summary>
+        /// <param name="configName"></param>
+        /// <param name="obj"></param>
+        public override void AttributeConfigurationSetBind(string configName, object obj) => Configuration.Bind(configName, obj); 
         #endregion
 
         #region 3.A PipelineComponentsSet()
@@ -144,6 +152,22 @@ namespace Xigadee
         }
         #endregion
 
+        #region B7. ConfigureController(IServiceCollection services)
+        /// <summary>
+        /// Configures the add MVC service.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        protected override void ConfigureController(IServiceCollection services)
+        {
+            PipelineExtensionsExecute(XigadeeAspNetPipelineExtensionScope.BeforeController, (e, scope) => e.ConfigureServices(scope, services));
+
+            if (PipelineComponentTryGet<IAspNetPipelineController>(out var ext))
+                ext.ConfigureControllerOptions(services);
+
+            PipelineExtensionsExecute(XigadeeAspNetPipelineExtensionScope.AfterController, (e, scope) => e.ConfigureServices(scope, services));
+        }
+        #endregion
+
         #region PipelineExtensionRegister(IXigadeeAspNetPipelineExtension extension)
         /// <summary>
         /// This method sets the extension logger and then adds it to the collection.
@@ -154,6 +178,51 @@ namespace Xigadee
             extension.Logger = Logger;
             extension.Host = Host;
             PipelineExtensions.Add(extension);
+        }
+        #endregion
+
+        #region C5. ConfigureUseEndpoints(IApplicationBuilder app
+        /// <summary>
+        /// Use this section to configure the routing
+        /// </summary>
+        /// <param name="app">The application builder.</param>
+        protected override void ConfigureUseEndpoints(IApplicationBuilder app)
+        {
+            PipelineExtensionsExecute(XigadeeAspNetPipelineExtensionScope.BeforeController
+                , (e, scope) => e.ConfigureUseEndpoints(scope, app));
+
+            if (PipelineComponentTryGet<IAspNetPipelineController>(out var ext))
+                ext.ConfigureUseEndpoints(app);
+
+            app.UseEndpoints(endpoints => ConfigureUseEndpoints(app, endpoints));
+
+            PipelineExtensionsExecute(XigadeeAspNetPipelineExtensionScope.AfterController
+                , (e, scope) => e.ConfigureUseEndpoints(scope, app));
+
+        }
+
+        /// <summary>
+        /// This method configures the specific endpoint.
+        /// </summary>
+        /// <param name="app">The application builder.</param>
+        /// <param name="endpoints">The endpoint route builder.</param>
+        protected virtual void ConfigureUseEndpoints(IApplicationBuilder app, IEndpointRouteBuilder endpoints)
+        {
+            PipelineExtensionsExecute(XigadeeAspNetPipelineExtensionScope.BeforeController
+                , (e, scope) => ExecuteIfSupportsEndpoints(e, app, endpoints, scope));
+
+            if (PipelineComponentTryGet<IAspNetPipelineController>(out var ext))
+                ExecuteIfSupportsEndpoints(ext, app, endpoints);
+
+            PipelineExtensionsExecute(XigadeeAspNetPipelineExtensionScope.AfterController
+                , (e, scope) => ExecuteIfSupportsEndpoints(e, app, endpoints, scope));
+        }
+
+        protected virtual void ExecuteIfSupportsEndpoints(IAspNetPipelineComponent c, IApplicationBuilder app, IEndpointRouteBuilder endpoints, XigadeeAspNetPipelineExtensionScope? scope = null)
+        {
+            var e = c as IAspNetPipelineSupportsUseEndpoints;
+            if (e != null)
+                e.ConfigureUseEndpoints(app, endpoints, scope);
         }
         #endregion
     }

@@ -47,7 +47,7 @@ namespace Xigadee
         /// <param name="dir">The directive.</param>
         /// <param name="repo">The repository.</param>
         /// <returns>Returns the persistence client.</returns>
-        public static ICommand RepositoryCreatePersistenceServer(this RepositoryDirective dir, RepositoryBase repo)
+        public static ICommand RepositoryCreatePersistenceServer(this RepositoryDirective dir, IRepositoryBase repo)
         {
             var repoType = typeof(PersistenceServer<,>).MakeGenericType(dir.TypeKey, dir.TypeEntity).GetConstructors();
 

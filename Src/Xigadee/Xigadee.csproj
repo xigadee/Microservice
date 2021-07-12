@@ -10,21 +10,24 @@
 
   <PropertyGroup>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Xigadee.xml</DocumentationFile>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>9.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Command\CommandPersistence\Server\DocumentDb\**" />
+    <Compile Remove="Communication\Messaging\**" />
     <Compile Remove="ServiceHandler\Handlers\Serializers\Base\**" />
     <Compile Remove="ServiceHandler\Ids\**" />
     <Compile Remove="ServiceHandler\Interfaces\Handler\**" />
     <Compile Remove="ServiceHandler\JWT\Interfaces\**" />
     <EmbeddedResource Remove="Command\CommandPersistence\Server\DocumentDb\**" />
+    <EmbeddedResource Remove="Communication\Messaging\**" />
     <EmbeddedResource Remove="ServiceHandler\Handlers\Serializers\Base\**" />
     <EmbeddedResource Remove="ServiceHandler\Ids\**" />
     <EmbeddedResource Remove="ServiceHandler\Interfaces\Handler\**" />
     <EmbeddedResource Remove="ServiceHandler\JWT\Interfaces\**" />
     <None Remove="Command\CommandPersistence\Server\DocumentDb\**" />
+    <None Remove="Communication\Messaging\**" />
     <None Remove="ServiceHandler\Handlers\Serializers\Base\**" />
     <None Remove="ServiceHandler\Ids\**" />
     <None Remove="ServiceHandler\Interfaces\Handler\**" />
@@ -45,7 +48,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Communication\Messaging\" />
     <Folder Include="DataCollection\Pipeline\Add\" />
     <Folder Include="ServiceHandler\Handlers\Serializers\Pipeline\" />
   </ItemGroup>

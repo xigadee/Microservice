@@ -47,7 +47,6 @@ namespace Xigadee
         /// </summary>
         public event EventHandler<E> OnBeforeUpdate;
         #endregion
-
         #region OnAfterUpdate ...
         /// <summary>
         /// Occurs after an entity is created/attempted.
@@ -749,7 +748,7 @@ namespace Xigadee
     /// <summary>
     /// This is the base holding class.
     /// </summary>
-    public abstract class RepositoryBase
+    public abstract class RepositoryBase : IRepositoryBase
     {
         #region Constructor
         /// <summary>
@@ -765,7 +764,7 @@ namespace Xigadee
             TypeEntity = entityType;
 
             RepositoryType = typeof(IRepositoryAsync<,>).MakeGenericType(keyType, entityType);
-        } 
+        }
         #endregion
 
         #region RepositoryTypeValidate(Type repositoryType, out Type keyType, out Type entityType)
@@ -783,7 +782,7 @@ namespace Xigadee
 
             keyType = repositoryType.GenericTypeArguments[0];
             entityType = repositoryType.GenericTypeArguments[1];
-        } 
+        }
         #endregion
 
         #region ResultFormat...
@@ -800,7 +799,7 @@ namespace Xigadee
         /// <param name="holderAction">The action to execute when the holder is created.</param>
         /// <returns>Returns the holder.</returns>
         public static Task<RepositoryHolder<KT, ET>> ResultFormat<KT, ET>(int result, Func<KT> key = null, Func<ET> entity = null
-            , Func<Tuple<string,string>> tup = null
+            , Func<Tuple<string, string>> tup = null
             , RepositorySettings options = null, Action<RepositoryHolder<KT, ET>> holderAction = null)
             where KT : IEquatable<KT>
         {
@@ -834,7 +833,7 @@ namespace Xigadee
         /// <exception cref="ArgumentOutOfRangeException">Key must be set to a value</exception>
         public static void IncomingParameterChecks<KT>(KT key) where KT : IEquatable<KT>
         {
-            if (object.Equals(key,default(KT)))
+            if (object.Equals(key, default(KT)))
                 throw new ArgumentOutOfRangeException("key must be set to a value");
         }
 
@@ -847,7 +846,7 @@ namespace Xigadee
         public static void IncomingParameterChecks<KT, ET>(KT key, ET value) where KT : IEquatable<KT>
         {
             IncomingParameterChecks(key);
-            if (object.Equals(value,default(ET)))
+            if (object.Equals(value, default(ET)))
                 throw new ArgumentNullException("value must be set to a value");
         }
         #endregion

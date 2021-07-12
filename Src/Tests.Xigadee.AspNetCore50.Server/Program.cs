@@ -1,19 +1,19 @@
+using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Xigadee;
 
-namespace Tests.Xigadee.AspNetCore50.Server
+namespace Tests.Xigadee.AspNetCore50
 {
     public class Program
     {
         public static void Main(string[] args)
         {
             Host.CreateDefaultBuilder(args)
-                //.UseContentRoot(Directory.GetCurrentDirectory())
+                .UseContentRoot(Directory.GetCurrentDirectory())
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.ConfigureKestrel(k => k.AddServerHeader = false);
-                    webBuilder.UseStartupXigadee<StartupContext>();
+                    webBuilder.UseStartup<Startup>();
                 })
             .Build()
             .Run();

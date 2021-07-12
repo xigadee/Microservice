@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Xigadee
 {
+    /// <summary>
+    /// This wrapper holds the communication service.
+    /// </summary>
     public class CommunicationWrapper: WrapperBase, IMicroserviceCommunication
     {
         /// <summary>
@@ -10,6 +13,11 @@ namespace Xigadee
         /// </summary>
         protected CommunicationContainer mCommunication;
 
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="communication">The communication container.</param>
+        /// <param name="getStatus">The function to return the service status.</param>
         public CommunicationWrapper(CommunicationContainer communication, Func<ServiceStatus> getStatus) : base(getStatus)
         {
             mCommunication = communication;
@@ -63,7 +71,18 @@ namespace Xigadee
         public bool HasChannel(string channelId, ChannelDirection direction)
         {
             return mCommunication.Exists(channelId, direction);
-        } 
+        }
+        #endregion
+
+        #region TryGet(string channelId, ChannelDirection direction, out Channel channel)
+        /// <summary>
+        /// This method attempts to retrieve and existing channel.
+        /// </summary>
+        /// <param name="channelId">The channel Id.</param>
+        /// <param name="direction">The direction.</param>
+        /// <param name="channel">Returns the channel object.</param>
+        /// <returns>Returns true if the channel is resolved.</returns>
+        public bool TryGet(string channelId, ChannelDirection direction, out Channel channel) => mCommunication.TryGet(channelId, direction, out channel);
         #endregion
 
         #region Channels

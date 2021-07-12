@@ -7,15 +7,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Reflection;
+using Microsoft.AspNetCore.Builder;
 
 namespace Xigadee
 {
     /// <summary>
     /// This is the root context it contains shared functionality within the .NET Standard capabilities.
     /// </summary>
-    public abstract class ApiStartUpContextRoot<HE> : IApiStartupContextBase, IHostedService
+    public abstract partial class ApiStartUpContextRoot<HE> : IApiStartupContextBase, IHostedService
         where HE : HostingContainerBase
     {
+
         #region Id
         /// <summary>
         /// This is the unique service Id which is regenerated each time the service starts up.
@@ -33,22 +36,40 @@ namespace Xigadee
         /// </summary>
         public ApiStartUpContextRoot()
         {
-            Directives = new ContextDirectives(this);
         }
-        #endregion
-        #region Directives
-        /// <summary>
-        /// This collection contains the list of repository directives for the context.
-        /// This can be used to populate the repositories and run time from a central method.
-        /// Useful when you want to set as memory backed for testing.
-        /// </summary>
-        public ContextDirectives Directives { get; }
         #endregion
         #region Host
         /// <summary>
         /// This is the hosting container environment.
         /// </summary>
         public HE Host { get; protected set; }
+        #endregion
+
+        #region ModuleLifecycle
+        /// <summary>
+        /// This is the current lifecycle.
+        /// </summary>
+        protected ApiModuleLifecycle ModuleLifecycle { get; private set; } = ApiModuleLifecycle.Initialized;
+        /// <summary>
+        /// This event can be used to intercept the lifecycle changes.
+        /// </summary>
+        public event EventHandler<ApiModuleLifecycle> OnModuleLifecycleChange;
+        /// <summary>
+        /// This method is called to change the lifecycle state.
+        /// </summary>
+        /// <param name="newState">The new state.</param>
+        protected void ModuleLifecycleChange(ApiModuleLifecycle newState)
+        {
+            ModuleLifecycle = newState;
+            try
+            {
+                OnModuleLifecycleChange?.Invoke(this, newState);
+            }
+            catch (Exception)
+            {
+                //Nothing we can do here.
+            }
+        }
         #endregion
         #region PipelineExtensions
         /// <summary>
@@ -131,10 +152,23 @@ namespace Xigadee
         /// </summary>
         public virtual void Initialize()
         {
+            LoggingProviderSet();
             Build();
             Bind();
             Pipeline();
         }
+        #endregion
+
+        #region 0.LoggingProviderSet()
+        /// <summary>
+        /// This method sets the logging provider.
+        /// </summary>
+        protected virtual void LoggingProviderSet()
+        {
+            LoggerProvider = new ApplicationLoggerProvider();
+            //This method tells the provider to hold messages internally until the release method is called.
+            LoggerProvider.Hold();
+        } 
         #endregion
         #region 1.Build()
         /// <summary>
@@ -182,49 +216,42 @@ namespace Xigadee
         protected virtual void PipelineExtensionsSet() { }
         #endregion
 
-        #region CXB => ModulesCreate(IServiceCollection services)
+        #region CXB => ModulesCreate/Load(IServiceCollection services)
         /// <summary>
         /// Connects the application components and registers the relevant services.
         /// </summary>
         /// <param name="services">The services.</param>
-        public virtual void ModulesCreate(IServiceCollection services)
-        {
-        }
-        #endregion
-        #region CXC => Connect(ILoggerFactory lf)
+        public virtual void ModulesCreate(IServiceCollection services) => AttributeModulesCreate();
         /// <summary>
         /// Connects the application components and registers the relevant services.
         /// </summary>
-        /// <param name="lf">The logger factory.</param>
-        public virtual void Connect(ILoggerFactory lf)
-        {
-            Logger = lf.CreateLogger<IApiStartupContextBase>();
-            //Set the logger for the pipeline extensions.
-            PipelineComponents.ForEach(ext =>
-            {
-                ext.Value.Logger = Logger;
-                ext.Value.Host = Host;
-            });
-        }
+        /// <param name="services">The services.</param>
+        public virtual void ModulesLoad(IServiceCollection services) => AttributeModulesLoad(services);
+        /// <summary>
+        /// This method is used to call the module that need to configure the Microservice before it starts.
+        /// </summary>
+        public virtual void ModulesMicroserviceConfigure() => AttributeModulesMicroserviceConfigure();
         #endregion
 
         #region StartAsync/StopAsync
+        bool _waitStart = false;
         /// <summary>
         /// This override starts any registered module that have the start stop attribute set in the context.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public async Task StartAsync(CancellationToken cancellationToken)
+        public virtual Task StartAsync(CancellationToken cancellationToken)
         {
-            await Task.WhenAll(Directives.ModuleStartStopExtract().Select(m => m.Start(cancellationToken)));
+            _waitStart = ModuleLifecycle < ApiModuleLifecycle.Connected;
+            if (_waitStart)
+                return Task.CompletedTask;
+
+            return AttributeModulesStart(cancellationToken);
         }
         /// <summary>
         /// This method stops any modules that have been marked for start stop.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public async Task StopAsync(CancellationToken cancellationToken)
-        {
-            await Task.WhenAll(Directives.ModuleStartStopExtract().Select(m => m.Stop(cancellationToken)));
-        }
+        public virtual Task StopAsync(CancellationToken cancellationToken) => AttributeModulesStop(cancellationToken);
         #endregion
 
         #region PipelineComponents ...
@@ -278,6 +305,30 @@ namespace Xigadee
         /// </summary>
         [RegisterAsSingleton]
         public StatisticsHolder Statistics { get; private set; } = new StatisticsHolder();
+        #endregion
+
+        #region Pipeline
+        /// <summary>
+        /// Gets the pipeline used to configure the Microservice.
+        /// </summary>
+        public MicroservicePipeline MicroservicePipeline { get; set; }
+        #endregion
+        #region Service
+        /// <summary>
+        /// Gets the Microservice ASP.NET Core hosted service.
+        /// </summary>
+        public MicroserviceHostedService MicroserviceHostedService { get; set; }
+        #endregion
+
+        #region LoggerFactory
+        /// <summary>
+        /// Gets or sets the logger factory.
+        /// </summary>
+        public ILoggerFactory LoggerFactory { get; set; }
+        /// <summary>
+        /// This is the logger provider for the application.
+        /// </summary>
+        public ApplicationLoggerProvider LoggerProvider { get; set; }
         #endregion
     }
 }

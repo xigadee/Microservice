@@ -68,11 +68,19 @@ namespace Xigadee
         }
     }
 
+    /// <summary>
+    /// This class is used to record the application parts that require startup logic.
+    /// </summary>
     public class ApplicationPartsLogger : IHostedService
     {
         private readonly ILogger<ApplicationPartsLogger> _logger;
         private readonly ApplicationPartManager _partManager;
 
+        /// <summary>
+        /// This is the default constructor.
+        /// </summary>
+        /// <param name="logger">The root logger.</param>
+        /// <param name="partManager">The MVC parts manager.</param>
         public ApplicationPartsLogger(ILogger<ApplicationPartsLogger> logger, ApplicationPartManager partManager)
         {
             _logger = logger;

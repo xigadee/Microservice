@@ -108,7 +108,7 @@ namespace Xigadee
         /// <param name="channelId">The channel Id.</param>
         /// <param name="direction">The direction.</param>
         /// <param name="channel">Returns the channel object.</param>
-        /// <returns></returns>
+        /// <returns>Returns true if the channel is resolved.</returns>
         public bool TryGet(string channelId, ChannelDirection direction, out Channel channel)
         {
             channel = null;

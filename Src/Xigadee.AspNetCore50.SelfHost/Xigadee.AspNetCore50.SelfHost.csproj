@@ -8,6 +8,11 @@
     <AssemblyName>Xigadee.AspNetCore50.SelfHost</AssemblyName>
   </PropertyGroup>
 
+    <PropertyGroup>
+	    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Xigadee.AspNetCore50.SelfHost.xml</DocumentationFile>
+	    <LangVersion>9.0</LangVersion>
+    </PropertyGroup>
+	
   <ItemGroup>
     <ProjectReference Include="..\Xigadee.AspNetCore.Abstractions\Xigadee.AspNetCore.Abstractions.csproj" />
   </ItemGroup>

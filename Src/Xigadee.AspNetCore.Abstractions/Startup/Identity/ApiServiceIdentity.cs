@@ -17,9 +17,12 @@ namespace Xigadee
         /// <param name="domain">The current domain of the hosting platform.</param>
         /// <param name="instanceId">The instance id.</param>
         /// <param name="environmentName">The environment name.</param>
-        public ApiServiceIdentity(Guid id,
-            string machineName, string application, string version, string domain
-            , string instanceId, string environmentName)
+        /// <param name="jwtAudience">The optional token audience.</param>
+        public ApiServiceIdentity(Guid id
+            , string machineName, string application
+            , string version, string domain
+            , string instanceId, string environmentName
+            , string jwtAudience = null)
         {
             Id = id;
             MachineName = machineName;
@@ -28,6 +31,7 @@ namespace Xigadee
             Domain = domain;
             InstanceId = instanceId;
             EnvironmentName = environmentName;
+            JwtAudience = jwtAudience;
         }
 
         /// <summary>
