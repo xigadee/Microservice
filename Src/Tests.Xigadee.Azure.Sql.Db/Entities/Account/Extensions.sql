@@ -93,7 +93,7 @@ BEGIN
 
 			--We want to make sure that we remove from the results temporary table, otherwise we could 
 			--get stuck in a loop.
-			DELETE FROM @Results WHERE ID = @ItemId;
+			DELETE FROM @Results WHERE Id = @ItemId;
 			IF (@@ROWCOUNT = 0)
 			BEGIN
 				PRINT 'Could not remove: ' + CAST(@ItemId AS VARCHAR(50));
