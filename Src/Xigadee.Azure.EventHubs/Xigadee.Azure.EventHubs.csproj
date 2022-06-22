@@ -23,7 +23,7 @@
     <PackageReference Include="Microsoft.Azure.EventHubs.Processor" Version="2.0.0" />
     <PackageReference Include="Microsoft.Azure.Management.EventHub" Version="2.0.3" />
     <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
   <ItemGroup>
