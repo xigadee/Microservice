@@ -8,7 +8,9 @@
     <RootNamespace>Tests.Xigadee</RootNamespace>
     <AssemblyName>Tests.Xigadee</AssemblyName>
   </PropertyGroup>
-
+	<PropertyGroup>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
   <ItemGroup>
     <None Remove="Communication\Tcp\HttpSamples\http1_rq.txt" />
     <None Remove="Communication\Tcp\HttpSamples\http1_rq_cont.txt" />

@@ -10,7 +10,7 @@
 
   <PropertyGroup>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Xigadee.AspNetCore50.xml</DocumentationFile>
-    <LangVersion>9.0</LangVersion>
+	  <LangVersion>latest</LangVersion>
   </PropertyGroup>
   
   <ItemGroup>
@@ -29,7 +29,4 @@
     <Compile Include="..\AssemblyInfo\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
   </ItemGroup>
 
-
-
-  
 </Project>
