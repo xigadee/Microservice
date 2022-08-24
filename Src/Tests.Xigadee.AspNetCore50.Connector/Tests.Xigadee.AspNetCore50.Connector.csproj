@@ -1,13 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PackageId>Tests.Xigadee.AspNetCore50.Connector</PackageId>
     <RootNamespace>Tests.Xigadee.AspNetCore50</RootNamespace>
     <AssemblyName>Tests.Xigadee.AspNetCore50.Connector</AssemblyName>
   </PropertyGroup>
-
+	<PropertyGroup>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tests.Xigadee.AspNetCore50.Common\Tests.Xigadee.AspNetCore50.Common.csproj" />
     <ProjectReference Include="..\Xigadee.Abstractions\Xigadee.Abstractions.csproj" />

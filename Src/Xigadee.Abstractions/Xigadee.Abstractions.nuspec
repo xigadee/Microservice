@@ -19,7 +19,6 @@
       <group targetFramework=".NETStandard2.0">
         <dependency id="Newtonsoft.Json" version="13.0.1" exclude="Build,Analyzers" />
         <dependency id="Microsoft.CSharp" version="4.7.0" exclude="Build,Analyzers" />
-        <dependency id="System.Memory" version="4.5.4" exclude="Build,Analyzers" />
       </group>
     </dependencies>
   </metadata>
