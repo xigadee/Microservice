@@ -62,7 +62,7 @@ namespace Test.Xigadee
         /// <summary>
         /// This is the Microservice configuration, or null if the pipeline is not set.
         /// </summary>
-        public IEnvironmentConfiguration Config { get { return Pipeline?.ToConfiguration(); } }
+        //public IEnvironmentConfiguration Config { get { return Pipeline?.ToConfiguration(); } }
         /// <summary>
         /// This method starts the service.
         /// </summary>

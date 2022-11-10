@@ -2,13 +2,18 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PackageId>Tests.Xigadee.DebugConsole</PackageId>
     <RootNamespace>Tests.Xigadee</RootNamespace>
     <AssemblyName>Tests.Xigadee.DebugConsole</AssemblyName>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.TestPlatform.Portable" Version="17.4.0" />
+    <PackageReference Include="Microsoft.UnitTestFramework.Extensions" Version="2.0.0" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Tests.Xigadee.Common\Tests.Xigadee.Common.csproj" />

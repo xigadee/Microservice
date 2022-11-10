@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28729.10
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33103.184
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Console", "Xigadee.Console\Xigadee.Console.csproj", "{AF748540-D35C-409A-AD23-D990CF19DED9}"
 EndProject
@@ -74,8 +74,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee.Sql", "Tests\Tests.Xigadee.Sql\Tests.Xigadee.Sql.csproj", "{2C1C00E4-232A-4EAD-8136-727AC60AC164}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Azure.Sql", "Xigadee.Azure.Sql\Xigadee.Azure.Sql.csproj", "{6042BBEF-14DD-48CA-9375-A44026BC3567}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Amazon.Web.Service", "Amazon.Web.Service", "{6BF9FD33-1160-4E10-AED6-F51A1ABC7C19}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PiO.Shared", "PiO.Shared\PiO.Shared.csproj", "{334E03BE-E7B9-45EA-9AFF-1923E461BB87}"
 EndProject
@@ -306,7 +304,7 @@ Global
 		{94E7DB91-DF2A-411C-AE99-95BF19A69FD6} = {45344820-9E25-4145-B4EA-731F81F60919}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
 		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
+		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
 	EndGlobalSection
 EndGlobal
