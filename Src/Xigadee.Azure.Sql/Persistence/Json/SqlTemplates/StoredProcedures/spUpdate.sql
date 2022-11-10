@@ -13,21 +13,20 @@ AS
 	BEGIN TRY
 		BEGIN TRAN
 
-		DECLARE @Id BIGINT
+		DECLARE @Id BIGINT, @ExistingVersion UNIQUEIDENTIFIER;
+		SELECT @Id = [Id], @ExistingVersion = [VersionId] FROM [{NamespaceTable}].[{EntityName}] WHERE [ExternalId] = @ExternalId
 
-		IF (@VersionId IS NOT NULL)
+		--Check we can find the entity
+		IF (@Id IS NULL)
 		BEGIN
-			DECLARE @ExistingVersion UNIQUEIDENTIFIER;
-			SELECT @Id = [Id], @ExistingVersion = [VersionId] FROM [{NamespaceTable}].[{EntityName}] WHERE [ExternalId] = @ExternalId
-			IF (@Id IS NOT NULL AND @ExistingVersion != @VersionId)
-			BEGIN
-				ROLLBACK TRAN;
-				RETURN 409; --Conflict
-			END
+			ROLLBACK TRAN;
+			RETURN 404; --Not found
 		END
-		ELSE
+
+		IF (@VersionId IS NOT NULL AND @ExistingVersion != @VersionId)
 		BEGIN
-			SELECT @Id = [Id] FROM [{NamespaceTable}].[{EntityName}] WHERE [ExternalId] = @ExternalId
+			ROLLBACK TRAN;
+			RETURN 409; --Conflict
 		END
 
 		--Check we can find the entity
@@ -44,7 +43,7 @@ AS
 			, [DateUpdated] = ISNULL(@DateUpdated, GETUTCDATE())
 			, [Sig] = @Sig
 			, [Body] = @Body
-		WHERE Id = @Id
+		WHERE Id = @Id AND [VersionId]=@ExistingVersion
 
 		IF (@@ROWCOUNT=0)
 		BEGIN
