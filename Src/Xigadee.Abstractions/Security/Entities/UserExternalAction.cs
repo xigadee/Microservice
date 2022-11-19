@@ -33,5 +33,10 @@ namespace Xigadee
         /// </summary>
         public DateTime? DateExpiry { get; set; }
 
+        /// <summary>
+        /// Gets or sets the option expiry date/time for the action.
+        /// </summary>
+        [EntityReferenceHint("refid")]
+        public string Reference { get; set; }
     }
 }

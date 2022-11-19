@@ -40,12 +40,13 @@ namespace Xigadee
         /// <param name="bag">The property bag.</param>
         /// <param name="key">The key.</param>
         /// <param name="convert">The optional convert method. If this is not passed, the method will resolve the key manager.</param>
+        /// <param name="defaultValue">The default value if not found.</param>
         /// <returns>The key, or null if not found.</returns>
-        public static K PropertiesGet<K>(this IPropertyBag bag, string key, Func<string, K> convert = null)
+        public static K PropertiesGet<K>(this IPropertyBag bag, string key, Func<string, K> convert = null, K defaultValue = default(K))
         {
             string value;
             if (!bag.Properties.TryGetValue(key, out value) || value == null)
-                return default(K);
+                return defaultValue;
 
             if (convert != null)
                 return convert(value);
@@ -74,12 +75,13 @@ namespace Xigadee
         /// </summary>
         /// <param name="bag">The property bag.</param>
         /// <param name="key">The key.</param>
-        /// <returns>The key, or null if not found.</returns>
-        public static string PropertiesGetRaw(this IPropertyBag bag, string key)
+        /// <param name="defaultValue">The default value if not found.</param>
+        /// <returns>The key, or defaultValue if not found.</returns>
+        public static string PropertiesGetRaw(this IPropertyBag bag, string key, string defaultValue = null)
         {
             string value;
             if (!bag.Properties.TryGetValue(key, out value))
-                return null;
+                return defaultValue;
 
             return value;
         }
