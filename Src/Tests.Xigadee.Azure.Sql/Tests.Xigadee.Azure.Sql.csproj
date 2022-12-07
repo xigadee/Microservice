@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Ancillary\**" />
+    <EmbeddedResource Remove="Ancillary\**" />
+    <None Remove="Ancillary\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />
     <PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
@@ -16,10 +22,6 @@
     <ProjectReference Include="..\Xigadee.Abstractions\Xigadee.Abstractions.csproj" />
     <ProjectReference Include="..\Xigadee.Azure.Sql\Xigadee.Azure.Sql.csproj" />
     <ProjectReference Include="..\Xigadee\Xigadee.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Ancillary\" />
   </ItemGroup>
 
 </Project>
