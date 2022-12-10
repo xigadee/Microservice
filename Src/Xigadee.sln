@@ -87,7 +87,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.Azure.Storage.Blob"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee.Azure.Storage.Blob", "Tests.Xigadee.Azure.Storage.Blob\Tests.Xigadee.Azure.Storage.Blob.csproj", "{BD67483C-0CE9-4C96-8134-7E7FE8624B26}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.AspNetCore50", "Xigadee.AspNetCore50\Xigadee.AspNetCore50.csproj", "{B2CB55E3-5E5C-48FB-8B8F-664479707FC4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.AspNetCore", "Xigadee.AspNetCore50\Xigadee.AspNetCore.csproj", "{B2CB55E3-5E5C-48FB-8B8F-664479707FC4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.AspNetCore.Abstractions", "Xigadee.AspNetCore.Abstractions\Xigadee.AspNetCore.Abstractions.csproj", "{E94B8F0B-0F7B-4319-962A-3EFBF39BA220}"
 EndProject
@@ -99,7 +99,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee.Common", "Tes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{E095B721-6471-484B-BCA7-D8623B6563A3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.AspNetCore50.SelfHost", "Xigadee.AspNetCore50.SelfHost\Xigadee.AspNetCore50.SelfHost.csproj", "{00177D3E-F5CD-4520-B37C-7ADA09CED4E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xigadee.AspNetCore.SelfHost", "Xigadee.AspNetCore50.SelfHost\Xigadee.AspNetCore.SelfHost.csproj", "{00177D3E-F5CD-4520-B37C-7ADA09CED4E5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Xigadee.AspNetCore50", "Tests.Xigadee.AspNetCore50\Tests.Xigadee.AspNetCore50.csproj", "{E420993C-99CC-446F-AFD8-97A83C062B39}"
 EndProject
@@ -304,7 +304,7 @@ Global
 		{94E7DB91-DF2A-411C-AE99-95BF19A69FD6} = {45344820-9E25-4145-B4EA-731F81F60919}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
 		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
+		SolutionGuid = {8BF7561D-7A94-4B22-B0EB-D82D95B110DE}
 	EndGlobalSection
 EndGlobal

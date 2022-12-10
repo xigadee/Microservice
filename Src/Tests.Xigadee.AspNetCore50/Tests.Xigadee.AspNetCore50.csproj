@@ -12,7 +12,7 @@
     <ProjectReference Include="..\Tests.Xigadee.AspNetCore50.Connector\Tests.Xigadee.AspNetCore50.Connector.csproj" />
     <ProjectReference Include="..\Tests.Xigadee.AspNetCore50.Server\Tests.Xigadee.AspNetCore50.Server.csproj" />
     <ProjectReference Include="..\Xigadee.AspNetCore.Abstractions\Xigadee.AspNetCore.Abstractions.csproj" />
-    <ProjectReference Include="..\Xigadee.AspNetCore50.SelfHost\Xigadee.AspNetCore50.SelfHost.csproj" />
+    <ProjectReference Include="..\Xigadee.AspNetCore50.SelfHost\Xigadee.AspNetCore.SelfHost.csproj" />
     <ProjectReference Include="..\Xigadee\Xigadee.csproj" />
   </ItemGroup>
 
