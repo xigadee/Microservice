@@ -3,13 +3,13 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <PackageId>Xigadee.AspNetCore50</PackageId>
+    <PackageId>Xigadee.AspNetCore</PackageId>
     <RootNamespace>Xigadee</RootNamespace>
-    <AssemblyName>Xigadee.AspNetCore50</AssemblyName>
+    <AssemblyName>Xigadee.AspNetCore</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Xigadee.AspNetCore50.xml</DocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Xigadee.AspNetCore.xml</DocumentationFile>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   

@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>Xigadee.AspNetCore50.SelfHost</id>
+    <id>Xigadee.AspNetCore.SelfHost</id>
     <version>{UpdateVersion.ps1.replace}</version>
-    <title>Xigadee AspNetCore 5.0 extension Library</title>
+    <title>Xigadee AspNetCore selfhost test library</title>
     <authors>Paul Stancer</authors>
     <owners>Xigadee.org</owners>
     <iconUrl>https://raw.githubusercontent.com/xigadee/Microservice/master/docs/Logo.png</iconUrl>
@@ -12,7 +12,7 @@
     <description>This Xigadee library is used to extend AspNetCore applications.</description>
     <summary>Xigadee Microservice Framework for .NET</summary>
     <releaseNotes>Release 2.0</releaseNotes>
-    <copyright>Copyright © Xigadee 2017-2021</copyright>
+    <copyright>Copyright © Xigadee 2017-2023</copyright>
     <tags>Xigadee Microservice AspNetCore</tags>
     <dependencies>
       <group targetFramework=".NETCoreApp2.2">

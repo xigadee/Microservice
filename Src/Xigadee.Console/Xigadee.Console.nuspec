@@ -11,7 +11,7 @@
     <projectUrl>http://xigadee.org</projectUrl>
     <description>The Xigadee Console Helper library is used to help spin up quick console based test-beds for Microservice based applications.</description>
     <releaseNotes>Initial test package.</releaseNotes>
-    <copyright>Copyright © Xigadee 2017-2020 incorporates copyright of Hitachi Consulting 2012-2017 and TiPJAR 2019-2022</copyright>
+    <copyright>Copyright © Xigadee 2017-2023 incorporates copyright of Hitachi Consulting 2012-2017 and TiPJAR 2019-2023</copyright>
     <tags>Xigadee .NET Console</tags>
     <dependencies>
       <group targetFramework=".NETStandard2.0">

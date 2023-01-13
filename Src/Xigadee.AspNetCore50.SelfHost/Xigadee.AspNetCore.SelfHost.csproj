@@ -3,13 +3,13 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <PackageId>Xigadee.AspNetCore50.SelfHost</PackageId>
+    <PackageId>Xigadee.AspNetCore.SelfHost</PackageId>
     <RootNamespace>Xigadee</RootNamespace>
-    <AssemblyName>Xigadee.AspNetCore50.SelfHost</AssemblyName>
+    <AssemblyName>Xigadee.AspNetCore.SelfHost</AssemblyName>
   </PropertyGroup>
 
     <PropertyGroup>
-	    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Xigadee.AspNetCore50.SelfHost.xml</DocumentationFile>
+	    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Xigadee.AspNetCore.SelfHost.xml</DocumentationFile>
 	    <LangVersion>latest</LangVersion>
     </PropertyGroup>
 	
@@ -26,4 +26,5 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
   </ItemGroup>
+	
 </Project>
